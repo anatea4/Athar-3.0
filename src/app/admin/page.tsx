@@ -1022,11 +1022,13 @@ function SettingsTab({ settings, onSave }: { settings: Record<string, string>; o
   const [notifyEmail, setNotifyEmail] = useState(settings.notify_email || '');
   const [resendKey, setResendKey] = useState(settings.resend_api_key || '');
   const [emailFrom, setEmailFrom] = useState(settings.email_from || '');
+  const [geminiKey, setGeminiKey] = useState(settings.gemini_api_key || '');
   useEffect(() => {
     setSiteName(settings.site_name || 'Athar Academy');
     setNotifyEmail(settings.notify_email || '');
     setResendKey(settings.resend_api_key || '');
     setEmailFrom(settings.email_from || '');
+    setGeminiKey(settings.gemini_api_key || '');
   }, [settings]);
 
   return (
@@ -1130,6 +1132,41 @@ function SettingsTab({ settings, onSave }: { settings: Record<string, string>; o
             <a href="https://resend.com/domains" target="_blank" rel="noopener noreferrer" className="text-brand-blue underline font-bold">resend.com/domains</a>
             {' '}ثم ضع هنا في خانة «المُرسِل»: <code>Athar Academy &lt;noreply@athar.my&gt;</code>. بعدها تصل لكل البُرُد.
           </div>
+        </div>
+      </div>
+
+      {/* AI Assistant (Gemini) */}
+      <div className="bg-white rounded-2xl border border-brand-gold/20 p-6 space-y-4 shadow-sm">
+        <div>
+          <h2 className="text-lg font-bold text-brand-blue-dark flex items-center gap-2">
+            <MessageSquare className="h-5 w-5 text-brand-gold" />
+            المساعد الذكي (Gemini)
+          </h2>
+          <p className="text-xs text-slate-500 mt-1">
+            مفتاح Gemini يشغّل شات بوت «مُعلّم أثر» ليرد على الزوار بذكاء.
+          </p>
+        </div>
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-1">مفتاح Gemini API</label>
+          <input
+            type="password"
+            value={geminiKey}
+            onChange={(e) => setGeminiKey(e.target.value)}
+            placeholder="AIza... أو AQ..."
+            dir="ltr"
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg font-mono text-xs focus:outline-none focus:border-brand-gold"
+          />
+          <button
+            onClick={() => onSave('gemini_api_key', geminiKey)}
+            className="mt-2 text-xs bg-brand-gold hover:bg-brand-gold-dark text-white px-4 py-1.5 rounded-lg font-bold"
+          >
+            حفظ مفتاح Gemini
+          </button>
+        </div>
+        <div className="text-xs text-slate-600 bg-brand-gold-light border border-brand-gold/20 p-3 rounded-xl leading-relaxed">
+          💡 احصل على مفتاح مجاني من{' '}
+          <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" className="text-brand-blue underline font-bold">aistudio.google.com/apikey</a>.
+          النموذج المستخدم: <code>gemini-2.5-flash</code>.
         </div>
       </div>
     </div>
