@@ -5,7 +5,7 @@ import {
   HelpCircle, Compass, ShieldCheck, HeartHandshake, PhoneCall, Calculator, Ticket
 } from 'lucide-react';
 import { Language, getLangField } from '@/types';
-import { DETAILED_PROGRAMS, ACADEMY_STATS, PROGRAMS, CONTACT_DETAILS } from '@/data';
+import { useDetailedPrograms, useStats, usePrograms, useContact } from '@/lib/content-provider';
 
 interface ProgramCatalogProps {
   currentLang: Language;
@@ -14,32 +14,44 @@ interface ProgramCatalogProps {
 }
 
 export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram }: ProgramCatalogProps) {
+  const DETAILED_PROGRAMS = useDetailedPrograms();
+  const ACADEMY_STATS = useStats();
+  const PROGRAMS = usePrograms();
+  const CONTACT_DETAILS = useContact();
   const [activeTab, setActiveTab] = useState('quran-circles');
 
 
 
   useEffect(() => {
-    if (activeSub) {
-      // Map activeSub navigation keys to actual tab IDs
-      if (activeSub === 'quran-circles') setActiveTab('quran-circles');
-      else if (activeSub === 'quran-sard') setActiveTab('quran-sard');
-      else if (activeSub === 'quran-ijazah') setActiveTab('quran-ijazah');
-      else if (activeSub === 'distance-learning') setActiveTab('distance-learning');
-      else if (activeSub === 'training-courses') setActiveTab('training-courses');
-      else if (activeSub === 'educational-camps') setActiveTab('educational-camps');
-      else if (activeSub === 'creators-of-tomorrow') setActiveTab('creators-of-tomorrow');
-    }
+    if (activeSub) setActiveTab(activeSub);
   }, [activeSub]);
 
+  // Tabs match the site menu exactly — one tab per educational program, in order.
   const tabs = [
-    { id: 'quran-circles', labelAr: 'حلقات القرآن', labelEn: 'Quran Circles', labelMs: 'Halaqah Al-Quran', icon: <Users className="h-4.5 w-4.5" /> },
-    { id: 'quran-sard', labelAr: 'السرد القرآني', labelEn: 'Quran Recital (Sard)', labelMs: 'Sard Al-Quran (Hafazan Lancar)', icon: <BookOpen className="h-4.5 w-4.5" /> },
-    { id: 'quran-ijazah', labelAr: 'الإجازات القرآنية', labelEn: 'Quranic Ijazat', labelMs: 'Ijazah Al-Quran', icon: <Award className="h-4.5 w-4.5" /> },
-    { id: 'distance-learning', labelAr: 'التعليم عن بُعد', labelEn: 'Distance Learning', labelMs: 'Pembelajaran Jarak Jauh', icon: <Compass className="h-4.5 w-4.5" /> },
-    { id: 'training-courses', labelAr: 'الدورات التدريبية', labelEn: 'Training Courses', labelMs: 'Kursus Latihan', icon: <ShieldCheck className="h-4.5 w-4.5" /> },
-    { id: 'educational-camps', labelAr: 'المخيمات التربوية', labelEn: 'Educational Camps', labelMs: 'Kem Pendidikan', icon: <HeartHandshake className="h-4.5 w-4.5" /> },
-    { id: 'creators-of-tomorrow', labelAr: 'صُنّاع الغد', labelEn: 'Creators of Tomorrow', labelMs: 'Pencipta Hari Esok', icon: <Sparkles className="h-4.5 w-4.5" /> }
+    { id: 'quran-circles', labelAr: 'برنامج الحلقات القرآنية', labelEn: 'Quran Circles', labelMs: 'Halaqah Al-Quran', icon: <Users className="h-4.5 w-4.5" /> },
+    { id: 'safara', labelAr: 'برنامج مع السّفرة', labelEn: 'With the Scribes', labelMs: 'Bersama Para Pencatat', icon: <BookOpen className="h-4.5 w-4.5" /> },
+    { id: 'takween', labelAr: 'برنامج تكوين', labelEn: 'Takween Program', labelMs: 'Program Takween', icon: <ShieldCheck className="h-4.5 w-4.5" /> },
+    { id: 'creators-of-tomorrow', labelAr: 'مخيم صنّاع الغد', labelEn: 'Creators of Tomorrow', labelMs: 'Pencipta Hari Esok', icon: <Sparkles className="h-4.5 w-4.5" /> },
+    { id: 'sfeerat', labelAr: 'مخيم سفيرات الأثر', labelEn: 'Ambassadors of Impact', labelMs: 'Duta Impak', icon: <HeartHandshake className="h-4.5 w-4.5" /> },
+    { id: 'ramadan-retreat', labelAr: 'المعتكف الرمضاني', labelEn: 'Ramadan Retreat', labelMs: 'Iktikaf Ramadan', icon: <Award className="h-4.5 w-4.5" /> },
+    { id: 'journey-athar', labelAr: 'رحلة الأثر', labelEn: 'Journey of Impact', labelMs: 'Perjalanan Impak', icon: <Compass className="h-4.5 w-4.5" /> },
+    { id: 'qari', labelAr: 'قارئ أثر', labelEn: 'Athar Reciter', labelMs: 'Qari Athar', icon: <BookOpen className="h-4.5 w-4.5" /> },
+    { id: 'accompanying', labelAr: 'البرامج المصاحبة', labelEn: 'Accompanying Programs', labelMs: 'Program Sampingan', icon: <Landmark className="h-4.5 w-4.5" /> },
   ];
+
+  // Look up a program from the detailed data by its id
+  const allDetailed = [...(DETAILED_PROGRAMS.basic || []), ...(DETAILED_PROGRAMS.accompanying || [])];
+  const findProg = (id: string) => allDetailed.find((p: any) => p.id === id);
+
+  // Maps each tab to its program data + accent icon
+  const PROGRAM_TABS: Record<string, { progId: string; icon: React.ReactNode }> = {
+    'safara': { progId: 'alsafarah', icon: <BookOpen className="h-6 w-6 text-brand-gold" /> },
+    'takween': { progId: 'takween', icon: <ShieldCheck className="h-6 w-6 text-brand-gold" /> },
+    'sfeerat': { progId: 'camps-sfeerat', icon: <HeartHandshake className="h-6 w-6 text-brand-gold" /> },
+    'ramadan-retreat': { progId: 'ramadan-retreat', icon: <Award className="h-6 w-6 text-brand-gold" /> },
+    'journey-athar': { progId: 'journey-athar', icon: <Compass className="h-6 w-6 text-brand-gold" /> },
+    'qari': { progId: 'qari', icon: <BookOpen className="h-6 w-6 text-brand-gold" /> },
+  };
 
 
 
@@ -173,6 +185,73 @@ export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram
             </div>
           )}
 
+          {/* Unified premium layout — one tab per program (مع السّفرة، تكوين، سفيرات، المعتكف، رحلة الأثر، قارئ أثر) */}
+          {PROGRAM_TABS[activeTab] && (() => {
+            const cfg = PROGRAM_TABS[activeTab];
+            const prog: any = findProg(cfg.progId);
+            if (!prog) return null;
+            const title = getLangField(prog, 'title', currentLang) as string;
+            const desc = getLangField(prog, 'desc', currentLang) as string;
+            return (
+              <div className="space-y-6 animate-in fade-in duration-500 text-right rtl:text-right ltr:text-left">
+                <h3 className="text-xl sm:text-2xl font-bold text-brand-blue-dark flex items-center gap-2 border-b border-brand-gold/15 pb-4">
+                  {cfg.icon}
+                  <span>{title}</span>
+                </h3>
+
+                <div className="bg-gradient-to-br from-brand-blue-dark to-[#12233b] border-2 border-brand-gold/30 text-white rounded-3xl p-8 relative overflow-hidden shadow-lg">
+                  <div className="absolute top-0 right-0 w-36 h-36 bg-brand-gold/10 rounded-full blur-3xl pointer-events-none" />
+                  <div className="space-y-4 max-w-3xl">
+                    <span className="text-[10px] uppercase font-bold tracking-widest px-3 py-1 bg-brand-gold/25 text-brand-gold-light rounded-full border border-brand-gold/20">
+                      {currentLang === 'ms' ? 'Program Akademi Athar' : currentLang === 'en' ? 'Athar Academy Program' : 'برنامج من أكاديمية أثر'}
+                    </span>
+                    <h4 className="text-lg sm:text-2xl font-extrabold text-brand-gold">{title}</h4>
+                    <p className="text-slate-200 font-sans text-sm sm:text-base leading-relaxed">{desc}</p>
+                    {prog.stats && (
+                      <div className="pt-4 border-t border-white/10">
+                        <span className="inline-flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-sm font-bold text-brand-gold-light">
+                          <Users className="h-4 w-4" /> {prog.stats}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="bg-brand-gold/5 border border-brand-gold/20 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="text-sm text-slate-600 font-sans">
+                    {currentLang === 'ms' ? 'Untuk pendaftaran dan maklumat lanjut, hubungi kami.' : currentLang === 'en' ? 'For registration and details, contact us.' : 'للتسجيل والاستفسار عن هذا البرنامج تواصل معنا.'}
+                  </div>
+                  <a href={CONTACT_DETAILS.whatsapp} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-brand-gold text-brand-blue-dark px-6 py-2.5 rounded-full text-xs font-bold shadow-md hover:scale-105 transition-transform shrink-0">
+                    <PhoneCall className="h-4 w-4" />
+                    <span>{currentLang === 'ms' ? 'Daftar via WhatsApp' : currentLang === 'en' ? 'Register on WhatsApp' : 'سجّل عبر واتساب'}</span>
+                  </a>
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* ACCOMPANYING PROGRAMS — grid of all */}
+          {activeTab === 'accompanying' && (
+            <div className="space-y-6 animate-in fade-in duration-500 text-right rtl:text-right ltr:text-left">
+              <h3 className="text-xl sm:text-2xl font-bold text-brand-blue-dark flex items-center gap-2 border-b border-brand-gold/15 pb-4">
+                <Landmark className="h-6 w-6 text-brand-gold" />
+                <span>{currentLang === 'ms' ? 'Program Sampingan' : currentLang === 'en' ? 'Accompanying Programs' : 'البرامج المصاحبة'}</span>
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {(DETAILED_PROGRAMS.accompanying || []).map((p: any, i: number) => (
+                  <div key={i} className="bg-white border-2 border-brand-gold/15 hover:border-brand-gold/30 rounded-3xl p-6 space-y-3 transition-all duration-300">
+                    <h4 className="text-lg font-bold text-brand-blue-dark">{getLangField(p, 'title', currentLang)}</h4>
+                    <p className="text-slate-500 font-sans text-xs sm:text-sm leading-relaxed">{getLangField(p, 'desc', currentLang)}</p>
+                    {p.stats && (
+                      <div className="bg-brand-sand p-3 rounded-xl text-xs text-brand-blue font-bold font-sans">👥 {p.stats}</div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ===== Legacy program blocks below are no longer reachable (kept harmless) ===== */}
           {/* T2: QURAN SARD */}
           {activeTab === 'quran-sard' && (
             <div className="space-y-6 animate-in fade-in duration-500 text-right rtl:text-right ltr:text-left">

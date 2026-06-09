@@ -379,7 +379,32 @@ export const ACADEMY_PROFILE = {
     'Melayakkan dan melahirkan pelajar yang mampu menyebarkan dan mengajar Al-Quran serta memberikan impak positif dalam komuniti mereka.',
     'Memperkenalkan program pendidikan kualitatif yang meningkatkan pemahaman dan aplikasi wahyu serta bahasa Arab.',
     'Menyebarkan bahasa Arab dengan menyediakan program khusus untuk pengajaran bahasa Arab kepada penutur bukan asli.'
-  ]
+  ],
+
+  // ---- Leadership messages (shown as tabs inside the "About Us" section) ----
+  directorNameAr: 'مدير الأكاديمية',
+  directorNameEn: 'Academy Director',
+  directorNameMs: 'Pengarah Akademi',
+  directorImage: '',
+  directorMessageAr: 'الحمد لله رب العالمين، والصلاة والسلام على أشرف الأنبياء والمرسلين، أما بعد:\n\nيسعدني أن أرحب بكم في أكاديمية أثر، التي نسعى من خلالها إلى بناء جيل قرآني متصل بكتاب الله تعالى تلاوةً وحفظاً وفهماً وعملاً. نؤمن أن تعليم القرآن الكريم رسالة قبل أن يكون مهنة، ونحرص على أن نترك في كل طالب أثراً طيباً باقياً. نفتح أبوابنا لكل راغب في تعلم القرآن وعلومه واللغة العربية، ونعدكم ببيئة تعليمية راقية ومعلمين مجازين بالسند المتصل.',
+  directorMessageEn: 'Welcome to Athar Academy. We strive to build a generation deeply connected to the Holy Quran in recitation, memorization, understanding, and practice. We believe teaching the Quran is a mission before a profession, and we are committed to leaving a lasting positive impact in every student.',
+  directorMessageMs: 'Selamat datang ke Akademi Athar. Kami berusaha membina generasi yang terhubung rapat dengan Al-Quran dalam bacaan, hafazan, pemahaman, dan amalan.',
+
+  chairmanNameAr: 'رئيس مجلس الإدارة',
+  chairmanNameEn: 'Chairman of the Board',
+  chairmanNameMs: 'Pengerusi Lembaga',
+  chairmanImage: '',
+  chairmanMessageAr: 'بسم الله الرحمن الرحيم،\n\nانطلقت أكاديمية أثر برؤية واضحة: الريادة في تعليم القرآن الكريم وعلومه واللغة العربية، وتحقيق أثر إيجابي مستدام في بناء جيل يتسم بالعلم والأخلاق. إن ما نقدمه اليوم هو ثمرة جهود مخلصة من فريق عمل متكامل وشركاء داعمين. نتطلع إلى أن تكون الأكاديمية منارة علمية تربوية تخرّج حفظةً ومعلمين قادرين على حمل رسالة القرآن إلى العالم.',
+  chairmanMessageEn: 'Athar Academy launched with a clear vision: leadership in teaching the Holy Quran and Arabic, achieving a sustainable positive impact in building a knowledgeable, ethical generation.',
+  chairmanMessageMs: 'Akademi Athar dilancarkan dengan visi yang jelas: peneraju dalam pengajaran Al-Quran dan bahasa Arab.',
+
+  secretaryNameAr: 'الأمين العام',
+  secretaryNameEn: 'Secretary-General',
+  secretaryNameMs: 'Setiausaha Agung',
+  secretaryImage: '',
+  secretaryMessageAr: 'الحمد لله والصلاة والسلام على رسول الله،\n\nتحرص الأمانة العامة لأكاديمية أثر على تنظيم العمل المؤسسي وتطوير البرامج التعليمية والإدارية بما يخدم رسالة الأكاديمية. نعمل على ضمان جودة التعليم ومتابعة الطلاب وأولياء الأمور، وتنسيق الجهود بين الأقسام المختلفة. نرحب بملاحظاتكم واقتراحاتكم التي تسهم في تطوير الأكاديمية.',
+  secretaryMessageEn: 'The Secretary-General office oversees institutional organization and the development of educational and administrative programs that serve the academy\'s mission.',
+  secretaryMessageMs: 'Pejabat Setiausaha Agung menyelia organisasi institusi dan pembangunan program pendidikan dan pentadbiran.',
 };
 
 // Statistics Dashboard
@@ -668,21 +693,24 @@ export const DIGITAL_LIBRARY = [
     titleEn: 'Al-Jazariyyah Text in Tajweed Rules (PDF)',
     titleMs: 'Teks Al-Jazariyyah dalam Hukum Tajwid (PDF)',
     type: 'PDF',
-    size: '2.4 MB'
+    size: '2.4 MB',
+    url: ''
   },
   {
     titleAr: 'كتاب الآداب والسنن اليومية لحملة القرآن الكريم',
     titleEn: 'Daily Manners Book for Quran Bearers (PDF)',
     titleMs: 'Buku Adab Harian untuk Penghafal Al-Quran (PDF)',
     type: 'PDF',
-    size: '1.8 MB'
+    size: '1.8 MB',
+    url: ''
   },
   {
     titleAr: 'جدول المراجعة التراكمي وتتبع الحفظ اليومي للطلاب',
     titleEn: 'Cumulative Review & Daily Hifz Tracker (XLS)',
     titleMs: 'Ulangkaji Kumulatif & Penjejak Hifz Harian (XLS)',
     type: 'Excel',
-    size: '850 KB'
+    size: '850 KB',
+    url: ''
   }
 ];
 

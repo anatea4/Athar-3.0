@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Send, CheckCircle2 } from 'lucide-react';
 import { Language } from '@/types';
+import { useFooter, useContact } from '@/lib/content-provider';
+import { submitForm } from '@/lib/submit-form';
 const atharLogo = '/athar-logo.png';
 const logoFooter = '/logo-footer.png';
 
@@ -9,7 +11,16 @@ interface FooterProps {
   currentLang: Language;
 }
 
+const pick = (obj: any, field: string, lang: Language): string => {
+  if (!obj) return '';
+  if (lang === 'ms') return obj[`${field}Ms`] || obj[`${field}En`] || '';
+  if (lang === 'en') return obj[`${field}En`] || obj[`${field}Ar`] || '';
+  return obj[`${field}Ar`] || obj[`${field}En`] || '';
+};
+
 export default function Footer({ currentLang }: FooterProps) {
+  const footer = useFooter();
+  const contact = useContact();
   const [emailInput, setEmailInput] = useState('');
   const [messageInput, setMessageInput] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -17,6 +28,7 @@ export default function Footer({ currentLang }: FooterProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!emailInput || !messageInput) return;
+    submitForm('inquiry', { email: emailInput, message: messageInput });
     setIsSubmitted(true);
     setTimeout(() => {
       setIsSubmitted(false);
@@ -41,11 +53,7 @@ export default function Footer({ currentLang }: FooterProps) {
             </div>
 
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans font-medium">
-              {currentLang === 'ms'
-                ? 'Membina jalan generasi yang terhubung dengan cahaya wahyu. Kelas maya yang bertauliah dan pusat fizikal yang didedikasikan untuk hafazan Al-Quran dan sains Syariah tingkah laku.'
-                : currentLang === 'en'
-                ? 'Building a generational pathway connected to the light of revelation. Certified virtual classrooms and physical centers dedicated to Quran memorization and behavioral Sharia sciences.'
-                : 'نبني للأجيال مساراً قرآنياً مباركاً متصلاً بعبير النبوة. مقرأة تفاعلية حية وحلقات حضورية تعنى بضبط المباني وفهم المعاني وبناء الفرد المؤثر.'}
+              {pick(footer, 'aboutText', currentLang)}
             </p>
 
             <div className="flex justify-center lg:justify-start gap-4">
@@ -61,17 +69,17 @@ export default function Footer({ currentLang }: FooterProps) {
           {/* Quick Contact Directory info */}
           <div className="lg:col-span-4 space-y-6 text-left rtl:text-right font-sans">
             <h3 className="text-sm font-bold text-brand-gold uppercase tracking-widest">
-              {currentLang === 'ms' ? 'Butiran Hubungan' : currentLang === 'en' ? 'Contact Details' : 'قنوات التواصل المباشر'}
+              {pick(footer, 'contactHeading', currentLang)}
             </h3>
 
             <ul className="space-y-4 text-xs sm:text-sm text-slate-300">
               <li className="flex items-center space-x-3.5 rtl:space-x-reverse">
                 <Phone className="h-5 w-5 text-brand-gold shrink-0" />
-                <span className="font-mono">+60147086011</span>
+                <span className="font-mono">{contact.phone || '+60147086011'}</span>
               </li>
               <li className="flex items-center space-x-3.5 rtl:space-x-reverse">
                 <Mail className="h-5 w-5 text-brand-gold shrink-0" />
-                <span className="font-sans">atharacademy6@gmail.com</span>
+                <span className="font-sans">{contact.email || 'atharacademy6@gmail.com'}</span>
               </li>
               <li className="flex items-center space-x-3.5 rtl:space-x-reverse">
                 <MapPin className="h-5 w-5 text-brand-gold shrink-0" />
@@ -142,7 +150,7 @@ export default function Footer({ currentLang }: FooterProps) {
         {/* Footer Base copyright notes */}
         <div className="mt-4 flex flex-col sm:flex-row justify-between items-center text-xs text-[#94a3b8] font-sans gap-4 select-none">
           <div>
-            &copy; {new Date().getFullYear()} Athar Academy (أكاديمية أثـــــر). All rights reserved.
+            {pick(footer, 'copyright', currentLang)}
           </div>
           <div className="flex items-center gap-3">
             <span>{currentLang === 'ms' ? 'Dibuat oleh' : currentLang === 'en' ? 'Made by' : 'صنع بواسطة'}</span>

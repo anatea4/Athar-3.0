@@ -2,15 +2,17 @@
 import React, { useState } from 'react';
 import { Calculator, Ticket } from 'lucide-react';
 import { Language, getLangField } from '@/types';
-import { PROGRAMS, CONTACT_DETAILS } from '@/data';
+import { usePrograms, useContact } from '@/lib/content-provider';
 
 interface FeeCalculatorProps {
   currentLang: Language;
 }
 
 export default function FeeCalculator({ currentLang }: FeeCalculatorProps) {
+  const PROGRAMS = usePrograms();
+  const CONTACT_DETAILS = useContact();
   // Calculator states
-  const [calcProgramId, setCalcProgramId] = useState<string>(PROGRAMS[0].id);
+  const [calcProgramId, setCalcProgramId] = useState<string>(PROGRAMS[0]?.id || '');
   const [hasSibling, setHasSibling] = useState(false);
   const [financialAid, setFinancialAid] = useState(false);
   const [prepayTerm, setPrepayTerm] = useState<1 | 3 | 5>(1); // months

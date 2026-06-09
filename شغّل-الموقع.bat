@@ -10,8 +10,9 @@ echo.
 echo   الموقع الرئيسي:  http://localhost:3000
 echo   لوحة الادارة:    http://localhost:3000/admin
 echo.
-echo   ملاحظة: الخادم يعمل من C:\athar-project
-echo   (لان Next.js لا يعمل من مسار يحتوي احرف عربية)
+echo   تسجيل الدخول:
+echo     البريد:  it@athar.my
+echo     المرور:  Athar@123
 echo.
 echo   اضغط Ctrl+C لايقاف الخادم
 echo  ===========================================

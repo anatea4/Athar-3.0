@@ -2,7 +2,22 @@
 import React, { useState } from 'react';
 import { Languages, Menu, X, LogIn, ChevronDown } from 'lucide-react';
 import { Language } from '@/types';
+import { useNavigation, useForms } from '@/lib/content-provider';
 const logoSrc = '/athar-logo-white.png';
+
+interface NavNode {
+  id: string;
+  labelAr: string;
+  labelEn: string;
+  labelMs?: string;
+  kind: 'section' | 'page' | 'external' | 'group';
+  section?: string;
+  sub?: string;
+  slug?: string;
+  url?: string;
+  children?: NavNode[];
+  _hidden?: boolean;
+}
 
 interface HeaderProps {
   currentLang: Language;
@@ -106,6 +121,40 @@ export default function Header({
   const [expandedMobileItem, setExpandedMobileItem] = useState<string | null>(null);
   const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
 
+  const navData = useNavigation();
+  const formsData = useForms() as any[];
+
+  // Groups whose dropdown items are generated dynamically from the managed forms,
+  // so newly-added forms appear in the menu automatically.
+  const FORM_GROUPS: Record<string, boolean> = { admission: true, support: true, finance: true };
+
+  const buildFormChildren = (groupId: string): NavNode[] => {
+    const items = (formsData || [])
+      .filter((f) => f.section === groupId && !f._hidden)
+      .sort((a, b) => (a.order || 0) - (b.order || 0))
+      .map((f) => ({
+        id: f.id,
+        labelAr: f.titleAr,
+        labelEn: f.titleEn,
+        labelMs: f.titleMs,
+        kind: 'section' as const,
+        section: groupId,
+        sub: f.id,
+      }));
+    if (groupId === 'finance') {
+      items.push({ id: 'calculator', labelAr: 'حاسبة الرسوم', labelEn: 'Fee Calculator', labelMs: 'Kalkulator Yuran', kind: 'section', section: 'finance', sub: 'calculator' });
+    }
+    return items;
+  };
+
+  const navItems: NavNode[] = ((navData?.items as NavNode[]) || [])
+    .filter((i) => !i._hidden)
+    .map((item) =>
+      item.kind === 'group' && FORM_GROUPS[item.id]
+        ? { ...item, children: buildFormChildren(item.id) }
+        : item
+    );
+
   const handleLanguageToggle = () => {
     if (currentLang === 'ar') {
       onLanguageChange('en');
@@ -116,7 +165,7 @@ export default function Header({
     }
   };
 
-  const getLabel = (item: NavItem | { labelAr: string; labelEn: string; labelMs?: string }) => {
+  const getLabel = (item: { labelAr: string; labelEn: string; labelMs?: string }) => {
     if (currentLang === 'ms') return item.labelMs || item.labelEn;
     if (currentLang === 'en') return item.labelEn;
     return item.labelAr;
@@ -126,6 +175,27 @@ export default function Header({
     onSectionChange(sectionId, subSectionId);
     setIsMobileMenuOpen(false);
     setExpandedMobileItem(null);
+  };
+
+  // Handle a click on any nav node based on its kind
+  const handleNav = (node: NavNode) => {
+    if (node.kind === 'section') {
+      menuClick(node.section || 'home', node.sub || '');
+    } else if (node.kind === 'page' && node.slug) {
+      window.location.href = `/${node.slug}`;
+    } else if (node.kind === 'external' && node.url) {
+      window.open(node.url, '_blank', 'noopener,noreferrer');
+    }
+    setIsMobileMenuOpen(false);
+    setExpandedMobileItem(null);
+  };
+
+  const isNodeActive = (node: NavNode): boolean => {
+    if (node.kind === 'group') return (node.children || []).some((c) => isNodeActive(c));
+    if (node.kind === 'section') {
+      return activeSection === node.section && (!node.sub || activeSubSection === node.sub);
+    }
+    return false;
   };
 
   const toggleMobileSubMenu = (itemId: string) => {
@@ -142,13 +212,13 @@ export default function Header({
             <img src={logoSrc} alt="شعار أثر" className="h-12 w-auto object-contain" />
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-2.5 whitespace-nowrap justify-center flex-nowrap shrink-0">
-            {NAVIGATION_ITEMS.map((item) => {
-              const hasSubs = !!item.subItems;
-              const isActive = activeSection === item.id;
+          {/* Desktop Navigation (dynamic from dashboard) — centered, language-stable */}
+          <nav className="hidden lg:flex flex-1 items-center gap-1 xl:gap-2.5 whitespace-nowrap justify-center flex-nowrap">
+            {navItems.map((item) => {
+              const children = (item.children || []).filter((c) => !c._hidden);
+              const isActive = isNodeActive(item);
 
-              if (hasSubs) {
+              if (item.kind === 'group') {
                 return (
                   <div key={item.id} className="relative group py-2">
                     <button
@@ -164,12 +234,12 @@ export default function Header({
 
                     {/* Premium Dropdown Panel */}
                     <div className="absolute top-full right-0 rtl:left-0 rtl:right-auto mt-1 w-60 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform scale-95 origin-top-right group-hover:scale-100 z-50 bg-[#162944] border border-brand-gold/20 shadow-2xl rounded-xl p-1.5 backdrop-blur-md">
-                      {item.subItems?.map((sub) => {
-                        const isSubActive = activeSubSection === sub.id;
+                      {children.map((sub) => {
+                        const isSubActive = isNodeActive(sub);
                         return (
                           <button
                             key={sub.id}
-                            onClick={() => menuClick(item.id, sub.id)}
+                            onClick={() => handleNav(sub)}
                             className={`block w-full text-right rtl:text-right ltr:text-left px-3.5 py-2.5 text-xs rounded-lg transition-colors cursor-pointer ${
                               isSubActive
                                 ? 'bg-brand-gold text-brand-blue-dark font-bold'
@@ -188,7 +258,7 @@ export default function Header({
               return (
                 <button
                   key={item.id}
-                  onClick={() => menuClick(item.id)}
+                  onClick={() => handleNav(item)}
                   className={`px-2 xl:px-3 py-1.5 text-[11px] xl:text-xs font-semibold rounded-lg transition-all duration-300 cursor-pointer whitespace-nowrap ${
                     isActive
                       ? 'text-brand-gold bg-brand-blue-light/30 border border-brand-gold/40'
@@ -288,12 +358,12 @@ export default function Header({
       {isMobileMenuOpen && (
         <div className="lg:hidden bg-[#162944] border-t border-brand-gold/15 max-h-[85vh] overflow-y-auto px-4 pt-2 pb-6 space-y-4 shadow-2xl animate-in fade-in slide-in-from-top-4 duration-300">
           <div className="space-y-1">
-            {NAVIGATION_ITEMS.map((item) => {
-              const hasSubs = !!item.subItems;
-              const isActive = activeSection === item.id;
+            {navItems.map((item) => {
+              const children = (item.children || []).filter((c) => !c._hidden);
+              const isActive = isNodeActive(item);
               const isExpanded = expandedMobileItem === item.id;
 
-              if (hasSubs) {
+              if (item.kind === 'group') {
                 return (
                   <div key={item.id} className="space-y-0.5 border-b border-white/5 pb-1">
                     <button
@@ -310,12 +380,12 @@ export default function Header({
 
                     {isExpanded && (
                       <div className="bg-brand-blue-dark/50 border border-brand-gold/10 rounded-lg py-1.5 px-2.5 mt-1 space-y-0.5 animate-in slide-in-from-top-2 duration-200">
-                        {item.subItems?.map((sub) => {
-                          const isSubActive = activeSubSection === sub.id;
+                        {children.map((sub) => {
+                          const isSubActive = isNodeActive(sub);
                           return (
                             <button
                               key={sub.id}
-                              onClick={() => menuClick(item.id, sub.id)}
+                              onClick={() => handleNav(sub)}
                               className={`block w-full text-right rtl:text-right ltr:text-left px-4 py-2.5 text-xs rounded-md transition-colors ${
                                 isSubActive
                                   ? 'bg-brand-gold text-brand-blue-dark font-bold'
@@ -335,7 +405,7 @@ export default function Header({
               return (
                 <button
                   key={item.id}
-                  onClick={() => menuClick(item.id)}
+                  onClick={() => handleNav(item)}
                   className={`block w-full text-right rtl:text-right ltr:text-left px-4 py-3 rounded-lg text-sm transition-all border-b border-white/5 ${
                     isActive
                       ? 'text-brand-gold font-bold bg-brand-blue-light/20'

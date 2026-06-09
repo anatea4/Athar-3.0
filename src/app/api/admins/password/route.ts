@@ -2,21 +2,25 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { changeAdminPassword } from '@/lib/auth';
 
-async function getSession() {
-  const cookieStore = await cookies();
+function getSession() {
+  const cookieStore = cookies();
   const session = cookieStore.get('admin_session');
   if (!session) return null;
-  try { return JSON.parse(session.value); } catch { return null; }
+  try {
+    return JSON.parse(session.value);
+  } catch {
+    return null;
+  }
 }
 
 export async function PUT(req: NextRequest) {
-  const session = await getSession();
+  const session = getSession();
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { adminId, newPassword } = await req.json();
-  if (!adminId || !newPassword) return NextResponse.json({ error: 'Admin ID and new password required' }, { status: 400 });
+  if (!adminId || !newPassword)
+    return NextResponse.json({ error: 'Admin ID and new password required' }, { status: 400 });
 
-  // Super admins can change anyone's password; regular admins can only change their own
   if (!session.isSuper && adminId !== session.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
