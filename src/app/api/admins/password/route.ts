@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { changeAdminPassword } from '@/lib/auth';
 
-function getSession() {
-  const cookieStore = cookies();
+async function getSession() {
+  const cookieStore = await cookies();
   const session = cookieStore.get('admin_session');
   if (!session) return null;
   try {
@@ -14,7 +14,7 @@ function getSession() {
 }
 
 export async function PUT(req: NextRequest) {
-  const session = getSession();
+  const session = await getSession();
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { adminId, newPassword } = await req.json();

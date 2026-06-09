@@ -12,8 +12,8 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-function getSession() {
-  const cookieStore = cookies();
+async function getSession() {
+  const cookieStore = await cookies();
   const session = cookieStore.get('admin_session');
   if (!session) return null;
   try {
@@ -38,7 +38,7 @@ export async function GET() {
 }
 
 export async function PUT(req: NextRequest) {
-  const session = getSession();
+  const session = await getSession();
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const body = await req.json();

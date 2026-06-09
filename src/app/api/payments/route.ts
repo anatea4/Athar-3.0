@@ -8,8 +8,8 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-function getSession() {
-  const cookieStore = cookies();
+async function getSession() {
+  const cookieStore = await cookies();
   const session = cookieStore.get('admin_session');
   if (!session) return null;
   try {
@@ -30,7 +30,7 @@ async function getStripeKey(): Promise<string | null> {
 
 // GET: list payments (admin only)
 export async function GET() {
-  const session = getSession();
+  const session = await getSession();
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { data, error } = await supabaseAdmin

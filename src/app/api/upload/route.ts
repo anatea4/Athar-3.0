@@ -7,8 +7,8 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-function getSession() {
-  const cookieStore = cookies();
+async function getSession() {
+  const cookieStore = await cookies();
   const session = cookieStore.get('admin_session');
   if (!session) return null;
   try {
@@ -22,7 +22,7 @@ const ALLOWED = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/sv
 const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
 
 export async function POST(req: NextRequest) {
-  const session = getSession();
+  const session = await getSession();
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const formData = await req.formData();
@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
 
 // List uploaded images (for media library view)
 export async function GET() {
-  const session = getSession();
+  const session = await getSession();
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { data, error } = await supabaseAdmin.storage
@@ -87,7 +87,7 @@ export async function GET() {
 
 // Delete an image
 export async function DELETE(req: NextRequest) {
-  const session = getSession();
+  const session = await getSession();
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { path } = await req.json();
