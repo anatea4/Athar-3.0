@@ -266,7 +266,7 @@ export default function Header({
                 </button>
               );
             })}
-          </nav>
+            </nav>
 
           {/* Actions Menu */}
           <div className="hidden lg:flex items-center gap-2 xl:gap-3.5 shrink-0 z-10 -translate-x-4 lg:-translate-x-8 xl:-translate-x-12">
