@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { HelpCircle, ChevronDown, ChevronUp, MessageSquare } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { FAQItem, Language, getLangField } from '@/types';
-import { FAQS } from '@/data';
+import { useFaqs } from '@/lib/content-provider';
 
 interface FAQProps {
   currentLang: Language;
@@ -32,12 +32,14 @@ const itemVariants = {
 };
 
 export default function FAQ({ currentLang }: FAQProps) {
+  const FAQS = useFaqs();
   const [activeCategory, setActiveCategory] = useState<'all' | 'admissions' | 'academics' | 'financial' | 'general'>('all');
   const [expandedFaqId, setExpandedFaqId] = useState<string | null>(null);
 
-  const filteredFaqs = activeCategory === 'all'
+  const filteredFaqs = (activeCategory === 'all'
     ? FAQS
-    : FAQS.filter(f => f.category === activeCategory);
+    : FAQS.filter((f: any) => f.category === activeCategory)
+  ).filter((f: any) => !f._hidden);
 
   const toggleExpand = (id: string) => {
     if (expandedFaqId === id) {

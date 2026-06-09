@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { Award, Users, BookOpen, Heart, Sparkles, Star, Target } from 'lucide-react';
 import { Language, getLangField } from '@/types';
-import { ACADEMY_STATS, STUDENT_PROFILES } from '@/data';
+import { useStats, useStudentProfiles } from '@/lib/content-provider';
 
 interface AchievementsSectionProps {
   currentLang: Language;
@@ -10,6 +10,8 @@ interface AchievementsSectionProps {
 }
 
 export default function AchievementsSection({ currentLang, activeSub }: AchievementsSectionProps) {
+  const ACADEMY_STATS = useStats();
+  const STUDENT_PROFILES = useStudentProfiles();
   const [activeTab, setActiveTab] = React.useState('stats');
 
   useEffect(() => {

@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, Gift, Users, Award, Hand, Send, CheckCircle2, CreditCard, Copy, X, ArrowRight, ArrowLeft, Loader2, Download, Check } from 'lucide-react';
 import { Language, getLangField } from '@/types';
-import { VOLUNTEER_OPPORTUNITIES, ACADEMY_STATS } from '@/data';
+import { useVolunteers, useStats } from '@/lib/content-provider';
+import { submitForm } from '@/lib/submit-form';
 import { motion, AnimatePresence } from 'framer-motion';
 const atharLogo = '/athar-logo.png';
 
@@ -198,10 +199,12 @@ const getPresets = (type: 'circle' | 'student' | 'endowment', curr: 'USD' | 'MYR
 };
 
 export default function SupportSection({ currentLang, activeSub }: SupportSectionProps) {
+  const VOLUNTEER_OPPORTUNITIES = useVolunteers();
+  const ACADEMY_STATS = useStats();
   const [activeTab, setActiveTab] = useState('support-athar');
   const [volunteerName, setVolunteerName] = useState('');
   const [volunteerPhone, setVolunteerPhone] = useState('');
-  const [selectedRole, setSelectedRole] = useState(VOLUNTEER_OPPORTUNITIES[0].id);
+  const [selectedRole, setSelectedRole] = useState(VOLUNTEER_OPPORTUNITIES[0]?.id || '');
   const [submitted, setSubmitted] = useState(false);
 
   // Sponsoring Payment Modal States
@@ -262,7 +265,13 @@ export default function SupportSection({ currentLang, activeSub }: SupportSectio
     e.preventDefault();
     if (!volunteerName || !volunteerPhone) return;
 
-    // Simulate submission
+    const role = VOLUNTEER_OPPORTUNITIES.find((r: any) => r.id === selectedRole);
+    submitForm('volunteer', {
+      name: volunteerName,
+      phone: volunteerPhone,
+      role: role ? role.titleAr || role.titleEn : selectedRole,
+    });
+
     setSubmitted(true);
     setTimeout(() => {
       setSubmitted(false);
@@ -292,6 +301,13 @@ export default function SupportSection({ currentLang, activeSub }: SupportSectio
     e.preventDefault();
     if (!fullName || !email || !phoneNumber) return;
     if (isCustomAmount && (!customAmount || parseFloat(customAmount) <= 0)) return;
+    submitForm('donation', {
+      name: fullName,
+      email,
+      phone: phoneNumber,
+      type: sponsorshipType,
+      amount: isCustomAmount ? customAmount : undefined,
+    });
     setPaymentStep('payment');
   };
 

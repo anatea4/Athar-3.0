@@ -2,13 +2,15 @@
 import React, { useState } from 'react';
 import { Phone, Mail, Globe, Send, CheckCircle2 } from 'lucide-react';
 import { Language } from '@/types';
-import { CONTACT_DETAILS } from '@/data';
+import { useContact } from '@/lib/content-provider';
+import { submitForm } from '@/lib/submit-form';
 
 interface ContactSectionProps {
   currentLang: Language;
 }
 
 export default function ContactSection({ currentLang }: ContactSectionProps) {
+  const CONTACT_DETAILS = useContact();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [msg, setMsg] = useState('');
@@ -17,6 +19,7 @@ export default function ContactSection({ currentLang }: ContactSectionProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !phone || !msg) return;
+    submitForm('contact', { name, phone, message: msg });
     setSent(true);
     setTimeout(() => {
       setSent(false);

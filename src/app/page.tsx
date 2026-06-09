@@ -16,6 +16,8 @@ import AICompanion from '@/components/AICompanion';
 import FeeCalculator from '@/components/FeeCalculator';
 import Footer from '@/components/Footer';
 import FloatingChatbot from '@/components/FloatingChatbot';
+import WhatsAppButton from '@/components/WhatsAppButton';
+import FormsSection from '@/components/FormsSection';
 import Preloader from '@/components/Preloader';
 import { Language } from '@/types';
 import { Sparkles } from 'lucide-react';
@@ -36,6 +38,42 @@ export default function App() {
     document.documentElement.dir = dir;
     document.documentElement.lang = currentLang;
   }, [currentLang]);
+
+  // Read ?s=section&sub=subsection from the URL (used when arriving from a custom page's navbar)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const s = params.get('s');
+    const sub = params.get('sub');
+    if (s) {
+      setActiveSection(s);
+      setActiveSubSection(sub || '');
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Live-preview mode (inside admin iframe): skip preloader + react to nav/lang messages
+  useEffect(() => {
+    const isPreview =
+      typeof window !== 'undefined' &&
+      (window.parent !== window || new URLSearchParams(window.location.search).get('preview') === '1');
+    if (isPreview) setIsLoading(false);
+
+    function onMessage(e: MessageEvent) {
+      const msg = e.data;
+      if (!msg) return;
+      if (msg.type === 'athar-preview-nav') {
+        if (msg.section) setActiveSection(msg.section);
+        setActiveSubSection(msg.subSection || '');
+        window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+      }
+      if (msg.type === 'athar-preview-lang' && msg.lang) {
+        setCurrentLang(msg.lang);
+      }
+    }
+    window.addEventListener('message', onMessage);
+    return () => window.removeEventListener('message', onMessage);
+  }, []);
 
   const triggerBannerNotification = (msgEn: string, msgAr: string, msgMs: string = '') => {
     setNotifyMsgEn(msgEn);
@@ -152,13 +190,41 @@ export default function App() {
                 </>
               )}
               {activeSection === 'support' && (
-                <>
-                  {activeSubSection === 'initiatives-list' ? (
-                    <InitiativesSection currentLang={currentLang} activeSub="initiatives-list" />
-                  ) : (
-                    <SupportSection currentLang={currentLang} activeSub={activeSubSection || 'support-athar'} />
-                  )}
-                </>
+                <FormsSection
+                  currentLang={currentLang}
+                  sectionKey="support"
+                  activeSub={activeSubSection}
+                  headingAr="المشاركة والدعم"
+                  headingEn="Participate & Support"
+                  headingMs="Sertai & Sokong"
+                  subAr="كن جزءاً من رسالة أكاديمية أثر — تطوّع أو انضم لفريق السفراء."
+                  subEn="Be part of the Athar Academy mission — volunteer or join the ambassadors."
+                />
+              )}
+              {activeSection === 'admission' && (
+                <FormsSection
+                  currentLang={currentLang}
+                  sectionKey="admission"
+                  activeSub={activeSubSection}
+                  headingAr="القبول والتسجيل"
+                  headingEn="Admission & Registration"
+                  headingMs="Kemasukan & Pendaftaran"
+                  subAr="سجّل في الحلقات والبرامج أو قدّم طلب توظيف — عبّئ النموذج المناسب وسنتواصل معك."
+                  subEn="Register for circles and programs, or apply to join our team."
+                />
+              )}
+              {activeSection === 'finance' && (
+                <FormsSection
+                  currentLang={currentLang}
+                  sectionKey="finance"
+                  activeSub={activeSubSection}
+                  includeCalculator
+                  headingAr="التبرعات والرسوم"
+                  headingEn="Donations & Fees"
+                  headingMs="Derma & Yuran"
+                  subAr="ادعم الأكاديمية بتبرعك، أو سدّد الرسوم، أو احسب تكلفة الاشتراك."
+                  subEn="Support the academy, pay fees, or estimate subscription costs."
+                />
               )}
               {activeSection === 'contact' && <ContactSection currentLang={currentLang} />}
             </motion.div>
@@ -167,6 +233,7 @@ export default function App() {
 
         <Footer currentLang={currentLang} />
         <FloatingChatbot currentLang={currentLang} />
+        <WhatsAppButton currentLang={currentLang} />
       </div>
     </>
   );

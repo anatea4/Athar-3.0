@@ -1,49 +1,155 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
-  LayoutDashboard, Users, BookOpen, Settings, LogOut, Plus, Trash2,
-  Edit3, Save, Eye, EyeOff, ChevronDown, ChevronRight, Shield,
-  Globe, MessageSquare, Image as ImageIcon, DollarSign, Bell,
-  FileText, Phone, Star, Award, Menu, X, Lock, Key, UserPlus,
-  RefreshCw, CheckCircle, AlertCircle, Info, ChevronUp, Loader2,
-  Building2, HelpCircle, Newspaper, Calendar, HandHeart, Map
+  LayoutDashboard, Settings, LogOut, Plus, Trash2,
+  Save, Eye, EyeOff, Shield, X, Lock, UserPlus,
+  RefreshCw, CheckCircle, AlertCircle, Loader2,
+  FileText, Mail, Users, BookOpen, Image as ImageIcon,
+  HelpCircle, Phone, CreditCard, Newspaper, Heart,
+  Star, Building2, MessageSquare, Code, LayoutList, FilePlus, Inbox, ChevronDown
 } from 'lucide-react';
+import SmartEditor from '@/components/admin/SmartEditor';
+import PreviewPane from '@/components/admin/PreviewPane';
+import PageBuilder from '@/components/admin/PageBuilder';
+import SubmissionsInbox from '@/components/admin/SubmissionsInbox';
+import NavManager from '@/components/admin/NavManager';
+import FormsManager from '@/components/admin/FormsManager';
 
-type AdminUser = { id: string; username: string; isSuper: boolean };
-type Tab = 'overview' | 'content' | 'programs' | 'team' | 'faq' | 'news' | 'contact' | 'admins' | 'settings';
+type AdminUser = { id: string; email: string; isSuper: boolean };
+type Tab =
+  | 'overview'
+  | 'hero'
+  | 'about'
+  | 'stats'
+  | 'programs'
+  | 'detailed_programs'
+  | 'team'
+  | 'partners'
+  | 'faqs'
+  | 'initiatives'
+  | 'volunteers'
+  | 'media_news'
+  | 'media_articles'
+  | 'digital_library'
+  | 'gallery'
+  | 'daily_ayahs'
+  | 'calendar'
+  | 'contact'
+  | 'footer'
+  | 'header'
+  | 'ai_companion'
+  | 'navigation'
+  | 'forms_manager'
+  | 'custom_pages'
+  | 'submissions'
+  | 'admins'
+  | 'payments'
+  | 'settings';
 
-interface ToastMsg { id: number; type: 'success' | 'error' | 'info'; message: string }
+interface ToastMsg {
+  id: number;
+  type: 'success' | 'error' | 'info';
+  message: string;
+}
+
+const SECTIONS: { id: Tab; label: string; icon: React.ReactNode; group: string }[] = [
+  { id: 'overview', label: 'نظرة عامة', icon: <LayoutDashboard className="h-4 w-4" />, group: 'home' },
+  // Pages
+  { id: 'hero', label: 'الصفحة الرئيسية', icon: <FileText className="h-4 w-4" />, group: 'pages' },
+  { id: 'about', label: 'عن الأكاديمية', icon: <Building2 className="h-4 w-4" />, group: 'pages' },
+  { id: 'stats', label: 'الإحصائيات', icon: <Star className="h-4 w-4" />, group: 'pages' },
+  { id: 'header', label: 'رأس الصفحة', icon: <FileText className="h-4 w-4" />, group: 'pages' },
+  { id: 'footer', label: 'تذييل الصفحة', icon: <FileText className="h-4 w-4" />, group: 'pages' },
+  { id: 'ai_companion', label: 'المساعد الذكي', icon: <MessageSquare className="h-4 w-4" />, group: 'pages' },
+  // Content sections
+  { id: 'programs', label: 'البرامج', icon: <BookOpen className="h-4 w-4" />, group: 'content' },
+  { id: 'detailed_programs', label: 'البرامج المفصلة', icon: <BookOpen className="h-4 w-4" />, group: 'content' },
+  { id: 'team', label: 'الفريق', icon: <Users className="h-4 w-4" />, group: 'content' },
+  { id: 'partners', label: 'الشركاء', icon: <Heart className="h-4 w-4" />, group: 'content' },
+  { id: 'faqs', label: 'الأسئلة الشائعة', icon: <HelpCircle className="h-4 w-4" />, group: 'content' },
+  { id: 'initiatives', label: 'المبادرات', icon: <Star className="h-4 w-4" />, group: 'content' },
+  { id: 'volunteers', label: 'التطوع', icon: <Heart className="h-4 w-4" />, group: 'content' },
+  { id: 'media_news', label: 'الأخبار', icon: <Newspaper className="h-4 w-4" />, group: 'content' },
+  { id: 'media_articles', label: 'المقالات', icon: <FileText className="h-4 w-4" />, group: 'content' },
+  { id: 'digital_library', label: 'المكتبة الرقمية', icon: <FileText className="h-4 w-4" />, group: 'content' },
+  { id: 'gallery', label: 'معرض الصور', icon: <ImageIcon className="h-4 w-4" />, group: 'content' },
+  { id: 'daily_ayahs', label: 'الآيات اليومية', icon: <BookOpen className="h-4 w-4" />, group: 'content' },
+  { id: 'calendar', label: 'التقويم السنوي', icon: <FileText className="h-4 w-4" />, group: 'content' },
+  { id: 'contact', label: 'بيانات التواصل', icon: <Phone className="h-4 w-4" />, group: 'content' },
+  // Builder
+  { id: 'navigation', label: 'إدارة القائمة', icon: <LayoutList className="h-4 w-4" />, group: 'builder' },
+  { id: 'forms_manager', label: 'إدارة النماذج', icon: <FileText className="h-4 w-4" />, group: 'builder' },
+  { id: 'custom_pages', label: 'صفحات مخصصة', icon: <FilePlus className="h-4 w-4" />, group: 'builder' },
+  // Inbox
+  { id: 'submissions', label: 'الرسائل والطلبات', icon: <Inbox className="h-4 w-4" />, group: 'inbox' },
+  // Management
+  { id: 'admins', label: 'إدارة المشرفين', icon: <UserPlus className="h-4 w-4" />, group: 'manage' },
+  { id: 'payments', label: 'المدفوعات', icon: <CreditCard className="h-4 w-4" />, group: 'manage' },
+  { id: 'settings', label: 'الإعدادات', icon: <Settings className="h-4 w-4" />, group: 'manage' },
+];
+
+const GROUP_LABELS: Record<string, string> = {
+  home: 'القائمة الرئيسية',
+  pages: 'صفحات الموقع',
+  content: 'محتوى الأقسام',
+  builder: 'منشئ الصفحات',
+  inbox: 'الوارد',
+  manage: 'الإدارة',
+};
 
 export default function AdminPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentAdmin, setCurrentAdmin] = useState<AdminUser | null>(null);
-  const [loginUser, setLoginUser] = useState('');
+  const [loginEmail, setLoginEmail] = useState('');
   const [loginPass, setLoginPass] = useState('');
   const [showPass, setShowPass] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>('overview');
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [toasts, setToasts] = useState<ToastMsg[]>([]);
-  const [loading, setLoading] = useState(false);
 
-  // Content state
-  const [siteContent, setSiteContent] = useState<Record<string, string>>({});
-  const [editingKey, setEditingKey] = useState<string | null>(null);
-  const [editValue, setEditValue] = useState('');
+  // Content state — keyed by section name
+  const [content, setContent] = useState<Record<string, any>>({});
+  const [defaults, setDefaults] = useState<Record<string, any>>({});
+  const [editingSection, setEditingSection] = useState<string | null>(null);
+  const [editorValue, setEditorValue] = useState('');          // JSON string (advanced view)
+  const [editorData, setEditorData] = useState<any>(null);     // parsed object (form view)
+  const [editorMode, setEditorMode] = useState<'form' | 'json'>('form');
+  const [savingSection, setSavingSection] = useState<string | null>(null);
+  const [showPreview, setShowPreview] = useState(true);
+  const [openPageSlug, setOpenPageSlug] = useState<string | null>(null);
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
+    home: true, pages: true, content: false, builder: true, inbox: true, manage: false,
+  });
 
   // Admins state
-  const [admins, setAdmins] = useState<Array<{ id: string; username: string; is_super: boolean; created_at: string }>>([]);
-  const [newAdminUser, setNewAdminUser] = useState('');
+  const [admins, setAdmins] = useState<Array<{ id: string; email: string; is_super: boolean; created_at: string }>>([]);
+  const [newAdminEmail, setNewAdminEmail] = useState('');
   const [newAdminPass, setNewAdminPass] = useState('');
   const [newAdminSuper, setNewAdminSuper] = useState(false);
   const [changingPassFor, setChangingPassFor] = useState<string | null>(null);
   const [newPassValue, setNewPassValue] = useState('');
 
+  // Settings state
+  const [settings, setSettings] = useState<Record<string, string>>({});
+
   const addToast = useCallback((type: ToastMsg['type'], message: string) => {
     const id = Date.now();
-    setToasts(prev => [...prev, { id, type, message }]);
-    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 4000);
+    setToasts((prev) => [...prev, { id, type, message }]);
+    setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 4000);
+  }, []);
+
+  // Check existing session on mount
+  useEffect(() => {
+    fetch('/api/auth')
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.admin) {
+          setCurrentAdmin({ id: d.admin.id, email: d.admin.email, isSuper: d.admin.isSuper });
+          setIsLoggedIn(true);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -53,18 +159,18 @@ export default function AdminPage() {
       const res = await fetch('/api/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: loginUser, password: loginPass }),
+        body: JSON.stringify({ email: loginEmail, password: loginPass }),
       });
       const data = await res.json();
       if (res.ok) {
-        setCurrentAdmin(data.admin);
+        setCurrentAdmin({ id: data.admin.id, email: data.admin.email, isSuper: data.admin.isSuper });
         setIsLoggedIn(true);
-        addToast('success', `Welcome back, ${data.admin.username}!`);
+        addToast('success', `مرحباً ${data.admin.email}!`);
       } else {
-        addToast('error', data.error || 'Login failed');
+        addToast('error', data.error || 'فشل تسجيل الدخول');
       }
     } catch {
-      addToast('error', 'Connection error');
+      addToast('error', 'خطأ في الاتصال');
     } finally {
       setLoginLoading(false);
     }
@@ -74,788 +180,957 @@ export default function AdminPage() {
     await fetch('/api/auth', { method: 'DELETE' });
     setIsLoggedIn(false);
     setCurrentAdmin(null);
-    addToast('info', 'Logged out successfully');
+    addToast('info', 'تم تسجيل الخروج');
   };
 
   const loadContent = useCallback(async () => {
-    setLoading(true);
     try {
-      const res = await fetch('/api/content');
+      const res = await fetch('/api/content', { cache: 'no-store' });
       const data = await res.json();
-      if (res.ok) setSiteContent(data.content || {});
+      if (res.ok && data.content) setContent(data.content);
     } catch {
-      addToast('error', 'Failed to load content');
-    } finally {
-      setLoading(false);
+      addToast('error', 'فشل تحميل المحتوى');
     }
   }, [addToast]);
 
-  const saveContent = async (key: string, value: string) => {
+  const loadDefaults = useCallback(async () => {
     try {
-      const res = await fetch('/api/content', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ key, value }),
-      });
-      if (res.ok) {
-        setSiteContent(prev => ({ ...prev, [key]: value }));
-        setEditingKey(null);
-        addToast('success', 'Content saved!');
-      } else {
-        addToast('error', 'Failed to save');
-      }
-    } catch {
-      addToast('error', 'Connection error');
-    }
-  };
+      const res = await fetch('/api/defaults');
+      const data = await res.json();
+      if (res.ok) setDefaults(data);
+    } catch {}
+  }, []);
 
   const loadAdmins = useCallback(async () => {
     try {
       const res = await fetch('/api/admins');
       const data = await res.json();
       if (res.ok) setAdmins(data.admins || []);
-    } catch {
-      addToast('error', 'Failed to load admins');
-    }
-  }, [addToast]);
+    } catch {}
+  }, []);
 
-  const createAdmin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const loadSettings = useCallback(async () => {
     try {
-      const res = await fetch('/api/admins', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: newAdminUser, password: newAdminPass, isSuper: newAdminSuper }),
-      });
+      const res = await fetch('/api/settings');
       const data = await res.json();
-      if (res.ok) {
-        setAdmins(prev => [...prev, data.admin]);
-        setNewAdminUser(''); setNewAdminPass(''); setNewAdminSuper(false);
-        addToast('success', `Admin "${data.admin.username}" created!`);
-      } else {
-        addToast('error', data.error || 'Failed to create admin');
+      if (res.ok) setSettings(data.settings || {});
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    loadContent();
+    loadDefaults();
+    loadAdmins();
+    loadSettings();
+  }, [isLoggedIn, loadContent, loadDefaults, loadAdmins, loadSettings]);
+
+  const CONTENT_TABS = SECTIONS.filter((s) => s.group === 'pages' || s.group === 'content').map((s) => s.id);
+  const isContentTab = (t: Tab) => CONTENT_TABS.includes(t);
+
+  const startEdit = useCallback((section: string) => {
+    const current = content[section];
+    const fallback = defaults[section];
+    let value: any;
+    if (Array.isArray(fallback)) {
+      // Arrays: use saved content if non-empty, else defaults
+      value = Array.isArray(current) && current.length > 0 ? current : fallback || [];
+    } else if (fallback && typeof fallback === 'object') {
+      // Objects: merge defaults under saved content so newly-added default fields always appear
+      value = { ...(fallback as any), ...(current && typeof current === 'object' ? current : {}) };
+    } else {
+      value = current ?? fallback ?? {};
+    }
+    // Deep clone so editing doesn't mutate the loaded state
+    const cloned = JSON.parse(JSON.stringify(value));
+    setEditorData(cloned);
+    setEditorValue(JSON.stringify(cloned, null, 2));
+    setEditingSection(section);
+    setEditorMode('form');
+  }, [content, defaults]);
+
+  // Auto-open the form when switching to a content section (no extra clicks).
+  const loadedSectionRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    if (!isContentTab(activeTab)) {
+      loadedSectionRef.current = null;
+      return;
+    }
+    if (loadedSectionRef.current === activeTab) return; // already loaded this section
+    if (Object.keys(defaults).length === 0) return; // wait for defaults
+    startEdit(activeTab);
+    loadedSectionRef.current = activeTab;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, isLoggedIn, defaults, content]);
+
+  const saveSection = async (section: string) => {
+    setSavingSection(section);
+    try {
+      // In JSON mode parse the textarea; in form mode use editorData
+      const parsed = editorMode === 'json' ? JSON.parse(editorValue) : editorData;
+      const res = await fetch('/api/content', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ section, data: parsed }),
+      });
+      if (!res.ok) {
+        const d = await res.json();
+        addToast('error', d.error || 'فشل الحفظ');
+        return;
       }
-    } catch {
-      addToast('error', 'Connection error');
+      addToast('success', `تم الحفظ بنجاح ✓`);
+      await loadContent();
+    } catch (e: any) {
+      addToast('error', 'تعذّر الحفظ: ' + e.message);
+    } finally {
+      setSavingSection(null);
     }
   };
 
-  const deleteAdmin = async (id: string, username: string) => {
-    if (!confirm(`Delete admin "${username}"?`)) return;
-    try {
-      const res = await fetch('/api/admins', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id }),
-      });
-      if (res.ok) {
-        setAdmins(prev => prev.filter(a => a.id !== id));
-        addToast('success', `Admin "${username}" deleted`);
-      } else {
-        const data = await res.json();
-        addToast('error', data.error || 'Failed to delete');
-      }
-    } catch {
-      addToast('error', 'Connection error');
+  const resetSection = async (section: string) => {
+    if (!confirm(`هل تريد استعادة المحتوى الأصلي لهذا القسم؟ سيتم فقدان تعديلاتك.`)) return;
+    const res = await fetch('/api/content', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ section, data: {} }),
+    });
+    if (res.ok) {
+      addToast('success', 'تمت استعادة المحتوى الأصلي');
+      await loadContent();
+      // Force the form to reload with default content
+      loadedSectionRef.current = null;
+      const fallback = defaults[section] || {};
+      const cloned = JSON.parse(JSON.stringify(fallback));
+      setEditorData(cloned);
+      loadedSectionRef.current = section;
+    }
+  };
+
+  const createAdmin = async () => {
+    if (!newAdminEmail || !newAdminPass) {
+      addToast('error', 'البريد وكلمة المرور مطلوبان');
+      return;
+    }
+    const res = await fetch('/api/admins', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: newAdminEmail, password: newAdminPass, isSuper: newAdminSuper }),
+    });
+    const d = await res.json();
+    if (res.ok) {
+      addToast('success', `تم إنشاء المشرف ${newAdminEmail}`);
+      setNewAdminEmail('');
+      setNewAdminPass('');
+      setNewAdminSuper(false);
+      await loadAdmins();
+    } else {
+      addToast('error', d.error || 'فشل');
+    }
+  };
+
+  const deleteAdmin = async (id: string) => {
+    if (!confirm('حذف هذا المشرف نهائياً؟')) return;
+    const res = await fetch('/api/admins', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id }),
+    });
+    if (res.ok) {
+      addToast('success', 'تم الحذف');
+      await loadAdmins();
+    } else {
+      const d = await res.json();
+      addToast('error', d.error || 'فشل');
     }
   };
 
   const changePassword = async (adminId: string) => {
-    if (!newPassValue) return;
-    try {
-      const res = await fetch('/api/admins/password', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ adminId, newPassword: newPassValue }),
-      });
-      if (res.ok) {
-        setChangingPassFor(null);
-        setNewPassValue('');
-        addToast('success', 'Password changed!');
-      } else {
-        const data = await res.json();
-        addToast('error', data.error || 'Failed to change password');
-      }
-    } catch {
-      addToast('error', 'Connection error');
+    if (!newPassValue) {
+      addToast('error', 'كلمة المرور مطلوبة');
+      return;
+    }
+    const res = await fetch('/api/admins/password', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ adminId, newPassword: newPassValue }),
+    });
+    if (res.ok) {
+      addToast('success', 'تم تغيير كلمة المرور');
+      setChangingPassFor(null);
+      setNewPassValue('');
+    } else {
+      const d = await res.json();
+      addToast('error', d.error || 'فشل');
     }
   };
 
-  useEffect(() => {
-    if (isLoggedIn && activeTab === 'content') loadContent();
-    if (isLoggedIn && activeTab === 'admins') loadAdmins();
-  }, [isLoggedIn, activeTab, loadContent, loadAdmins]);
+  const saveSetting = async (key: string, value: string) => {
+    const res = await fetch('/api/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key, value }),
+    });
+    if (res.ok) {
+      addToast('success', `تم حفظ ${key}`);
+      setSettings({ ...settings, [key]: value });
+    } else {
+      addToast('error', 'فشل الحفظ');
+    }
+  };
 
-  // ---------- CONTENT SECTIONS ----------
-  const contentSections = [
-    {
-      id: 'hero', label: 'Hero Section', icon: <Star className="w-4 h-4" />,
-      keys: [
-        { key: 'hero_title_ar', label: 'Title (Arabic)' },
-        { key: 'hero_title_en', label: 'Title (English)' },
-        { key: 'hero_title_ms', label: 'Title (Malay)' },
-        { key: 'hero_subtitle_ar', label: 'Subtitle (Arabic)' },
-        { key: 'hero_subtitle_en', label: 'Subtitle (English)' },
-        { key: 'hero_subtitle_ms', label: 'Subtitle (Malay)' },
-        { key: 'hero_image_url', label: 'Hero Image URL' },
-      ]
-    },
-    {
-      id: 'about', label: 'About Section', icon: <Building2 className="w-4 h-4" />,
-      keys: [
-        { key: 'about_title_ar', label: 'Title (Arabic)' },
-        { key: 'about_title_en', label: 'Title (English)' },
-        { key: 'about_title_ms', label: 'Title (Malay)' },
-        { key: 'about_desc_ar', label: 'Description (Arabic)' },
-        { key: 'about_desc_en', label: 'Description (English)' },
-        { key: 'about_desc_ms', label: 'Description (Malay)' },
-        { key: 'about_vision_ar', label: 'Vision (Arabic)' },
-        { key: 'about_vision_en', label: 'Vision (English)' },
-        { key: 'about_mission_ar', label: 'Mission (Arabic)' },
-        { key: 'about_mission_en', label: 'Mission (English)' },
-      ]
-    },
-    {
-      id: 'stats', label: 'Statistics', icon: <Award className="w-4 h-4" />,
-      keys: [
-        { key: 'stats_students', label: 'Total Students' },
-        { key: 'stats_teachers', label: 'Total Teachers' },
-        { key: 'stats_programs', label: 'Total Programs' },
-        { key: 'stats_countries', label: 'Countries Served' },
-        { key: 'stats_years', label: 'Years Operating' },
-        { key: 'stats_graduates', label: 'Total Graduates' },
-      ]
-    },
-    {
-      id: 'contact_info', label: 'Contact Info', icon: <Phone className="w-4 h-4" />,
-      keys: [
-        { key: 'contact_email', label: 'Email' },
-        { key: 'contact_phone', label: 'Phone' },
-        { key: 'contact_whatsapp', label: 'WhatsApp' },
-        { key: 'contact_address_ar', label: 'Address (Arabic)' },
-        { key: 'contact_address_en', label: 'Address (English)' },
-        { key: 'social_facebook', label: 'Facebook URL' },
-        { key: 'social_instagram', label: 'Instagram URL' },
-        { key: 'social_twitter', label: 'Twitter/X URL' },
-        { key: 'social_youtube', label: 'YouTube URL' },
-        { key: 'social_telegram', label: 'Telegram URL' },
-        { key: 'social_tiktok', label: 'TikTok URL' },
-      ]
-    },
-    {
-      id: 'footer', label: 'Footer', icon: <Map className="w-4 h-4" />,
-      keys: [
-        { key: 'footer_desc_ar', label: 'Description (Arabic)' },
-        { key: 'footer_desc_en', label: 'Description (English)' },
-        { key: 'footer_desc_ms', label: 'Description (Malay)' },
-        { key: 'footer_copyright_ar', label: 'Copyright (Arabic)' },
-        { key: 'footer_copyright_en', label: 'Copyright (English)' },
-      ]
-    },
-  ];
+  // Render toasts
+  const renderToasts = () => (
+    <div className="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-md">
+      {toasts.map((t) => (
+        <div
+          key={t.id}
+          className={`flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg border ${
+            t.type === 'success'
+              ? 'bg-emerald-50 border-emerald-300 text-emerald-900'
+              : t.type === 'error'
+              ? 'bg-red-50 border-red-300 text-red-900'
+              : 'bg-blue-50 border-blue-300 text-blue-900'
+          }`}
+        >
+          {t.type === 'success' ? (
+            <CheckCircle className="h-5 w-5" />
+          ) : t.type === 'error' ? (
+            <AlertCircle className="h-5 w-5" />
+          ) : (
+            <RefreshCw className="h-5 w-5" />
+          )}
+          <span className="text-sm font-medium">{t.message}</span>
+        </div>
+      ))}
+    </div>
+  );
 
-  const [expandedSection, setExpandedSection] = useState<string | null>('hero');
-
-  const navItems: { id: Tab; label: string; icon: React.ReactNode; superOnly?: boolean }[] = [
-    { id: 'overview', label: 'Overview', icon: <LayoutDashboard className="w-5 h-5" /> },
-    { id: 'content', label: 'Website Content', icon: <Globe className="w-5 h-5" /> },
-    { id: 'programs', label: 'Programs', icon: <BookOpen className="w-5 h-5" /> },
-    { id: 'team', label: 'Team Members', icon: <Users className="w-5 h-5" /> },
-    { id: 'faq', label: 'FAQ', icon: <HelpCircle className="w-5 h-5" /> },
-    { id: 'news', label: 'News & Media', icon: <Newspaper className="w-5 h-5" /> },
-    { id: 'contact', label: 'Contact Info', icon: <Phone className="w-5 h-5" /> },
-    { id: 'admins', label: 'Admin Users', icon: <Shield className="w-5 h-5" />, superOnly: true },
-    { id: 'settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },
-  ];
-
-  // ---------- LOGIN PAGE ----------
+  // Login screen
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#192d4a] to-[#0d1e33] flex items-center justify-center p-4">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <div className="w-20 h-20 bg-[#C09E5B]/20 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-[#C09E5B]/40">
-              <Shield className="w-10 h-10 text-[#C09E5B]" />
-            </div>
-            <h1 className="text-3xl font-bold text-white mb-1">Athar Admin</h1>
-            <p className="text-white/50 text-sm">Secure Dashboard Access</p>
-          </div>
-          <form onSubmit={handleLogin} className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-8 space-y-5">
-            <div>
-              <label className="text-white/70 text-sm mb-2 block">Username</label>
-              <input
-                type="text" value={loginUser} onChange={e => setLoginUser(e.target.value)} required
-                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-[#C09E5B] transition-colors"
-                placeholder="Enter username"
-              />
-            </div>
-            <div>
-              <label className="text-white/70 text-sm mb-2 block">Password</label>
-              <div className="relative">
-                <input
-                  type={showPass ? 'text' : 'password'} value={loginPass} onChange={e => setLoginPass(e.target.value)} required
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 pr-12 text-white placeholder-white/30 focus:outline-none focus:border-[#C09E5B] transition-colors"
-                  placeholder="Enter password"
-                />
-                <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors">
-                  {showPass ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-blue-dark via-brand-blue to-brand-blue-dark px-4 relative overflow-hidden">
+        {renderToasts()}
+        <div className="absolute inset-0 islamic-pattern-dark opacity-30" />
+        <div className="absolute w-[500px] h-[500px] bg-brand-gold/10 blur-[120px] rounded-full" />
+        <div className="relative w-full max-w-md">
+          <div className="bg-white rounded-3xl shadow-2xl p-8 space-y-6 border-t-4 border-brand-gold">
+            <div className="text-center space-y-2">
+              <div className="inline-flex p-3 bg-brand-gold-light rounded-2xl border border-brand-gold/30">
+                <Shield className="h-8 w-8 text-brand-gold-dark" />
               </div>
+              <h1 className="text-2xl font-bold text-brand-blue-dark font-serif">لوحة إدارة أثر</h1>
+              <p className="text-sm text-slate-500">Athar Academy Admin</p>
             </div>
-            <button
-              type="submit" disabled={loginLoading}
-              className="w-full bg-[#C09E5B] hover:bg-[#ad8d4a] text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
-            >
-              {loginLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Lock className="w-5 h-5" />}
-              {loginLoading ? 'Logging in...' : 'Login to Dashboard'}
-            </button>
-          </form>
-        </div>
-
-        {/* Toasts */}
-        <div className="fixed top-4 right-4 space-y-2 z-50">
-          {toasts.map(t => (
-            <div key={t.id} className={`flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg text-white text-sm font-medium max-w-xs ${t.type === 'success' ? 'bg-green-600' : t.type === 'error' ? 'bg-red-600' : 'bg-blue-600'}`}>
-              {t.type === 'success' ? <CheckCircle className="w-4 h-4" /> : t.type === 'error' ? <AlertCircle className="w-4 h-4" /> : <Info className="w-4 h-4" />}
-              {t.message}
-            </div>
-          ))}
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">البريد الإلكتروني</label>
+                <input
+                  type="email"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:border-brand-gold"
+                  placeholder="it@athar.my"
+                  required
+                  autoFocus
+                  dir="ltr"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">كلمة المرور</label>
+                <div className="relative">
+                  <input
+                    type={showPass ? 'text' : 'password'}
+                    value={loginPass}
+                    onChange={(e) => setLoginPass(e.target.value)}
+                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:border-brand-gold pr-12"
+                    placeholder="••••••••"
+                    required
+                    dir="ltr"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPass(!showPass)}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  >
+                    {showPass ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
+              </div>
+              <button
+                type="submit"
+                disabled={loginLoading}
+                className="w-full bg-gradient-to-r from-brand-gold to-brand-gold-dark hover:from-brand-gold-dark hover:to-brand-gold text-white font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-60 shadow-lg"
+              >
+                {loginLoading ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <>
+                    <Lock className="h-5 w-5" />
+                    دخول
+                  </>
+                )}
+              </button>
+            </form>
+            <p className="text-xs text-center text-slate-500">
+              أكاديمية أثر • التحكم الكامل في الموقع
+            </p>
+          </div>
         </div>
       </div>
     );
   }
 
-  // ---------- DASHBOARD ----------
+  // Main dashboard layout
   return (
-    <div className="min-h-screen bg-gray-50 flex" dir="ltr">
+    <div className="min-h-screen bg-brand-gold-light flex" dir="rtl">
+      {renderToasts()}
+
       {/* Sidebar */}
-      <aside className={`${sidebarOpen ? 'w-64' : 'w-16'} transition-all duration-300 bg-[#192d4a] text-white flex flex-col fixed h-full z-40`}>
-        <div className="flex items-center justify-between p-4 border-b border-white/10">
-          {sidebarOpen && (
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-[#C09E5B]/20 rounded-lg flex items-center justify-center">
-                <Shield className="w-4 h-4 text-[#C09E5B]" />
-              </div>
-              <span className="font-bold text-sm">Athar Admin</span>
-            </div>
+      <aside className="w-64 bg-brand-blue-dark text-slate-100 flex flex-col fixed h-full border-l border-brand-gold/20">
+        <div className="p-5 border-b border-brand-gold/20 relative">
+          <div className="absolute inset-0 islamic-pattern-dark opacity-40 pointer-events-none" />
+          <h2 className="text-xl font-bold font-serif text-brand-gold relative">لوحة أثر</h2>
+          <p className="text-xs text-slate-400 mt-1 relative" dir="ltr">{currentAdmin?.email}</p>
+          {currentAdmin?.isSuper && (
+            <span className="inline-block mt-2 text-[10px] uppercase font-bold bg-brand-gold text-brand-blue-dark px-2 py-0.5 rounded relative">
+              Super Admin
+            </span>
           )}
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors ml-auto">
-            {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
         </div>
-
-        <nav className="flex-1 overflow-y-auto py-4 space-y-1 px-2">
-          {navItems.filter(item => !item.superOnly || currentAdmin?.isSuper).map(item => (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${activeTab === item.id ? 'bg-[#C09E5B] text-white' : 'text-white/60 hover:bg-white/10 hover:text-white'}`}
-            >
-              {item.icon}
-              {sidebarOpen && <span>{item.label}</span>}
-            </button>
-          ))}
+        <nav className="flex-1 overflow-y-auto py-3">
+          {Object.keys(GROUP_LABELS).map((group) => {
+            const groupSections = SECTIONS.filter((s) => s.group === group);
+            const isOpen = expandedGroups[group] ?? true;
+            const hasActive = groupSections.some((s) => s.id === activeTab);
+            return (
+              <div key={group} className="mb-1">
+                <button
+                  onClick={() => setExpandedGroups((prev) => ({ ...prev, [group]: !(prev[group] ?? true) }))}
+                  className="w-full flex items-center justify-between px-5 py-2 text-[10px] uppercase text-brand-gold/60 font-bold tracking-wider hover:text-brand-gold"
+                >
+                  <span>{GROUP_LABELS[group]}</span>
+                  <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isOpen ? '' : '-rotate-90'}`} />
+                </button>
+                {(isOpen || hasActive) && (
+                  <div className="space-y-0.5">
+                    {groupSections.map((s) => (
+                      <button
+                        key={s.id}
+                        onClick={() => setActiveTab(s.id)}
+                        className={`w-full flex items-center gap-3 px-5 py-2.5 text-sm transition-colors ${
+                          activeTab === s.id
+                            ? 'bg-brand-gold/15 text-brand-gold border-r-2 border-brand-gold font-bold'
+                            : 'hover:bg-brand-blue/40 text-slate-300'
+                        }`}
+                      >
+                        {s.icon}
+                        <span>{s.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </nav>
-
-        <div className="p-4 border-t border-white/10">
-          {sidebarOpen && (
-            <div className="mb-3">
-              <p className="text-xs text-white/40">Logged in as</p>
-              <p className="text-sm font-semibold text-[#C09E5B] flex items-center gap-1">
-                {currentAdmin?.username}
-                {currentAdmin?.isSuper && <Shield className="w-3 h-3" />}
-              </p>
-            </div>
-          )}
-          <button onClick={handleLogout} className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-white/60 hover:bg-red-500/20 hover:text-red-400 transition-colors text-sm">
-            <LogOut className="w-5 h-5" />
-            {sidebarOpen && <span>Logout</span>}
+        <div className="p-3 border-t border-slate-700">
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white py-2 rounded text-sm"
+          >
+            <LogOut className="h-4 w-4" />
+            تسجيل الخروج
           </button>
         </div>
       </aside>
 
-      {/* Main content */}
-      <main className={`${sidebarOpen ? 'ml-64' : 'ml-16'} transition-all duration-300 flex-1 p-6`}>
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">
-            {navItems.find(n => n.id === activeTab)?.label || 'Dashboard'}
-          </h1>
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-            Live Dashboard
-          </div>
-        </div>
-
-        {/* OVERVIEW */}
+      {/* Main */}
+      <main className="flex-1 mr-64 p-8 overflow-y-auto">
         {activeTab === 'overview' && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {[
-                { label: 'Total Students', value: siteContent['stats_students'] || '—', icon: <Users className="w-6 h-6" />, color: 'bg-blue-500' },
-                { label: 'Teachers', value: siteContent['stats_teachers'] || '—', icon: <BookOpen className="w-6 h-6" />, color: 'bg-green-500' },
-                { label: 'Programs', value: siteContent['stats_programs'] || '—', icon: <Award className="w-6 h-6" />, color: 'bg-yellow-500' },
-                { label: 'Countries', value: siteContent['stats_countries'] || '—', icon: <Globe className="w-6 h-6" />, color: 'bg-purple-500' },
-              ].map((stat, i) => (
-                <div key={i} className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-                  <div className={`${stat.color} w-12 h-12 rounded-xl flex items-center justify-center text-white mb-3`}>
-                    {stat.icon}
-                  </div>
-                  <p className="text-2xl font-bold text-gray-800">{stat.value}</p>
-                  <p className="text-sm text-gray-500">{stat.label}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                  <Bell className="w-5 h-5 text-[#C09E5B]" /> Quick Actions
-                </h3>
-                <div className="space-y-2">
-                  {[
-                    { label: 'Edit Website Content', tab: 'content' as Tab, icon: <Edit3 className="w-4 h-4" /> },
-                    { label: 'Manage Programs', tab: 'programs' as Tab, icon: <BookOpen className="w-4 h-4" /> },
-                    { label: 'Update Contact Info', tab: 'contact' as Tab, icon: <Phone className="w-4 h-4" /> },
-                    { label: 'Manage Admin Users', tab: 'admins' as Tab, icon: <Shield className="w-4 h-4" /> },
-                  ].map((action, i) => (
-                    <button key={i} onClick={() => setActiveTab(action.tab)} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors text-sm text-gray-700">
-                      <span className="text-[#C09E5B]">{action.icon}</span>
-                      {action.label}
-                      <ChevronRight className="w-4 h-4 ml-auto text-gray-400" />
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="bg-gradient-to-br from-[#192d4a] to-[#1f3f69] rounded-2xl p-6 text-white">
-                <h3 className="font-semibold mb-3 flex items-center gap-2">
-                  <Info className="w-5 h-5 text-[#C09E5B]" /> System Info
-                </h3>
-                <div className="space-y-2 text-sm text-white/70">
-                  <p>Platform: <span className="text-white">Athar Academy</span></p>
-                  <p>Stack: <span className="text-white">Next.js 15 + Supabase</span></p>
-                  <p>Admin: <span className="text-[#C09E5B]">{currentAdmin?.username}</span></p>
-                  <p>Role: <span className="text-white">{currentAdmin?.isSuper ? 'Super Admin' : 'Admin'}</span></p>
-                  <p>DB: <span className="text-green-400">Connected ✓</span></p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <OverviewTab adminCount={admins.length} onGoto={(t) => setActiveTab(t)} />
         )}
 
-        {/* CONTENT */}
-        {activeTab === 'content' && (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 mb-4">
-              <button onClick={loadContent} className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm hover:bg-gray-50 transition-colors">
-                <RefreshCw className="w-4 h-4" /> Refresh
-              </button>
-              <p className="text-sm text-gray-500">Changes are saved to Supabase and override the default content.</p>
+        {isContentTab(activeTab) && (
+          <div className={`flex gap-6 ${showPreview ? '' : ''}`}>
+            <div className="flex-1 min-w-0">
+              <SectionEditor
+                label={SECTIONS.find((s) => s.id === activeTab)?.label || activeTab}
+                currentData={content[activeTab]}
+                editorData={editorData}
+                setEditorData={setEditorData}
+                onSave={() => saveSection(activeTab)}
+                onReset={() => resetSection(activeTab)}
+                saving={savingSection === activeTab}
+                addToast={addToast}
+                showPreview={showPreview}
+                onTogglePreview={() => setShowPreview((v) => !v)}
+              />
             </div>
-            {loading ? (
-              <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-[#C09E5B]" /></div>
-            ) : (
-              contentSections.map(section => (
-                <div key={section.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                  <button
-                    onClick={() => setExpandedSection(expandedSection === section.id ? null : section.id)}
-                    className="w-full flex items-center justify-between p-5 hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="flex items-center gap-3 font-semibold text-gray-800">
-                      <span className="text-[#C09E5B]">{section.icon}</span>
-                      {section.label}
-                    </div>
-                    {expandedSection === section.id ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
-                  </button>
-                  {expandedSection === section.id && (
-                    <div className="border-t border-gray-100 divide-y divide-gray-50">
-                      {section.keys.map(({ key, label }) => (
-                        <div key={key} className="p-4 flex items-start gap-4">
-                          <div className="flex-1">
-                            <p className="text-xs font-medium text-gray-500 mb-1">{label}</p>
-                            {editingKey === key ? (
-                              <div className="space-y-2">
-                                <textarea
-                                  value={editValue}
-                                  onChange={e => setEditValue(e.target.value)}
-                                  rows={3}
-                                  className="w-full border border-[#C09E5B] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C09E5B]/30 resize-none"
-                                />
-                                <div className="flex gap-2">
-                                  <button onClick={() => saveContent(key, editValue)} className="flex items-center gap-1.5 px-3 py-1.5 bg-[#C09E5B] text-white rounded-lg text-xs font-medium hover:bg-[#ad8d4a] transition-colors">
-                                    <Save className="w-3 h-3" /> Save
-                                  </button>
-                                  <button onClick={() => setEditingKey(null)} className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-xs font-medium hover:bg-gray-200 transition-colors">
-                                    Cancel
-                                  </button>
-                                </div>
-                              </div>
-                            ) : (
-                              <p className="text-sm text-gray-700 min-h-[24px]">
-                                {siteContent[key] || <span className="text-gray-300 italic">Not set</span>}
-                              </p>
-                            )}
-                          </div>
-                          {editingKey !== key && (
-                            <button
-                              onClick={() => { setEditingKey(key); setEditValue(siteContent[key] || ''); }}
-                              className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors mt-4 shrink-0"
-                            >
-                              <Edit3 className="w-4 h-4" />
-                            </button>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))
+            {showPreview && (
+              <div className="w-[44%] max-w-[640px] shrink-0 hidden lg:block">
+                <PreviewPane section={activeTab} data={editorData} />
+              </div>
             )}
           </div>
         )}
 
-        {/* PROGRAMS - Static display, edit via content */}
-        {activeTab === 'programs' && (
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-            <div className="flex items-center gap-3 mb-6">
-              <BookOpen className="w-6 h-6 text-[#C09E5B]" />
-              <h2 className="text-lg font-semibold">Programs Management</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[
-                { name: 'Quran Circles', name_ar: 'حلقات القرآن الكريم', level: 'All Levels', status: 'Active' },
-                { name: 'Tajweed Mastery', name_ar: 'إتقان التجويد', level: 'Intermediate', status: 'Active' },
-                { name: 'Hifz Program', name_ar: 'برنامج الحفظ', level: 'Advanced', status: 'Active' },
-                { name: 'Arabic Language', name_ar: 'اللغة العربية', level: 'Beginner', status: 'Active' },
-                { name: 'Islamic Studies', name_ar: 'الدراسات الإسلامية', level: 'All Levels', status: 'Active' },
-                { name: 'Kids Quran', name_ar: 'قرآن الأطفال', level: 'Children', status: 'Active' },
-              ].map((prog, i) => (
-                <div key={i} className="border border-gray-100 rounded-xl p-4 flex items-center justify-between hover:border-[#C09E5B]/30 transition-colors">
-                  <div>
-                    <p className="font-medium text-gray-800">{prog.name}</p>
-                    <p className="text-sm text-gray-500">{prog.name_ar}</p>
-                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full mt-1 inline-block">{prog.level}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs bg-green-100 text-green-700 px-2.5 py-1 rounded-full font-medium">{prog.status}</span>
-                    <button className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors">
-                      <Edit3 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <p className="text-sm text-gray-400 mt-4 flex items-center gap-2">
-              <Info className="w-4 h-4" /> To edit program details (titles, descriptions in 3 languages), use the Website Content tab.
-            </p>
-          </div>
+        {activeTab === 'admins' && (
+          <AdminsTab
+            admins={admins}
+            currentAdmin={currentAdmin}
+            newAdminEmail={newAdminEmail}
+            setNewAdminEmail={setNewAdminEmail}
+            newAdminPass={newAdminPass}
+            setNewAdminPass={setNewAdminPass}
+            newAdminSuper={newAdminSuper}
+            setNewAdminSuper={setNewAdminSuper}
+            onCreate={createAdmin}
+            onDelete={deleteAdmin}
+            changingPassFor={changingPassFor}
+            setChangingPassFor={setChangingPassFor}
+            newPassValue={newPassValue}
+            setNewPassValue={setNewPassValue}
+            onChangePass={changePassword}
+          />
         )}
 
-        {/* TEAM */}
-        {activeTab === 'team' && (
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <Users className="w-6 h-6 text-[#C09E5B]" />
-                <h2 className="text-lg font-semibold">Team Members</h2>
-              </div>
-              <button className="flex items-center gap-2 px-4 py-2 bg-[#C09E5B] text-white rounded-xl text-sm font-medium hover:bg-[#ad8d4a] transition-colors">
-                <Plus className="w-4 h-4" /> Add Member
-              </button>
-            </div>
-            <div className="space-y-3">
-              {[
-                { name: 'Sheikh Ahmad Al-Rashid', role_en: 'Quran & Tajweed Teacher', role_ar: 'معلم القرآن والتجويد' },
-                { name: 'Ustazah Maryam Ibrahim', role_en: 'Arabic Language Instructor', role_ar: 'مدرسة اللغة العربية' },
-                { name: 'Dr. Hassan Abdullah', role_en: 'Islamic Studies Scholar', role_ar: 'عالم الدراسات الإسلامية' },
-              ].map((member, i) => (
-                <div key={i} className="flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-[#C09E5B]/30 transition-colors">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-[#C09E5B]/10 rounded-full flex items-center justify-center text-[#C09E5B] font-bold text-lg">
-                      {member.name[0]}
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-800">{member.name}</p>
-                      <p className="text-sm text-gray-500">{member.role_en} / {member.role_ar}</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <button className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors"><Edit3 className="w-4 h-4" /></button>
-                    <button className="p-2 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors"><Trash2 className="w-4 h-4" /></button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+        {activeTab === 'navigation' && (
+          <NavManager
+            onToast={addToast}
+            onOpenPage={(slug: string) => {
+              setOpenPageSlug(slug);
+              setActiveTab('custom_pages');
+            }}
+          />
         )}
 
-        {/* FAQ */}
-        {activeTab === 'faq' && (
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <HelpCircle className="w-6 h-6 text-[#C09E5B]" />
-                <h2 className="text-lg font-semibold">FAQ Management</h2>
-              </div>
-              <button className="flex items-center gap-2 px-4 py-2 bg-[#C09E5B] text-white rounded-xl text-sm font-medium hover:bg-[#ad8d4a] transition-colors">
-                <Plus className="w-4 h-4" /> Add FAQ
-              </button>
-            </div>
-            <div className="space-y-3">
-              {[
-                { q_en: 'How can I enroll in a program?', q_ar: 'كيف يمكنني التسجيل في برنامج؟' },
-                { q_en: 'What are the program fees?', q_ar: 'ما هي رسوم البرامج؟' },
-                { q_en: 'Are there online classes available?', q_ar: 'هل تتوفر دروس عبر الإنترنت؟' },
-                { q_en: 'What qualifications do teachers have?', q_ar: 'ما هي مؤهلات المعلمين؟' },
-              ].map((faq, i) => (
-                <div key={i} className="p-4 rounded-xl border border-gray-100 hover:border-[#C09E5B]/30 transition-colors">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="font-medium text-gray-800 text-sm">{faq.q_en}</p>
-                      <p className="text-sm text-gray-500 mt-0.5" dir="rtl">{faq.q_ar}</p>
-                    </div>
-                    <div className="flex gap-2 shrink-0">
-                      <button className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors"><Edit3 className="w-4 h-4" /></button>
-                      <button className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors"><Trash2 className="w-4 h-4" /></button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        {activeTab === 'forms_manager' && <FormsManager onToast={addToast} />}
 
-        {/* NEWS */}
-        {activeTab === 'news' && (
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <Newspaper className="w-6 h-6 text-[#C09E5B]" />
-                <h2 className="text-lg font-semibold">News & Media</h2>
-              </div>
-              <button className="flex items-center gap-2 px-4 py-2 bg-[#C09E5B] text-white rounded-xl text-sm font-medium hover:bg-[#ad8d4a] transition-colors">
-                <Plus className="w-4 h-4" /> Add Article
-              </button>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[
-                { title: 'Athar Academy Opens New Branch', date: '2024-11-01', status: 'Published' },
-                { title: 'Annual Quran Competition 2024', date: '2024-10-15', status: 'Published' },
-                { title: 'Partnership with Islamic Center', date: '2024-09-20', status: 'Draft' },
-              ].map((article, i) => (
-                <div key={i} className="border border-gray-100 rounded-xl p-4 hover:border-[#C09E5B]/30 transition-colors">
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <p className="font-medium text-gray-800 text-sm">{article.title}</p>
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${article.status === 'Published' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
-                      {article.status}
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-400 mb-3">{article.date}</p>
-                  <div className="flex gap-2">
-                    <button className="flex items-center gap-1 text-xs text-[#C09E5B] hover:underline"><Edit3 className="w-3 h-3" /> Edit</button>
-                    <button className="flex items-center gap-1 text-xs text-red-400 hover:underline"><Trash2 className="w-3 h-3" /> Delete</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        {activeTab === 'custom_pages' && <PageBuilder onToast={addToast} openSlug={openPageSlug} onConsumedOpenSlug={() => setOpenPageSlug(null)} />}
 
-        {/* CONTACT */}
-        {activeTab === 'contact' && (
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-            <div className="flex items-center gap-3 mb-6">
-              <Phone className="w-6 h-6 text-[#C09E5B]" />
-              <h2 className="text-lg font-semibold">Contact & Social Media</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[
-                { key: 'contact_email', label: 'Email', placeholder: 'info@atharacademy.com', icon: <MessageSquare className="w-4 h-4" /> },
-                { key: 'contact_phone', label: 'Phone', placeholder: '+60 12-345 6789', icon: <Phone className="w-4 h-4" /> },
-                { key: 'contact_whatsapp', label: 'WhatsApp', placeholder: '+60 12-345 6789', icon: <MessageSquare className="w-4 h-4" /> },
-                { key: 'social_facebook', label: 'Facebook URL', placeholder: 'https://facebook.com/...', icon: <Globe className="w-4 h-4" /> },
-                { key: 'social_instagram', label: 'Instagram URL', placeholder: 'https://instagram.com/...', icon: <Globe className="w-4 h-4" /> },
-                { key: 'social_youtube', label: 'YouTube URL', placeholder: 'https://youtube.com/...', icon: <Globe className="w-4 h-4" /> },
-              ].map(({ key, label, placeholder, icon }) => (
-                <div key={key}>
-                  <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2 block">
-                    <span className="text-[#C09E5B]">{icon}</span> {label}
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      defaultValue={siteContent[key] || ''}
-                      placeholder={placeholder}
-                      id={`contact-${key}`}
-                      className="flex-1 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#C09E5B] transition-colors"
-                    />
-                    <button
-                      onClick={() => {
-                        const el = document.getElementById(`contact-${key}`) as HTMLInputElement;
-                        if (el) saveContent(key, el.value);
-                      }}
-                      className="px-3 py-2 bg-[#C09E5B] text-white rounded-xl hover:bg-[#ad8d4a] transition-colors"
-                    >
-                      <Save className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        {activeTab === 'submissions' && <SubmissionsInbox onToast={addToast} />}
 
-        {/* ADMINS */}
-        {activeTab === 'admins' && currentAdmin?.isSuper && (
-          <div className="space-y-6">
-            {/* Create new admin */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <UserPlus className="w-5 h-5 text-[#C09E5B]" /> Add New Admin
-              </h2>
-              <form onSubmit={createAdmin} className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <input
-                  type="text" value={newAdminUser} onChange={e => setNewAdminUser(e.target.value)} required
-                  placeholder="Username" className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#C09E5B] transition-colors"
-                />
-                <input
-                  type="password" value={newAdminPass} onChange={e => setNewAdminPass(e.target.value)} required
-                  placeholder="Password" className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#C09E5B] transition-colors"
-                />
-                <div className="flex items-center gap-4">
-                  <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                    <input type="checkbox" checked={newAdminSuper} onChange={e => setNewAdminSuper(e.target.checked)} className="w-4 h-4 accent-[#C09E5B]" />
-                    Super Admin
-                  </label>
-                  <button type="submit" className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-[#C09E5B] text-white rounded-xl text-sm font-medium hover:bg-[#ad8d4a] transition-colors">
-                    <Plus className="w-4 h-4" /> Create
-                  </button>
-                </div>
-              </form>
-            </div>
+        {activeTab === 'payments' && <PaymentsTab settings={settings} onSave={saveSetting} />}
 
-            {/* Admin list */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold flex items-center gap-2">
-                  <Shield className="w-5 h-5 text-[#C09E5B]" /> Admin Users
-                </h2>
-                <button onClick={loadAdmins} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700">
-                  <RefreshCw className="w-4 h-4" /> Refresh
-                </button>
-              </div>
-              <div className="space-y-3">
-                {admins.map(admin => (
-                  <div key={admin.id} className="flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-[#C09E5B]/30 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-[#1f3f69]/10 rounded-full flex items-center justify-center">
-                        <Shield className={`w-5 h-5 ${admin.is_super ? 'text-[#C09E5B]' : 'text-gray-400'}`} />
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-800 flex items-center gap-2">
-                          {admin.username}
-                          {admin.is_super && <span className="text-xs bg-[#C09E5B]/10 text-[#C09E5B] px-2 py-0.5 rounded-full">Super</span>}
-                        </p>
-                        <p className="text-xs text-gray-400">Created: {new Date(admin.created_at).toLocaleDateString()}</p>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      {changingPassFor === admin.id ? (
-                        <div className="flex gap-2">
-                          <input
-                            type="password" value={newPassValue} onChange={e => setNewPassValue(e.target.value)}
-                            placeholder="New password" className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm w-36 focus:outline-none focus:border-[#C09E5B]"
-                          />
-                          <button onClick={() => changePassword(admin.id)} className="px-3 py-1.5 bg-[#C09E5B] text-white rounded-lg text-xs font-medium hover:bg-[#ad8d4a]">Save</button>
-                          <button onClick={() => { setChangingPassFor(null); setNewPassValue(''); }} className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-xs">Cancel</button>
-                        </div>
-                      ) : (
-                        <button onClick={() => setChangingPassFor(admin.id)} className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-lg text-xs text-gray-600 hover:bg-gray-50 transition-colors">
-                          <Key className="w-3.5 h-3.5" /> Change Password
-                        </button>
-                      )}
-                      {admin.id !== currentAdmin?.id && (
-                        <button onClick={() => deleteAdmin(admin.id, admin.username)} className="p-2 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors">
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-                {admins.length === 0 && (
-                  <p className="text-center text-gray-400 py-8">No admins found. Database may not be set up yet.</p>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* SETTINGS */}
-        {activeTab === 'settings' && (
-          <div className="space-y-6">
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Key className="w-5 h-5 text-[#C09E5B]" /> Change My Password
-              </h2>
-              <form onSubmit={async e => {
-                e.preventDefault();
-                const form = e.target as HTMLFormElement;
-                const newPwd = (form.elements.namedItem('newPwd') as HTMLInputElement).value;
-                if (currentAdmin) {
-                  const res = await fetch('/api/admins/password', {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ adminId: currentAdmin.id, newPassword: newPwd }),
-                  });
-                  if (res.ok) { addToast('success', 'Password changed!'); form.reset(); }
-                  else addToast('error', 'Failed to change password');
-                }
-              }} className="flex gap-4 max-w-md">
-                <input type="password" name="newPwd" required placeholder="New password" minLength={6}
-                  className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#C09E5B] transition-colors"
-                />
-                <button type="submit" className="px-6 py-2.5 bg-[#C09E5B] text-white rounded-xl text-sm font-medium hover:bg-[#ad8d4a] transition-colors">
-                  Update
-                </button>
-              </form>
-            </div>
-
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <DollarSign className="w-5 h-5 text-[#C09E5B]" /> Payment Integration
-              </h2>
-              <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 text-sm text-yellow-800">
-                <p className="font-medium mb-1">Stripe Integration — Coming Soon</p>
-                <p className="text-yellow-700">Student registration and online payments will be available in the next update. The database schema is already prepared.</p>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <ImageIcon className="w-5 h-5 text-[#C09E5B]" /> Image Settings
-              </h2>
-              <p className="text-sm text-gray-500 mb-3">Upload images to replace placeholder images across the site. Image URLs can be updated via the Website Content tab.</p>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {['Hero Image', 'About Image', 'Logo', 'Footer Logo'].map((img, i) => (
-                  <div key={i} className="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-[#C09E5B]/40 transition-colors cursor-pointer">
-                    <ImageIcon className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                    <p className="text-xs text-gray-500">{img}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
+        {activeTab === 'settings' && <SettingsTab settings={settings} onSave={saveSetting} />}
       </main>
+    </div>
+  );
+}
 
-      {/* Toasts */}
-      <div className="fixed top-4 right-4 space-y-2 z-50">
-        {toasts.map(t => (
-          <div key={t.id} className={`flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg text-white text-sm font-medium max-w-xs ${t.type === 'success' ? 'bg-green-600' : t.type === 'error' ? 'bg-red-600' : 'bg-blue-600'}`}>
-            {t.type === 'success' ? <CheckCircle className="w-4 h-4" /> : t.type === 'error' ? <AlertCircle className="w-4 h-4" /> : <Info className="w-4 h-4" />}
-            {t.message}
+// ============================================================================
+// Subcomponents
+// ============================================================================
+
+function OverviewTab({ adminCount, onGoto }: { adminCount: number; onGoto: (t: Tab) => void }) {
+  const [counts, setCounts] = useState<Record<string, { total: number; unread: number }>>({});
+  const [pagesCount, setPagesCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const [subRes, pagesRes] = await Promise.all([
+          fetch('/api/submissions?type=all', { cache: 'no-store' }),
+          fetch('/api/pages', { cache: 'no-store' }),
+        ]);
+        const subData = await subRes.json();
+        const pagesData = await pagesRes.json();
+        if (subRes.ok) setCounts(subData.counts || {});
+        if (pagesRes.ok) setPagesCount((pagesData.pages || []).length);
+      } catch {}
+      finally { setLoading(false); }
+    })();
+  }, []);
+
+  const c = (k: string) => counts[k]?.total || 0;
+  const totalUnread = Object.values(counts).reduce((a, b) => a + b.unread, 0);
+  const totalAll = Object.values(counts).reduce((a, b) => a + b.total, 0);
+  const registrations = c('register_circles') + c('register_programs');
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold text-brand-blue-dark font-serif">نظرة عامة</h1>
+        <p className="text-slate-600 mt-1">ملخّص نشاط أكاديمية أثر {loading && '...'}</p>
+      </div>
+
+      {/* Primary registration stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <BigStat label="تسجيلات الحلقات" value={c('register_circles')} icon={<BookOpen className="h-6 w-6" />} onClick={() => onGoto('submissions')} />
+        <BigStat label="تسجيلات البرامج" value={c('register_programs')} icon={<Star className="h-6 w-6" />} onClick={() => onGoto('submissions')} />
+        <BigStat label="طلبات التوظيف" value={c('careers')} icon={<Users className="h-6 w-6" />} onClick={() => onGoto('submissions')} />
+        <BigStat label="طلبات التطوع" value={c('volunteer')} icon={<Heart className="h-6 w-6" />} onClick={() => onGoto('submissions')} />
+      </div>
+
+      {/* Secondary stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <BigStat label="الكفالات والتبرعات" value={c('donation')} icon={<CreditCard className="h-6 w-6" />} onClick={() => onGoto('submissions')} dark />
+        <BigStat label="رسائل التواصل" value={c('contact') + c('inquiry')} icon={<MessageSquare className="h-6 w-6" />} onClick={() => onGoto('submissions')} dark />
+        <BigStat label="الصفحات المخصصة" value={pagesCount} icon={<FilePlus className="h-6 w-6" />} onClick={() => onGoto('custom_pages')} dark />
+        <BigStat label="عدد المشرفين" value={adminCount} icon={<Shield className="h-6 w-6" />} onClick={() => onGoto('admins')} dark />
+      </div>
+
+      {/* Inbox highlight */}
+      <button
+        onClick={() => onGoto('submissions')}
+        className="w-full text-right bg-gradient-to-l from-brand-gold-light to-white border border-brand-gold/30 rounded-2xl p-6 flex items-center justify-between hover:shadow-md transition"
+      >
+        <div>
+          <div className="text-2xl font-bold text-brand-blue-dark font-serif">{totalAll} رسالة/طلب إجمالاً</div>
+          <p className="text-sm text-slate-500 mt-1">
+            {totalUnread > 0 ? `لديك ${totalUnread} رسالة جديدة غير مقروءة` : 'كل الرسائل مقروءة'}
+          </p>
+        </div>
+        <div className="relative">
+          <Inbox className="h-12 w-12 text-brand-gold" />
+          {totalUnread > 0 && (
+            <span className="absolute -top-1 -left-1 bg-red-500 text-white text-[11px] font-bold h-6 min-w-6 px-1.5 rounded-full flex items-center justify-center">{totalUnread}</span>
+          )}
+        </div>
+      </button>
+
+      <div className="bg-white rounded-2xl border border-brand-gold/20 p-6">
+        <h2 className="text-lg font-bold mb-3 text-brand-blue-dark">دليل سريع</h2>
+        <ul className="space-y-2 text-sm text-slate-600">
+          <li>• «إدارة القائمة»: رتّب عناصر قائمة الموقع وأضف صفحات جديدة.</li>
+          <li>• «الرسائل والطلبات»: كل تسجيل أو طلب يصلك هنا + على بريدك.</li>
+          <li>• أي قسم في «صفحات الموقع» و«محتوى الأقسام»: عدّل النصوص بالـ3 لغات وارفع الصور.</li>
+          <li>• «الإعدادات»: حدّد بُرُد الإشعارات (أكثر من بريد) ومفاتيح الدفع.</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+function BigStat({ label, value, icon, onClick, dark }: { label: string; value: number; icon: React.ReactNode; onClick?: () => void; dark?: boolean }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`text-right rounded-2xl border p-5 shadow-sm transition hover:shadow-md hover:-translate-y-0.5 ${
+        dark ? 'bg-brand-blue-dark border-brand-gold/30 text-white' : 'bg-white border-brand-gold/30 text-brand-blue-dark'
+      }`}
+    >
+      <div className="flex items-center justify-between mb-2">
+        <span className={dark ? 'text-brand-gold' : 'text-brand-gold-dark'}>{icon}</span>
+        <span className="text-3xl font-bold font-serif">{value}</span>
+      </div>
+      <p className={`text-sm font-semibold ${dark ? 'text-slate-200' : 'text-slate-600'}`}>{label}</p>
+    </button>
+  );
+}
+
+function StatCard({ label, value, icon, color }: { label: string; value: number | string; icon: React.ReactNode; color: string }) {
+  const colorMap: Record<string, string> = {
+    amber: 'bg-white border-brand-gold/30 text-brand-gold-dark',
+    emerald: 'bg-white border-brand-blue/20 text-brand-blue',
+    indigo: 'bg-brand-blue-dark border-brand-gold/30 text-brand-gold',
+  };
+  return (
+    <div className={`rounded-2xl border p-5 shadow-sm ${colorMap[color]}`}>
+      <div className="flex items-center justify-between mb-2">
+        {icon}
+        <span className="text-3xl font-bold font-serif">{value}</span>
+      </div>
+      <p className="text-sm font-semibold">{label}</p>
+    </div>
+  );
+}
+
+function SectionEditor({
+  label,
+  currentData,
+  editorData,
+  setEditorData,
+  onSave,
+  onReset,
+  saving,
+  addToast,
+  showPreview,
+  onTogglePreview,
+}: any) {
+  return (
+    <div className="space-y-4 pb-24">
+      {/* Sticky header bar with title + actions */}
+      <div className="sticky top-0 z-10 -mx-8 px-8 py-4 bg-brand-gold-light/95 backdrop-blur border-b border-brand-gold/20 flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-brand-blue-dark font-serif">{label}</h1>
+          <p className="text-xs text-slate-500 mt-0.5">عدّل النصوص والصور ثم اضغط "حفظ التغييرات"</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onTogglePreview}
+            className="hidden lg:flex items-center gap-2 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold px-4 py-2.5 rounded-xl text-sm"
+            title="إظهار/إخفاء المعاينة"
+          >
+            {showPreview ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            {showPreview ? 'إخفاء المعاينة' : 'إظهار المعاينة'}
+          </button>
+          <button
+            onClick={onReset}
+            className="flex items-center gap-2 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold px-4 py-2.5 rounded-xl text-sm"
+            title="استعادة المحتوى الأصلي"
+          >
+            <RefreshCw className="h-4 w-4" />
+            استعادة الأصلي
+          </button>
+          <button
+            onClick={onSave}
+            disabled={saving}
+            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl text-sm disabled:opacity-60 shadow-sm"
+          >
+            {saving ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
+            حفظ التغييرات
+          </button>
+        </div>
+      </div>
+
+      {editorData == null ? (
+        <div className="flex items-center justify-center py-20 text-slate-400">
+          <Loader2 className="h-6 w-6 animate-spin" />
+        </div>
+      ) : (
+        <div className="bg-white rounded-2xl border border-slate-200 p-6">
+          <SmartEditor data={editorData} onChange={setEditorData} onToast={addToast} />
+        </div>
+      )}
+
+      <div className="bg-brand-gold-light border border-brand-gold/30 rounded-xl p-4 text-sm text-brand-blue-dark">
+        <div className="font-bold mb-1">💡 إرشادات</div>
+        <ul className="text-xs space-y-1 list-disc list-inside">
+          <li>اضغط على عنوان أي عنصر لفتحه وتعديل نصوصه بالعربية والإنجليزية والماليزية.</li>
+          <li>لرفع صورة: اضغط زر «رفع صورة» واختر الصورة من جهازك (الحد الأقصى 5 ميجابايت).</li>
+          <li>أزرار ⬆️⬇️ لإعادة الترتيب، 👁️ للإظهار/الإخفاء، 🗑️ للحذف، وزر «إضافة» لعنصر جديد.</li>
+          <li>لا تنسَ الضغط على «حفظ التغييرات» — تظهر التعديلات على الموقع مباشرة بعد الحفظ.</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+function AdminsTab({
+  admins,
+  currentAdmin,
+  newAdminEmail,
+  setNewAdminEmail,
+  newAdminPass,
+  setNewAdminPass,
+  newAdminSuper,
+  setNewAdminSuper,
+  onCreate,
+  onDelete,
+  changingPassFor,
+  setChangingPassFor,
+  newPassValue,
+  setNewPassValue,
+  onChangePass,
+}: any) {
+  return (
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold text-brand-blue-dark font-serif">إدارة المشرفين</h1>
+
+      {currentAdmin?.isSuper && (
+        <div className="bg-white rounded-xl border border-slate-200 p-6">
+          <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+            <UserPlus className="h-5 w-5 text-brand-gold" />
+            إضافة مشرف جديد
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <input
+              type="email"
+              placeholder="email@athar.my"
+              value={newAdminEmail}
+              onChange={(e) => setNewAdminEmail(e.target.value)}
+              className="px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-brand-gold"
+              dir="ltr"
+            />
+            <input
+              type="password"
+              placeholder="كلمة المرور"
+              value={newAdminPass}
+              onChange={(e) => setNewAdminPass(e.target.value)}
+              className="px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-brand-gold"
+              dir="ltr"
+            />
+            <label className="flex items-center gap-2 px-2 py-2">
+              <input
+                type="checkbox"
+                checked={newAdminSuper}
+                onChange={(e) => setNewAdminSuper(e.target.checked)}
+                className="h-4 w-4"
+              />
+              <span className="text-sm">صلاحيات Super Admin</span>
+            </label>
           </div>
-        ))}
+          <button
+            onClick={onCreate}
+            className="mt-3 flex items-center gap-2 bg-brand-gold hover:bg-brand-gold-dark text-white font-bold px-4 py-2 rounded-lg text-sm"
+          >
+            <Plus className="h-4 w-4" />
+            إضافة المشرف
+          </button>
+        </div>
+      )}
+
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <table className="w-full text-sm">
+          <thead className="bg-slate-50">
+            <tr className="text-right">
+              <th className="px-4 py-3 font-bold text-slate-700">البريد</th>
+              <th className="px-4 py-3 font-bold text-slate-700">الصلاحية</th>
+              <th className="px-4 py-3 font-bold text-slate-700">تاريخ الإنشاء</th>
+              <th className="px-4 py-3 font-bold text-slate-700">إجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            {admins.map((a: any) => (
+              <tr key={a.id} className="border-t border-slate-200">
+                <td className="px-4 py-3" dir="ltr">{a.email}</td>
+                <td className="px-4 py-3">
+                  {a.is_super ? (
+                    <span className="inline-block text-[10px] uppercase font-bold bg-brand-gold text-brand-blue-dark px-2 py-0.5 rounded">
+                      Super
+                    </span>
+                  ) : (
+                    <span className="text-xs text-slate-600">عادي</span>
+                  )}
+                </td>
+                <td className="px-4 py-3 text-xs text-slate-500">
+                  {new Date(a.created_at).toLocaleDateString('ar-EG')}
+                </td>
+                <td className="px-4 py-3 space-x-2 rtl:space-x-reverse">
+                  <button
+                    onClick={() => setChangingPassFor(changingPassFor === a.id ? null : a.id)}
+                    className="text-xs bg-blue-100 text-blue-700 hover:bg-blue-200 px-3 py-1 rounded"
+                  >
+                    تغيير كلمة المرور
+                  </button>
+                  {currentAdmin?.isSuper && a.id !== currentAdmin.id && (
+                    <button
+                      onClick={() => onDelete(a.id)}
+                      className="text-xs bg-red-100 text-red-700 hover:bg-red-200 px-3 py-1 rounded"
+                    >
+                      حذف
+                    </button>
+                  )}
+                  {changingPassFor === a.id && (
+                    <div className="mt-2 flex items-center gap-2">
+                      <input
+                        type="password"
+                        placeholder="كلمة مرور جديدة"
+                        value={newPassValue}
+                        onChange={(e) => setNewPassValue(e.target.value)}
+                        className="px-3 py-1 border border-slate-300 rounded text-xs"
+                        dir="ltr"
+                      />
+                      <button
+                        onClick={() => onChangePass(a.id)}
+                        className="text-xs bg-emerald-500 text-white px-3 py-1 rounded"
+                      >
+                        حفظ
+                      </button>
+                    </div>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function PaymentsTab({ settings, onSave }: { settings: Record<string, string>; onSave: (k: string, v: string) => void }) {
+  const [pubKey, setPubKey] = useState(settings.stripe_publishable_key || '');
+  const [secretKey, setSecretKey] = useState(settings.stripe_secret_key || '');
+  const [enabled, setEnabled] = useState(settings.payment_enabled === 'true');
+
+  useEffect(() => {
+    setPubKey(settings.stripe_publishable_key || '');
+    setSecretKey(settings.stripe_secret_key || '');
+    setEnabled(settings.payment_enabled === 'true');
+  }, [settings]);
+
+  return (
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold text-brand-blue-dark font-serif">إعدادات المدفوعات (Stripe)</h1>
+      <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-1">حالة المدفوعات</label>
+          <button
+            onClick={() => {
+              const v = !enabled;
+              setEnabled(v);
+              onSave('payment_enabled', v ? 'true' : 'false');
+            }}
+            className={`px-4 py-2 rounded-lg font-bold text-sm ${
+              enabled ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-700'
+            }`}
+          >
+            {enabled ? '✓ مفعّل' : '✗ معطّل'}
+          </button>
+        </div>
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-1">Stripe Publishable Key</label>
+          <input
+            type="text"
+            value={pubKey}
+            onChange={(e) => setPubKey(e.target.value)}
+            placeholder="pk_test_... or pk_live_..."
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg font-mono text-xs"
+            dir="ltr"
+          />
+          <button
+            onClick={() => onSave('stripe_publishable_key', pubKey)}
+            className="mt-2 text-xs bg-brand-gold hover:bg-brand-gold-dark text-white px-3 py-1 rounded"
+          >
+            حفظ
+          </button>
+        </div>
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-1">Stripe Secret Key</label>
+          <input
+            type="password"
+            value={secretKey}
+            onChange={(e) => setSecretKey(e.target.value)}
+            placeholder="sk_test_... or sk_live_..."
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg font-mono text-xs"
+            dir="ltr"
+          />
+          <button
+            onClick={() => onSave('stripe_secret_key', secretKey)}
+            className="mt-2 text-xs bg-brand-gold hover:bg-brand-gold-dark text-white px-3 py-1 rounded"
+          >
+            حفظ
+          </button>
+        </div>
+        <div className="text-xs text-slate-500 bg-slate-50 p-3 rounded">
+          💡 أنشئ المفاتيح من Dashboard Stripe الخاص بك في{' '}
+          <a href="https://dashboard.stripe.com/apikeys" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+            dashboard.stripe.com/apikeys
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SettingsTab({ settings, onSave }: { settings: Record<string, string>; onSave: (k: string, v: string) => void }) {
+  const [siteName, setSiteName] = useState(settings.site_name || 'Athar Academy');
+  const [notifyEmail, setNotifyEmail] = useState(settings.notify_email || '');
+  const [resendKey, setResendKey] = useState(settings.resend_api_key || '');
+  const [emailFrom, setEmailFrom] = useState(settings.email_from || '');
+  useEffect(() => {
+    setSiteName(settings.site_name || 'Athar Academy');
+    setNotifyEmail(settings.notify_email || '');
+    setResendKey(settings.resend_api_key || '');
+    setEmailFrom(settings.email_from || '');
+  }, [settings]);
+
+  return (
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold text-brand-blue-dark font-serif">الإعدادات العامة</h1>
+
+      <div className="bg-white rounded-2xl border border-brand-gold/20 p-6 space-y-4 shadow-sm">
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-1">اسم الموقع</label>
+          <input
+            type="text"
+            value={siteName}
+            onChange={(e) => setSiteName(e.target.value)}
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-brand-gold"
+          />
+          <button
+            onClick={() => onSave('site_name', siteName)}
+            className="mt-2 text-xs bg-brand-gold hover:bg-brand-gold-dark text-white px-4 py-1.5 rounded-lg font-bold"
+          >
+            حفظ
+          </button>
+        </div>
+      </div>
+
+      {/* Email notifications */}
+      <div className="bg-white rounded-2xl border border-brand-gold/20 p-6 space-y-4 shadow-sm">
+        <div>
+          <h2 className="text-lg font-bold text-brand-blue-dark flex items-center gap-2">
+            <Mail className="h-5 w-5 text-brand-gold" />
+            إشعارات البريد الإلكتروني
+          </h2>
+          <p className="text-xs text-slate-500 mt-1">
+            عند أي تسجيل أو طلب تطوّع أو تبرّع، تصلك رسالة على هذا البريد فوراً.
+          </p>
+        </div>
+
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-1">البريد/البُرُد التي تصلها الإشعارات</label>
+          <textarea
+            value={notifyEmail}
+            onChange={(e) => setNotifyEmail(e.target.value)}
+            placeholder="email1@example.com, email2@example.com"
+            dir="ltr"
+            rows={2}
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-brand-gold resize-y"
+          />
+          <p className="text-[11px] text-slate-500 mt-1">يمكنك إضافة أكثر من بريد، افصل بينها بفاصلة أو سطر جديد.</p>
+          <button
+            onClick={() => onSave('notify_email', notifyEmail)}
+            className="mt-2 text-xs bg-brand-gold hover:bg-brand-gold-dark text-white px-4 py-1.5 rounded-lg font-bold"
+          >
+            حفظ البريد
+          </button>
+        </div>
+
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-1">مفتاح Resend API (لتفعيل الإرسال)</label>
+          <input
+            type="password"
+            value={resendKey}
+            onChange={(e) => setResendKey(e.target.value)}
+            placeholder="re_xxxxxxxx"
+            dir="ltr"
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg font-mono text-xs focus:outline-none focus:border-brand-gold"
+          />
+          <button
+            onClick={() => onSave('resend_api_key', resendKey)}
+            className="mt-2 text-xs bg-brand-gold hover:bg-brand-gold-dark text-white px-4 py-1.5 rounded-lg font-bold"
+          >
+            حفظ المفتاح
+          </button>
+        </div>
+
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-1">عنوان المُرسِل (From) — اختياري</label>
+          <input
+            type="text"
+            value={emailFrom}
+            onChange={(e) => setEmailFrom(e.target.value)}
+            placeholder="Athar Academy <noreply@athar.my>"
+            dir="ltr"
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg text-xs focus:outline-none focus:border-brand-gold"
+          />
+          <button
+            onClick={() => onSave('email_from', emailFrom)}
+            className="mt-2 text-xs bg-brand-gold hover:bg-brand-gold-dark text-white px-4 py-1.5 rounded-lg font-bold"
+          >
+            حفظ المُرسِل
+          </button>
+        </div>
+
+        <div className="text-xs text-slate-600 bg-brand-gold-light border border-brand-gold/20 p-3 rounded-xl leading-relaxed space-y-2">
+          <div>
+            💡 <b>المفتاح مجاناً:</b> ادخل{' '}
+            <a href="https://resend.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-brand-blue underline font-bold">resend.com</a>
+            {' '}→ حساب مجاني → API Keys → Create → الصق المفتاح هنا.
+          </div>
+          <div className="border-t border-brand-gold/20 pt-2">
+            ⚠️ <b>مهم لإرسال أكثر من بريد:</b> في الوضع التجريبي يصل البريد فقط لبريد حساب Resend.
+            لاستقبال الإشعارات على <b>أي بريد</b> (مثل بريدك الشخصي): وثّق نطاق <code>athar.my</code> في{' '}
+            <a href="https://resend.com/domains" target="_blank" rel="noopener noreferrer" className="text-brand-blue underline font-bold">resend.com/domains</a>
+            {' '}ثم ضع هنا في خانة «المُرسِل»: <code>Athar Academy &lt;noreply@athar.my&gt;</code>. بعدها تصل لكل البُرُد.
+          </div>
+        </div>
       </div>
     </div>
   );

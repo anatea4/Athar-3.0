@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { Sparkles, Calendar, Gift, Heart, ArrowRight } from 'lucide-react';
 import { Language, getLangField } from '@/types';
-import { INITIATIVES_LIST } from '@/data';
+import { useInitiatives } from '@/lib/content-provider';
 
 interface InitiativesSectionProps {
   currentLang: Language;
@@ -10,6 +10,7 @@ interface InitiativesSectionProps {
 }
 
 export default function InitiativesSection({ currentLang, activeSub }: InitiativesSectionProps) {
+  const INITIATIVES_LIST = useInitiatives();
   const [activeTab, setActiveTab] = React.useState('initiatives-list');
 
   useEffect(() => {

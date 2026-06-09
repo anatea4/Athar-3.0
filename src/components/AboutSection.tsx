@@ -1,8 +1,8 @@
 'use client';
 import React, { useEffect } from 'react';
-import { Target, Users, Landmark, BookOpen, Compass, Award } from 'lucide-react';
+import { Target, Users, Landmark, BookOpen, Compass, Award, Quote, UserCircle2 } from 'lucide-react';
 import { Language, getLangField } from '@/types';
-import { ACADEMY_PROFILE, TEAM_MEMBERS, PARTNERS } from '@/data';
+import { useAbout, useTeam, usePartners } from '@/lib/content-provider';
 
 interface AboutSectionProps {
   currentLang: Language;
@@ -10,6 +10,9 @@ interface AboutSectionProps {
 }
 
 export default function AboutSection({ currentLang, activeSub }: AboutSectionProps) {
+  const ACADEMY_PROFILE = useAbout();
+  const TEAM_MEMBERS = useTeam();
+  const PARTNERS = usePartners();
   const [activeTab, setActiveTab] = React.useState('who-we-are');
 
   useEffect(() => {
@@ -19,11 +22,22 @@ export default function AboutSection({ currentLang, activeSub }: AboutSectionPro
   }, [activeSub]);
 
   const tabs = [
-    { id: 'who-we-are', labelAr: 'من نحن', labelEn: 'Who We Are', labelMs: 'Siapa Kami', icon: <Compass className="h-4.5 w-4.5" /> },
+    { id: 'who-we-are', labelAr: 'نبذة عن الأكاديمية', labelEn: 'About the Academy', labelMs: 'Tentang Akademi', icon: <Compass className="h-4.5 w-4.5" /> },
     { id: 'vision-mission', labelAr: 'الرؤية والرسالة', labelEn: 'Vision & Mission', labelMs: 'Visi & Misi', icon: <Target className="h-4.5 w-4.5" /> },
+    { id: 'objectives', labelAr: 'أهداف الأكاديمية', labelEn: 'Our Goals', labelMs: 'Matlamat Kami', icon: <Award className="h-4.5 w-4.5" /> },
     { id: 'team', labelAr: 'فريق العمل', labelEn: 'Our Team', labelMs: 'Barisan Guru/Staf', icon: <Users className="h-4.5 w-4.5" /> },
+    { id: 'director-message', labelAr: 'كلمة مدير الأكاديمية', labelEn: "Director's Message", labelMs: 'Pesanan Pengarah', icon: <Quote className="h-4.5 w-4.5" /> },
+    { id: 'chairman-message', labelAr: 'كلمة رئيس مجلس الإدارة', labelEn: "Chairman's Message", labelMs: 'Pesanan Pengerusi', icon: <Quote className="h-4.5 w-4.5" /> },
+    { id: 'secretary-message', labelAr: 'كلمة الأمين العام', labelEn: "Secretary-General's Message", labelMs: 'Pesanan Setiausaha', icon: <Quote className="h-4.5 w-4.5" /> },
     { id: 'partners', labelAr: 'شركاؤنا', labelEn: 'Our Partners', labelMs: 'Rakan Kerjasama', icon: <Landmark className="h-4.5 w-4.5" /> },
   ];
+
+  // Leadership-message tabs share one layout, driven by the field prefix in ACADEMY_PROFILE
+  const messageTabs: Record<string, { prefix: string; titleAr: string; titleEn: string; titleMs: string }> = {
+    'director-message': { prefix: 'director', titleAr: 'كلمة مدير الأكاديمية', titleEn: "Director's Message", titleMs: 'Pesanan Pengarah' },
+    'chairman-message': { prefix: 'chairman', titleAr: 'كلمة رئيس مجلس الإدارة', titleEn: "Chairman's Message", titleMs: 'Pesanan Pengerusi' },
+    'secretary-message': { prefix: 'secretary', titleAr: 'كلمة الأمين العام', titleEn: "Secretary-General's Message", titleMs: 'Pesanan Setiausaha' },
+  };
 
   const objectives = currentLang === 'ms'
     ? ACADEMY_PROFILE.objectivesMs
@@ -77,37 +91,38 @@ export default function AboutSection({ currentLang, activeSub }: AboutSectionPro
           {/* Sub-view Content Box */}
           <div className="lg:col-span-9 bg-white border border-brand-gold/15 rounded-3xl p-6 sm:p-10 shadow-sm relative min-h-[450px] flex flex-col justify-between">
 
-            {/* WHOW WE ARE */}
+            {/* WHO WE ARE (intro only) */}
             {activeTab === 'who-we-are' && (
-              <div className="space-y-8 animate-in fade-in duration-500 text-right rtl:text-right ltr:text-left">
-                <div className="space-y-4">
-                  <h3 className="text-xl sm:text-2xl font-bold text-brand-blue-dark flex items-center gap-2">
-                    <Compass className="h-6 w-6 text-brand-gold" />
-                    <span>{currentLang === 'ms' ? 'Siapa Kami' : currentLang === 'en' ? 'Who We Are' : 'من نحن؟'}</span>
-                  </h3>
-                  <p className="text-slate-600 leading-relaxed font-sans text-sm sm:text-base">
-                    {getLangField(ACADEMY_PROFILE, 'about', currentLang)}
-                  </p>
-                </div>
+              <div className="space-y-6 animate-in fade-in duration-500 text-right rtl:text-right ltr:text-left">
+                <h3 className="text-xl sm:text-2xl font-bold text-brand-blue-dark flex items-center gap-2">
+                  <Compass className="h-6 w-6 text-brand-gold" />
+                  <span>{currentLang === 'ms' ? 'Tentang Akademi' : currentLang === 'en' ? 'About the Academy' : 'نبذة عن الأكاديمية'}</span>
+                </h3>
+                <p className="text-slate-600 leading-loose font-sans text-sm sm:text-base whitespace-pre-line">
+                  {getLangField(ACADEMY_PROFILE, 'about', currentLang)}
+                </p>
+              </div>
+            )}
 
-                <div className="border-t border-brand-gold/15 pt-6 space-y-5">
-                  <h4 className="text-base font-bold text-brand-blue-dark flex items-center gap-2">
-                    <Award className="h-5 w-5 text-brand-gold" />
-                    <span>{currentLang === 'ms' ? 'Matlamat Strategik Kami' : currentLang === 'en' ? 'Our Strategic Goals' : 'أهدافنا الإستراتيجية'}</span>
-                  </h4>
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {objectives.map((obj, i) => (
-                      <li key={i} className="flex items-start gap-3 bg-brand-gold/5 border border-brand-gold/10 p-4 rounded-2xl">
-                        <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-gold text-brand-blue-dark font-bold text-xs mt-0.5">
-                          {i + 1}
-                        </span>
-                        <span className="text-xs sm:text-sm text-slate-700 font-sans leading-relaxed">
-                          {obj}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+            {/* OBJECTIVES / GOALS (own tab) */}
+            {activeTab === 'objectives' && (
+              <div className="space-y-6 animate-in fade-in duration-500 text-right rtl:text-right ltr:text-left">
+                <h3 className="text-xl sm:text-2xl font-bold text-brand-blue-dark flex items-center gap-2">
+                  <Award className="h-6 w-6 text-brand-gold" />
+                  <span>{currentLang === 'ms' ? 'Matlamat Akademi' : currentLang === 'en' ? 'Our Goals' : 'أهداف الأكاديمية'}</span>
+                </h3>
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {objectives.map((obj, i) => (
+                    <li key={i} className="flex items-start gap-3 bg-brand-gold/5 border border-brand-gold/10 p-4 rounded-2xl">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-gold text-brand-blue-dark font-bold text-xs mt-0.5">
+                        {i + 1}
+                      </span>
+                      <span className="text-xs sm:text-sm text-slate-700 font-sans leading-relaxed">
+                        {obj}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
 
@@ -215,6 +230,47 @@ export default function AboutSection({ currentLang, activeSub }: AboutSectionPro
                 </div>
               </div>
             )}
+
+            {/* LEADERSHIP MESSAGES (Director / Chairman / Secretary-General) */}
+            {messageTabs[activeTab] && (() => {
+              const cfg = messageTabs[activeTab];
+              const title = currentLang === 'ms' ? cfg.titleMs : currentLang === 'en' ? cfg.titleEn : cfg.titleAr;
+              const message = getLangField(ACADEMY_PROFILE as any, `${cfg.prefix}Message`, currentLang) as string;
+              const name = getLangField(ACADEMY_PROFILE as any, `${cfg.prefix}Name`, currentLang) as string;
+              const image = (ACADEMY_PROFILE as any)[`${cfg.prefix}Image`] as string;
+              return (
+                <div className="space-y-6 animate-in fade-in duration-500 text-right rtl:text-right ltr:text-left">
+                  <h3 className="text-xl sm:text-2xl font-bold text-brand-blue-dark flex items-center gap-2">
+                    <Quote className="h-6 w-6 text-brand-gold" />
+                    <span>{title}</span>
+                  </h3>
+
+                  <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start bg-gradient-to-br from-brand-gold/5 to-white border border-brand-gold/15 rounded-3xl p-6 sm:p-8">
+                    {/* Portrait */}
+                    <div className="shrink-0">
+                      {image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={image} alt={name} className="h-28 w-28 sm:h-36 sm:w-36 rounded-2xl object-cover border-2 border-brand-gold/30 shadow-md" />
+                      ) : (
+                        <div className="h-28 w-28 sm:h-36 sm:w-36 rounded-2xl bg-brand-blue-dark/5 border-2 border-brand-gold/20 flex items-center justify-center">
+                          <UserCircle2 className="h-16 w-16 text-brand-gold/40" />
+                        </div>
+                      )}
+                    </div>
+                    {/* Message */}
+                    <div className="flex-1 space-y-3">
+                      <Quote className="h-8 w-8 text-brand-gold/40" />
+                      <p className="text-sm sm:text-base text-slate-600 leading-loose font-sans whitespace-pre-line">
+                        {message}
+                      </p>
+                      <div className="pt-2 border-t border-brand-gold/15">
+                        <span className="text-base font-bold text-brand-blue-dark">{name}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
 
           </div>
 

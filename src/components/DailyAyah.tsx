@@ -2,13 +2,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Sparkles, Play, Pause, RefreshCw, BookOpen, Heart } from 'lucide-react';
 import { QuranVerse, Language, getLangField } from '@/types';
-import { DAILY_AYAHS } from '@/data';
+import { useDailyAyahs } from '@/lib/content-provider';
 
 interface DailyAyahProps {
   currentLang: Language;
 }
 
 export default function DailyAyah({ currentLang }: DailyAyahProps) {
+  const DAILY_AYAHS = useDailyAyahs();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [likes, setLikes] = useState<Record<number, number>>({ 1: 342, 2: 512, 3: 189 });
