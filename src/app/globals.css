@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700&family=El+Messiri:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700&family=Tajawal:wght@300;400;500;700;800;900&family=Outfit:wght@300;400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Tajawal", system-ui, sans-serif;
+  --font-serif: "Playfair Display", "El Messiri", Georgia, serif;
+  --font-arabic: "Tajawal", sans-serif;
+  --font-classical: "El Messiri", serif;
+  --color-brand-blue-dark: #192d4a;
+  --color-brand-blue: #1f3f69;
+  --color-brand-blue-light: #4f70a0;
+  --color-brand-gold-dark: #8C7343;
+  --color-brand-gold: #C09E5B;
+  --color-brand-gold-light: #FCF9F2;
+  --color-brand-sand: #FFFFFF;
+  --color-brand-moss: #123F27;
+}
+
+html { scroll-behavior: smooth; font-family: var(--font-sans); }
+body { background-color: var(--color-brand-sand); color: #1e293b; overflow-x: hidden; }
+
+.islamic-pattern {
+  background-color: transparent;
+  background-image: radial-gradient(rgba(197,168,98,0.12) 1.2px, transparent 0), radial-gradient(rgba(197,168,98,0.08) 1.2px, transparent 0);
+  background-size: 24px 24px;
+  background-position: 0 0, 12px 12px;
+}
+.islamic-pattern-dark {
+  background-color: transparent;
+  background-image: radial-gradient(rgba(197,168,98,0.08) 1.5px, transparent 0), radial-gradient(rgba(197,168,98,0.04) 1.5px, transparent 0);
+  background-size: 32px 32px;
+  background-position: 0 0, 16px 16px;
+}
+.gold-gradient-border { border-image: linear-gradient(to right, #827254, #AD9C75, #827254) 1; }
+.glow-gold:hover { box-shadow: 0 0 15px rgba(173,156,117,0.25); }
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #FAF9F6; }
+::-webkit-scrollbar-thumb { background: #AD9C75; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #827254; }
+[dir="rtl"] { font-family: "Tajawal","Inter",sans-serif; }
+[dir="rtl"] .font-serif,[dir="rtl"] .font-mono,[dir="rtl"] .font-classical { font-family: var(--font-sans) !important; }
+[dir="ltr"] { font-family: "Outfit","Inter",sans-serif; }
+[dir="ltr"] .font-sans { font-family: "Outfit","Inter",sans-serif; }
+[dir="ltr"] .font-serif,[dir="ltr"] .font-classical { font-family: "Cormorant Garamond","Playfair Display",Georgia,serif !important; }
+[dir="ltr"] .font-mono { font-family: "Outfit","Inter",monospace !important; }
+[dir="ltr"] h1,[dir="ltr"] h2,[dir="ltr"] h3,[dir="ltr"] h4,[dir="ltr"] h5,[dir="ltr"] h6 { font-family: "Cormorant Garamond","Playfair Display",Georgia,serif; letter-spacing: -0.01em; }
+[dir="ltr"] p { line-height: 1.6; }
+[dir="ltr"] .tracking-widest,[dir="ltr"] .tracking-wider { font-family: "Outfit","Inter",sans-serif; letter-spacing: 0.08em !important; }
