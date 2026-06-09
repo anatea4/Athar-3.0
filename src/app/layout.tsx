@@ -8,9 +8,9 @@ export const metadata: Metadata = {
     "أكاديمية أثر تهتم بتعليم القرآن الكريم وعلومه واللغة العربية | Athar Academy for Quran, Arabic & Islamic Sciences",
   keywords: "Athar Academy, أكاديمية أثر, Quran, تحفيظ القرآن, Malaysia, Tajweed",
   icons: {
-    icon: [{ url: "/athar-logo.png" }],
-    shortcut: ["/athar-logo.png"],
-    apple: ["/athar-logo.png"],
+    icon: [{ url: "/Athar,white-br-logo.jpg" }],
+    shortcut: ["/Athar,white-br-logo.jpg"],
+    apple: ["/Athar,white-br-logo.jpg"],
   },
 };
 

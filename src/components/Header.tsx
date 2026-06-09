@@ -208,12 +208,12 @@ export default function Header({
         <div className="flex h-20 items-center justify-between gap-4 relative">
 
           {/* Logo Section */}
-          <div className="flex items-center gap-2 shrink-0 cursor-pointer translate-x-4 lg:translate-x-8 xl:translate-x-12" onClick={() => menuClick('home')}>
+          <div className="flex items-center gap-2 shrink-0 cursor-pointer rtl:translate-x-4 rtl:lg:translate-x-8 rtl:xl:translate-x-12 ltr:-translate-x-4 ltr:lg:-translate-x-8 ltr:xl:-translate-x-12" onClick={() => menuClick('home')}>
             <img src={logoSrc} alt="شعار أثر" className="h-12 w-auto object-contain" />
           </div>
 
           {/* Desktop Navigation (Centered) */}
-          <nav className="hidden lg:flex absolute left-1/2 -translate-x-1/2 ml-4 lg:ml-8 xl:ml-12 h-full items-center gap-1 xl:gap-2.5 whitespace-nowrap">
+          <nav className="hidden lg:flex absolute left-1/2 -translate-x-1/2 rtl:ml-4 rtl:lg:ml-8 rtl:xl:ml-12 ltr:-ml-4 ltr:lg:-ml-8 ltr:xl:-ml-12 h-full items-center gap-1 xl:gap-2.5 whitespace-nowrap">
             {navItems.map((item) => {
               const children = (item.children || []).filter((c) => !c._hidden);
               const isActive = isNodeActive(item);
@@ -269,7 +269,7 @@ export default function Header({
             </nav>
 
           {/* Actions Menu */}
-          <div className="hidden lg:flex items-center gap-2 xl:gap-3.5 shrink-0 z-10 -translate-x-4 lg:-translate-x-8 xl:-translate-x-12">
+          <div className="hidden lg:flex items-center gap-2 xl:gap-3.5 shrink-0 z-10 rtl:-translate-x-4 rtl:lg:-translate-x-8 rtl:xl:-translate-x-12 ltr:translate-x-4 ltr:lg:translate-x-8 ltr:xl:translate-x-12">
             {/* Language Switch Dropdown */}
             <div className="relative">
               <button
