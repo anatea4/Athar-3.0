@@ -204,16 +204,16 @@ export default function Header({
 
   return (
     <header className="sticky top-0 z-50 w-full bg-brand-blue-dark/95 text-white shadow-lg backdrop-blur-md border-b border-brand-gold/20 select-none">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-20 items-center justify-between gap-4">
+      <div className="mx-auto w-full max-w-[1600px] px-4 sm:px-8 lg:px-16">
+        <div className="flex h-20 items-center justify-between gap-4 relative">
 
           {/* Logo Section */}
-          <div className="flex lg:flex-1 items-center justify-start gap-2 shrink-0 cursor-pointer" onClick={() => menuClick('home')}>
+          <div className="flex items-center gap-2 shrink-0 cursor-pointer translate-x-4 lg:translate-x-8 xl:translate-x-12" onClick={() => menuClick('home')}>
             <img src={logoSrc} alt="شعار أثر" className="h-12 w-auto object-contain" />
           </div>
 
-          {/* Desktop Navigation (dynamic from dashboard) — centered, language-stable */}
-          <nav className="hidden lg:flex shrink-0 items-center gap-1 xl:gap-2.5 whitespace-nowrap justify-center flex-nowrap">
+          {/* Desktop Navigation (Centered) */}
+          <nav className="hidden lg:flex absolute left-1/2 -translate-x-1/2 ml-4 lg:ml-8 xl:ml-12 h-full items-center gap-1 xl:gap-2.5 whitespace-nowrap">
             {navItems.map((item) => {
               const children = (item.children || []).filter((c) => !c._hidden);
               const isActive = isNodeActive(item);
@@ -222,11 +222,10 @@ export default function Header({
                 return (
                   <div key={item.id} className="relative group py-2">
                     <button
-                      className={`flex items-center gap-1 px-2 xl:px-3 py-1.5 text-[11px] xl:text-xs font-semibold rounded-lg transition-all duration-300 cursor-pointer whitespace-nowrap ${
-                        isActive
+                      className={`flex items-center gap-1 px-2 xl:px-3 py-1.5 text-[11px] xl:text-xs font-semibold rounded-lg transition-all duration-300 cursor-pointer whitespace-nowrap ${isActive
                           ? 'text-brand-gold bg-brand-blue-light/30 border border-brand-gold/40'
                           : 'text-white/80 hover:text-brand-gold hover:bg-brand-blue-light/10'
-                      }`}
+                        }`}
                     >
                       <span>{getLabel(item)}</span>
                       <ChevronDown className="h-3.5 w-3.5 opacity-60 transition-transform duration-300 group-hover:rotate-180" />
@@ -240,11 +239,10 @@ export default function Header({
                           <button
                             key={sub.id}
                             onClick={() => handleNav(sub)}
-                            className={`block w-full text-right rtl:text-right ltr:text-left px-3.5 py-2.5 text-xs rounded-lg transition-colors cursor-pointer ${
-                              isSubActive
+                            className={`block w-full text-right rtl:text-right ltr:text-left px-3.5 py-2.5 text-xs rounded-lg transition-colors cursor-pointer ${isSubActive
                                 ? 'bg-brand-gold text-brand-blue-dark font-bold'
                                 : 'text-white/90 hover:bg-brand-blue-light/20 hover:text-brand-gold'
-                            }`}
+                              }`}
                           >
                             {getLabel(sub)}
                           </button>
@@ -259,11 +257,10 @@ export default function Header({
                 <button
                   key={item.id}
                   onClick={() => handleNav(item)}
-                  className={`px-2 xl:px-3 py-1.5 text-[11px] xl:text-xs font-semibold rounded-lg transition-all duration-300 cursor-pointer whitespace-nowrap ${
-                    isActive
+                  className={`px-2 xl:px-3 py-1.5 text-[11px] xl:text-xs font-semibold rounded-lg transition-all duration-300 cursor-pointer whitespace-nowrap ${isActive
                       ? 'text-brand-gold bg-brand-blue-light/30 border border-brand-gold/40'
                       : 'text-white/80 hover:text-brand-gold hover:bg-brand-blue-light/10'
-                  }`}
+                    }`}
                 >
                   {getLabel(item)}
                 </button>
@@ -272,7 +269,7 @@ export default function Header({
           </nav>
 
           {/* Actions Menu */}
-          <div className="hidden lg:flex lg:flex-1 items-center justify-end gap-2 xl:gap-3.5 shrink-0">
+          <div className="hidden lg:flex items-center gap-2 xl:gap-3.5 shrink-0 z-10 -translate-x-4 lg:-translate-x-8 xl:-translate-x-12">
             {/* Language Switch Dropdown */}
             <div className="relative">
               <button
@@ -301,11 +298,10 @@ export default function Header({
                           onLanguageChange(lang.code);
                           setIsLangDropdownOpen(false);
                         }}
-                        className={`block w-full text-right rtl:text-right ltr:text-left px-3 py-2 text-xs rounded-lg transition-colors cursor-pointer ${
-                          currentLang === lang.code
+                        className={`block w-full text-right rtl:text-right ltr:text-left px-3 py-2 text-xs rounded-lg transition-colors cursor-pointer ${currentLang === lang.code
                             ? 'bg-brand-gold text-brand-blue-dark font-bold'
                             : 'text-white/90 hover:bg-brand-blue-light/20 hover:text-brand-gold'
-                        }`}
+                          }`}
                       >
                         {lang.nativeLabel}
                       </button>
@@ -368,11 +364,10 @@ export default function Header({
                   <div key={item.id} className="space-y-0.5 border-b border-white/5 pb-1">
                     <button
                       onClick={() => toggleMobileSubMenu(item.id)}
-                      className={`flex items-center justify-between w-full px-4 py-3 rounded-lg text-sm transition-all ${
-                        isActive
+                      className={`flex items-center justify-between w-full px-4 py-3 rounded-lg text-sm transition-all ${isActive
                           ? 'text-brand-gold font-bold bg-brand-blue-light/20'
                           : 'text-white/80 hover:bg-brand-blue-light/10'
-                      }`}
+                        }`}
                     >
                       <span>{getLabel(item)}</span>
                       <ChevronDown className={`h-4.5 w-4.5 transition-transform duration-300 ${isExpanded ? 'rotate-180 text-brand-gold' : 'opacity-65'}`} />
@@ -386,11 +381,10 @@ export default function Header({
                             <button
                               key={sub.id}
                               onClick={() => handleNav(sub)}
-                              className={`block w-full text-right rtl:text-right ltr:text-left px-4 py-2.5 text-xs rounded-md transition-colors ${
-                                isSubActive
+                              className={`block w-full text-right rtl:text-right ltr:text-left px-4 py-2.5 text-xs rounded-md transition-colors ${isSubActive
                                   ? 'bg-brand-gold text-brand-blue-dark font-bold'
                                   : 'text-white/80 hover:bg-brand-blue-light/20 hover:text-brand-gold'
-                              }`}
+                                }`}
                             >
                               {getLabel(sub)}
                             </button>
@@ -406,11 +400,10 @@ export default function Header({
                 <button
                   key={item.id}
                   onClick={() => handleNav(item)}
-                  className={`block w-full text-right rtl:text-right ltr:text-left px-4 py-3 rounded-lg text-sm transition-all border-b border-white/5 ${
-                    isActive
+                  className={`block w-full text-right rtl:text-right ltr:text-left px-4 py-3 rounded-lg text-sm transition-all border-b border-white/5 ${isActive
                       ? 'text-brand-gold font-bold bg-brand-blue-light/20'
                       : 'text-white/80 hover:bg-brand-blue-light/10'
-                  }`}
+                    }`}
                 >
                   {getLabel(item)}
                 </button>

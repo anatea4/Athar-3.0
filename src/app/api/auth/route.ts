@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     cookieStore.set(
       'admin_session',
       JSON.stringify({ id: admin.id, email: admin.email, isSuper: admin.is_super }),
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const session = cookieStore.get('admin_session');
   if (!session) return NextResponse.json({ admin: null });
   try {
@@ -51,7 +51,7 @@ export async function GET() {
 }
 
 export async function DELETE() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   cookieStore.delete('admin_session');
   return NextResponse.json({ success: true });
 }

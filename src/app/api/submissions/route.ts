@@ -8,8 +8,8 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-function getSession() {
-  const cookieStore = cookies();
+async function getSession() {
+  const cookieStore = await cookies();
   const session = cookieStore.get('admin_session');
   if (!session) return null;
   try {
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
 
 // GET — admin: list submissions (optional ?type=&unread=1)
 export async function GET(req: NextRequest) {
-  const session = getSession();
+  const session = await getSession();
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const type = req.nextUrl.searchParams.get('type');
@@ -73,7 +73,7 @@ export async function GET(req: NextRequest) {
 
 // PATCH — admin: mark read/unread
 export async function PATCH(req: NextRequest) {
-  const session = getSession();
+  const session = await getSession();
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { id, is_read } = await req.json();
@@ -86,7 +86,7 @@ export async function PATCH(req: NextRequest) {
 
 // DELETE — admin: remove a submission
 export async function DELETE(req: NextRequest) {
-  const session = getSession();
+  const session = await getSession();
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { id } = await req.json();
