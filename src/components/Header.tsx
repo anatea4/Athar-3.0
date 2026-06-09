@@ -208,12 +208,12 @@ export default function Header({
         <div className="flex h-20 items-center justify-between gap-4">
 
           {/* Logo Section */}
-          <div className="flex items-center gap-2 shrink-0 cursor-pointer" onClick={() => menuClick('home')}>
+          <div className="flex lg:flex-1 items-center justify-start gap-2 shrink-0 cursor-pointer" onClick={() => menuClick('home')}>
             <img src={logoSrc} alt="شعار أثر" className="h-12 w-auto object-contain" />
           </div>
 
           {/* Desktop Navigation (dynamic from dashboard) — centered, language-stable */}
-          <nav className="hidden lg:flex flex-1 items-center gap-1 xl:gap-2.5 whitespace-nowrap justify-center flex-nowrap">
+          <nav className="hidden lg:flex shrink-0 items-center gap-1 xl:gap-2.5 whitespace-nowrap justify-center flex-nowrap">
             {navItems.map((item) => {
               const children = (item.children || []).filter((c) => !c._hidden);
               const isActive = isNodeActive(item);
@@ -272,7 +272,7 @@ export default function Header({
           </nav>
 
           {/* Actions Menu */}
-          <div className="hidden lg:flex items-center gap-2 xl:gap-3.5 shrink-0">
+          <div className="hidden lg:flex lg:flex-1 items-center justify-end gap-2 xl:gap-3.5 shrink-0">
             {/* Language Switch Dropdown */}
             <div className="relative">
               <button
