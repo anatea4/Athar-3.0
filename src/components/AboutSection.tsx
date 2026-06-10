@@ -9,6 +9,19 @@ interface AboutSectionProps {
   activeSub?: string;
 }
 
+// A logo can be either a short emoji/initials (text) or an uploaded image URL.
+// Treat it as an image when it looks like a URL / path / data-URI.
+function isImageSrc(v?: string): boolean {
+  if (!v) return false;
+  const s = v.trim();
+  return (
+    /^(https?:)?\/\//i.test(s) ||
+    /^(data:image|blob:)/i.test(s) ||
+    s.startsWith('/') ||
+    /\.(png|jpe?g|gif|webp|svg|avif)(\?.*)?$/i.test(s)
+  );
+}
+
 export default function AboutSection({ currentLang, activeSub }: AboutSectionProps) {
   const ACADEMY_PROFILE = useAbout();
   const TEAM_MEMBERS = useTeam();
@@ -214,9 +227,21 @@ export default function AboutSection({ currentLang, activeSub }: AboutSectionPro
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                   {PARTNERS.map((partner, i) => (
                     <div key={i} className="p-5 bg-white border-2 border-brand-gold/10 hover:border-brand-gold/40 rounded-2xl shadow-sm transition-all duration-300 flex items-start gap-4">
-                      <div className="p-3.5 bg-brand-gold/10 text-brand-gold-dark rounded-xl font-bold text-xl">
-                        {partner.logo}
-                      </div>
+                      {isImageSrc(partner.logo) ? (
+                        <div className="h-14 w-14 shrink-0 rounded-xl border border-brand-gold/20 bg-white overflow-hidden flex items-center justify-center shadow-sm">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={partner.logo}
+                            alt={getLangField(partner, 'name', currentLang) as string}
+                            className="h-full w-full object-contain"
+                            referrerPolicy="no-referrer"
+                          />
+                        </div>
+                      ) : (
+                        <div className="p-3.5 bg-brand-gold/10 text-brand-gold-dark rounded-xl font-bold text-xl shrink-0">
+                          {partner.logo}
+                        </div>
+                      )}
                       <div className="space-y-1 text-right rtl:text-right ltr:text-left">
                         <h4 className="text-sm sm:text-base font-bold text-brand-blue-dark">
                           {getLangField(partner, 'name', currentLang)}
