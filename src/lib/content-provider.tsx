@@ -7,7 +7,7 @@ import {
   INITIATIVES_LIST, VOLUNTEER_OPPORTUNITIES, STUDENT_PROFILES,
 } from '@/data';
 import {
-  HERO_DEFAULTS, FOOTER_DEFAULTS, HEADER_DEFAULTS, AI_COMPANION_DEFAULTS, NAV_DEFAULTS, FORMS_DEFAULTS, CALENDAR_DEFAULTS
+  HERO_DEFAULTS, FOOTER_DEFAULTS, HEADER_DEFAULTS, AI_COMPANION_DEFAULTS, NAV_DEFAULTS, FORMS_DEFAULTS, CALENDAR_DEFAULTS, EVENTS_DEFAULTS
 } from '@/data/defaults';
 
 export type Content = {
@@ -34,6 +34,7 @@ export type Content = {
   navigation: typeof NAV_DEFAULTS;
   forms: typeof FORMS_DEFAULTS;
   calendar: typeof CALENDAR_DEFAULTS;
+  events: typeof EVENTS_DEFAULTS;
 };
 
 const DEFAULTS: Content = {
@@ -60,6 +61,7 @@ const DEFAULTS: Content = {
   navigation: NAV_DEFAULTS,
   forms: FORMS_DEFAULTS,
   calendar: CALENDAR_DEFAULTS,
+  events: EVENTS_DEFAULTS,
 };
 
 const ContentContext = createContext<Content>(DEFAULTS);
@@ -152,5 +154,6 @@ export const useStudentProfiles = () => useContent().student_profiles;
 export const useNavigation = () => useContent().navigation;
 export const useForms = () => useContent().forms;
 export const useCalendar = () => useContent().calendar;
+export const useEvents = () => useContent().events;
 
 export { DEFAULTS as DEFAULT_CONTENT };

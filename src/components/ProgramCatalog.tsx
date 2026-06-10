@@ -18,9 +18,7 @@ export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram
   const ACADEMY_STATS = useStats();
   const PROGRAMS = usePrograms();
   const CONTACT_DETAILS = useContact();
-  const [activeTab, setActiveTab] = useState('quran-circles');
-
-
+  const [activeTab, setActiveTab] = useState(activeSub || 'quran-circles');
 
   useEffect(() => {
     if (activeSub) setActiveTab(activeSub);

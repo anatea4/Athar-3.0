@@ -148,6 +148,28 @@ export const CALENDAR_DEFAULTS = {
   ],
 };
 
+// Current / upcoming events (editable from the dashboard → "الفعاليات الحالية")
+export const EVENTS_DEFAULTS = [
+  {
+    id: 'event-1',
+    image: 'https://images.unsplash.com/photo-1590076215667-87373f82cb38?auto=format&fit=crop&q=80&w=600',
+    badgeAr: 'ملتقى إيماني', badgeEn: 'Spiritual Meeting', badgeMs: 'Pertemuan Ruhiyyah',
+    titleAr: 'الملتقى السنوي للمعتكف الرمضاني', titleEn: 'Annual Ramadan Quran Retreat', titleMs: 'Halaqah Intensif Rehlah Ramadan',
+    descAr: 'ملتقى مبارك يعقد في العشر الأواخر من الشهر الفضيل للمراجعة المكثفة لطلبة الحلقات والمجازين.',
+    descEn: 'Gathering students and sheikhs in the last ten days of Ramadan to review, contemplate, and pray together.',
+    descMs: 'Menghimpunkan pelajar dan sheikh pada sepuluh malam terakhir Ramadan untuk mengulang, bertadabbur, dan solat bersama.',
+  },
+  {
+    id: 'event-2',
+    image: 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&q=80&w=600',
+    badgeAr: 'حفل تخريج', badgeEn: 'Graduation', badgeMs: 'Graduasi',
+    titleAr: 'حفل تكريم حفاظ السند المتصل', titleEn: 'Connected Sanad Graduates Ceremony', titleMs: 'Majlis Graduasi Penerima Sanad',
+    descAr: 'احتفال مهيب لتكريم الطلبة الذين أتموا قراءة القرآن غيباً بالإسناد المتصل إلى رسول الله ﷺ.',
+    descEn: 'Honoring students who successfully completed and recited the entire Quran in different narrations.',
+    descMs: 'Merai dan memberi penghargaan kepada pelajar yang telah berjaya menghafal dan memperdengarkan keseluruhan Al-Quran dengan sanad bersambung.',
+  },
+];
+
 export const HERO_DEFAULTS = {
   // Top badge
   badgeAr: 'أكاديمية أثر الرسمية',
@@ -360,10 +382,19 @@ export const NAV_DEFAULTS = {
     {
       id: 'media', labelAr: 'المركز الإعلامي', labelEn: 'Media Center', labelMs: 'Pusat Media', kind: 'group',
       children: [
-        { id: 'm-news', labelAr: 'الأخبار والإعلانات', labelEn: 'News & Announcements', labelMs: 'Berita', kind: 'section', section: 'media', sub: 'news' },
-        { id: 'm-media', labelAr: 'الوسائط الإعلامية', labelEn: 'Media Gallery', labelMs: 'Galeri Media', kind: 'section', section: 'media', sub: 'gallery' },
+        { id: 'm-news', labelAr: 'الأخبار والإعلانات', labelEn: 'News & Announcements', labelMs: 'Berita & Pengumuman', kind: 'section', section: 'media', sub: 'news' },
+        { id: 'm-articles', labelAr: 'المقالات التربوية', labelEn: 'Educational Articles', labelMs: 'Artikel Pendidikan', kind: 'section', section: 'media', sub: 'articles' },
         { id: 'm-library', labelAr: 'المكتبة الرقمية', labelEn: 'Digital Library', labelMs: 'Perpustakaan Digital', kind: 'section', section: 'media', sub: 'digital-library' },
-        { id: 'm-calendar', labelAr: 'التقويم السنوي', labelEn: 'Annual Calendar', labelMs: 'Kalendar Tahunan', kind: 'section', section: 'media', sub: 'annual-calendar' },
+        { id: 'm-gallery', labelAr: 'الصور والفيديو', labelEn: 'Photo & Video Gallery', labelMs: 'Galeri Foto & Video', kind: 'section', section: 'media', sub: 'gallery' },
+        {
+          id: 'm-calendar', labelAr: 'التقويم السنوي', labelEn: 'Annual Calendar', labelMs: 'Kalendar Tahunan', kind: 'group',
+          section: 'media', sub: 'annual-calendar',
+          children: [
+            { id: 'm-cal-calendar', labelAr: 'التقويم السنوي', labelEn: 'Annual Calendar', labelMs: 'Kalendar Tahunan', kind: 'section', section: 'media', sub: 'annual-calendar' },
+            { id: 'm-cal-initiatives', labelAr: 'المبادرات والمساعدات', labelEn: 'Initiatives & Grants', labelMs: 'Inisiatif & Bantuan', kind: 'section', section: 'media', sub: 'initiatives-list' },
+            { id: 'm-cal-events', labelAr: 'الفعاليات الحالية', labelEn: 'Active Events', labelMs: 'Acara Aktif', kind: 'section', section: 'media', sub: 'events-list' },
+          ],
+        },
       ],
     },
     {

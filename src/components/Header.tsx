@@ -1,8 +1,9 @@
 'use client';
 import React, { useState } from 'react';
-import { Languages, Menu, X, LogIn, ChevronDown } from 'lucide-react';
+import { Languages, Menu, X, LogIn, ChevronDown, ChevronLeft } from 'lucide-react';
 import { Language } from '@/types';
 import { useNavigation, useForms } from '@/lib/content-provider';
+import { viewToPath } from '@/lib/sections';
 const logoSrc = '/athar-logo-white.png';
 
 interface NavNode {
@@ -177,14 +178,29 @@ export default function Header({
     setExpandedMobileItem(null);
   };
 
+  // The semantic href for a nav node (real per-section URL, e.g. /about, /programs).
+  const nodeHref = (node: NavNode): string => {
+    if (node.kind === 'section' || (node.kind === 'group' && node.section)) {
+      return viewToPath(node.section || node.id, node.sub);
+    }
+    if (node.kind === 'page' && node.slug) return `/${node.slug}`;
+    if (node.kind === 'external' && node.url) return node.url;
+    return '#';
+  };
+
   // Handle a click on any nav node based on its kind
-  const handleNav = (node: NavNode) => {
-    if (node.kind === 'section') {
+  const handleNav = (node: NavNode, e?: React.MouseEvent) => {
+    if (node.kind === 'external' && node.url) {
+      // let real external links open normally in a new tab
+      setIsMobileMenuOpen(false);
+      setExpandedMobileItem(null);
+      return;
+    }
+    e?.preventDefault();
+    if (node.kind === 'section' || (node.kind === 'group' && node.section)) {
       menuClick(node.section || 'home', node.sub || '');
     } else if (node.kind === 'page' && node.slug) {
       window.location.href = `/${node.slug}`;
-    } else if (node.kind === 'external' && node.url) {
-      window.open(node.url, '_blank', 'noopener,noreferrer');
     }
     setIsMobileMenuOpen(false);
     setExpandedMobileItem(null);
@@ -235,17 +251,59 @@ export default function Header({
                     <div className="absolute top-full right-0 rtl:left-0 rtl:right-auto mt-1 w-60 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform scale-95 origin-top-right group-hover:scale-100 z-50 bg-[#162944] border border-brand-gold/20 shadow-2xl rounded-xl p-1.5 backdrop-blur-md">
                       {children.map((sub) => {
                         const isSubActive = isNodeActive(sub);
+                        const subChildren = (sub.children || []).filter((c) => !c._hidden);
+
+                        // Nested sub-group → opens a side fly-out menu
+                        if (sub.kind === 'group') {
+                          return (
+                            <div key={sub.id} className="relative group/sub">
+                              <a
+                                href={nodeHref(sub)}
+                                onClick={(e) => handleNav(sub, e)}
+                                className={`flex items-center justify-between w-full text-right rtl:text-right ltr:text-left px-3.5 py-2.5 text-xs rounded-lg transition-colors cursor-pointer ${isSubActive
+                                    ? 'bg-brand-gold/15 text-brand-gold font-bold'
+                                    : 'text-white/90 hover:bg-brand-blue-light/20 hover:text-brand-gold'
+                                  }`}
+                              >
+                                <span>{getLabel(sub)}</span>
+                                <ChevronLeft className="h-3.5 w-3.5 opacity-60 ltr:rotate-180" />
+                              </a>
+                              <div className="absolute top-0 rtl:right-full ltr:left-full rtl:mr-1.5 ltr:ml-1.5 w-56 opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all duration-200 z-50 bg-[#162944] border border-brand-gold/20 shadow-2xl rounded-xl p-1.5 backdrop-blur-md">
+                                {subChildren.map((leaf) => {
+                                  const isLeafActive = isNodeActive(leaf);
+                                  return (
+                                    <a
+                                      key={leaf.id}
+                                      href={nodeHref(leaf)}
+                                      {...(leaf.kind === 'external' ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                                      onClick={(e) => handleNav(leaf, e)}
+                                      className={`block w-full text-right rtl:text-right ltr:text-left px-3.5 py-2.5 text-xs rounded-lg transition-colors cursor-pointer ${isLeafActive
+                                          ? 'bg-brand-gold text-brand-blue-dark font-bold'
+                                          : 'text-white/90 hover:bg-brand-blue-light/20 hover:text-brand-gold'
+                                        }`}
+                                    >
+                                      {getLabel(leaf)}
+                                    </a>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          );
+                        }
+
                         return (
-                          <button
+                          <a
                             key={sub.id}
-                            onClick={() => handleNav(sub)}
+                            href={nodeHref(sub)}
+                            {...(sub.kind === 'external' ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                            onClick={(e) => handleNav(sub, e)}
                             className={`block w-full text-right rtl:text-right ltr:text-left px-3.5 py-2.5 text-xs rounded-lg transition-colors cursor-pointer ${isSubActive
                                 ? 'bg-brand-gold text-brand-blue-dark font-bold'
                                 : 'text-white/90 hover:bg-brand-blue-light/20 hover:text-brand-gold'
                               }`}
                           >
                             {getLabel(sub)}
-                          </button>
+                          </a>
                         );
                       })}
                     </div>
@@ -254,16 +312,18 @@ export default function Header({
               }
 
               return (
-                <button
+                <a
                   key={item.id}
-                  onClick={() => handleNav(item)}
+                  href={nodeHref(item)}
+                  {...(item.kind === 'external' ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  onClick={(e) => handleNav(item, e)}
                   className={`px-2 xl:px-3 py-1.5 text-[11px] xl:text-xs font-semibold rounded-lg transition-all duration-300 cursor-pointer whitespace-nowrap ${isActive
                       ? 'text-brand-gold bg-brand-blue-light/30 border border-brand-gold/40'
                       : 'text-white/80 hover:text-brand-gold hover:bg-brand-blue-light/10'
                     }`}
                 >
                   {getLabel(item)}
-                </button>
+                </a>
               );
             })}
             </nav>
@@ -377,17 +437,54 @@ export default function Header({
                       <div className="bg-brand-blue-dark/50 border border-brand-gold/10 rounded-lg py-1.5 px-2.5 mt-1 space-y-0.5 animate-in slide-in-from-top-2 duration-200">
                         {children.map((sub) => {
                           const isSubActive = isNodeActive(sub);
+                          const subChildren = (sub.children || []).filter((c) => !c._hidden);
+
+                          // Nested sub-group → inline sub-header + indented items
+                          if (sub.kind === 'group') {
+                            return (
+                              <div key={sub.id} className="mt-1 pt-1 border-t border-white/5">
+                                <a
+                                  href={nodeHref(sub)}
+                                  onClick={(e) => handleNav(sub, e)}
+                                  className="flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold text-brand-gold/90 hover:text-brand-gold"
+                                >
+                                  <ChevronLeft className="h-3.5 w-3.5 ltr:rotate-180 opacity-70" />
+                                  {getLabel(sub)}
+                                </a>
+                                {subChildren.map((leaf) => {
+                                  const isLeafActive = isNodeActive(leaf);
+                                  return (
+                                    <a
+                                      key={leaf.id}
+                                      href={nodeHref(leaf)}
+                                      {...(leaf.kind === 'external' ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                                      onClick={(e) => handleNav(leaf, e)}
+                                      className={`block w-full text-right rtl:text-right ltr:text-left px-6 py-2.5 text-xs rounded-md transition-colors ${isLeafActive
+                                          ? 'bg-brand-gold text-brand-blue-dark font-bold'
+                                          : 'text-white/80 hover:bg-brand-blue-light/20 hover:text-brand-gold'
+                                        }`}
+                                    >
+                                      {getLabel(leaf)}
+                                    </a>
+                                  );
+                                })}
+                              </div>
+                            );
+                          }
+
                           return (
-                            <button
+                            <a
                               key={sub.id}
-                              onClick={() => handleNav(sub)}
+                              href={nodeHref(sub)}
+                              {...(sub.kind === 'external' ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                              onClick={(e) => handleNav(sub, e)}
                               className={`block w-full text-right rtl:text-right ltr:text-left px-4 py-2.5 text-xs rounded-md transition-colors ${isSubActive
                                   ? 'bg-brand-gold text-brand-blue-dark font-bold'
                                   : 'text-white/80 hover:bg-brand-blue-light/20 hover:text-brand-gold'
                                 }`}
                             >
                               {getLabel(sub)}
-                            </button>
+                            </a>
                           );
                         })}
                       </div>
@@ -397,16 +494,18 @@ export default function Header({
               }
 
               return (
-                <button
+                <a
                   key={item.id}
-                  onClick={() => handleNav(item)}
+                  href={nodeHref(item)}
+                  {...(item.kind === 'external' ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  onClick={(e) => handleNav(item, e)}
                   className={`block w-full text-right rtl:text-right ltr:text-left px-4 py-3 rounded-lg text-sm transition-all border-b border-white/5 ${isActive
                       ? 'text-brand-gold font-bold bg-brand-blue-light/20'
                       : 'text-white/80 hover:bg-brand-blue-light/10'
                     }`}
                 >
                   {getLabel(item)}
-                </button>
+                </a>
               );
             })}
           </div>
