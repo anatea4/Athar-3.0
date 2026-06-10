@@ -7,7 +7,7 @@ import {
   RefreshCw, CheckCircle, AlertCircle, Loader2,
   FileText, Mail, Users, BookOpen, Image as ImageIcon,
   HelpCircle, Phone, CreditCard, Newspaper, Heart,
-  Star, Building2, MessageSquare, Code, LayoutList, FilePlus, Inbox, ChevronDown
+  Star, Building2, MessageSquare, Code, LayoutList, FilePlus, Inbox, ChevronDown, Sparkles
 } from 'lucide-react';
 import SmartEditor from '@/components/admin/SmartEditor';
 import PreviewPane from '@/components/admin/PreviewPane';
@@ -28,6 +28,7 @@ type Tab =
   | 'partners'
   | 'faqs'
   | 'initiatives'
+  | 'events'
   | 'volunteers'
   | 'media_news'
   | 'media_articles'
@@ -69,6 +70,7 @@ const SECTIONS: { id: Tab; label: string; icon: React.ReactNode; group: string }
   { id: 'partners', label: 'الشركاء', icon: <Heart className="h-4 w-4" />, group: 'content' },
   { id: 'faqs', label: 'الأسئلة الشائعة', icon: <HelpCircle className="h-4 w-4" />, group: 'content' },
   { id: 'initiatives', label: 'المبادرات', icon: <Star className="h-4 w-4" />, group: 'content' },
+  { id: 'events', label: 'الفعاليات الحالية', icon: <Sparkles className="h-4 w-4" />, group: 'content' },
   { id: 'volunteers', label: 'التطوع', icon: <Heart className="h-4 w-4" />, group: 'content' },
   { id: 'media_news', label: 'الأخبار', icon: <Newspaper className="h-4 w-4" />, group: 'content' },
   { id: 'media_articles', label: 'المقالات', icon: <FileText className="h-4 w-4" />, group: 'content' },
