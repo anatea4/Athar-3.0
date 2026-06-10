@@ -177,14 +177,27 @@ export default function Header({
     setExpandedMobileItem(null);
   };
 
+  // The semantic href for a nav node (used on <a> tags for SEO / open-in-new-tab).
+  const nodeHref = (node: NavNode): string => {
+    if (node.kind === 'section') return `#${node.section || node.id}`;
+    if (node.kind === 'page' && node.slug) return `/${node.slug}`;
+    if (node.kind === 'external' && node.url) return node.url;
+    return '#';
+  };
+
   // Handle a click on any nav node based on its kind
-  const handleNav = (node: NavNode) => {
+  const handleNav = (node: NavNode, e?: React.MouseEvent) => {
+    if (node.kind === 'external' && node.url) {
+      // let real external links open normally in a new tab
+      setIsMobileMenuOpen(false);
+      setExpandedMobileItem(null);
+      return;
+    }
+    e?.preventDefault();
     if (node.kind === 'section') {
       menuClick(node.section || 'home', node.sub || '');
     } else if (node.kind === 'page' && node.slug) {
       window.location.href = `/${node.slug}`;
-    } else if (node.kind === 'external' && node.url) {
-      window.open(node.url, '_blank', 'noopener,noreferrer');
     }
     setIsMobileMenuOpen(false);
     setExpandedMobileItem(null);
@@ -236,16 +249,18 @@ export default function Header({
                       {children.map((sub) => {
                         const isSubActive = isNodeActive(sub);
                         return (
-                          <button
+                          <a
                             key={sub.id}
-                            onClick={() => handleNav(sub)}
+                            href={nodeHref(sub)}
+                            {...(sub.kind === 'external' ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                            onClick={(e) => handleNav(sub, e)}
                             className={`block w-full text-right rtl:text-right ltr:text-left px-3.5 py-2.5 text-xs rounded-lg transition-colors cursor-pointer ${isSubActive
                                 ? 'bg-brand-gold text-brand-blue-dark font-bold'
                                 : 'text-white/90 hover:bg-brand-blue-light/20 hover:text-brand-gold'
                               }`}
                           >
                             {getLabel(sub)}
-                          </button>
+                          </a>
                         );
                       })}
                     </div>
@@ -254,16 +269,18 @@ export default function Header({
               }
 
               return (
-                <button
+                <a
                   key={item.id}
-                  onClick={() => handleNav(item)}
+                  href={nodeHref(item)}
+                  {...(item.kind === 'external' ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  onClick={(e) => handleNav(item, e)}
                   className={`px-2 xl:px-3 py-1.5 text-[11px] xl:text-xs font-semibold rounded-lg transition-all duration-300 cursor-pointer whitespace-nowrap ${isActive
                       ? 'text-brand-gold bg-brand-blue-light/30 border border-brand-gold/40'
                       : 'text-white/80 hover:text-brand-gold hover:bg-brand-blue-light/10'
                     }`}
                 >
                   {getLabel(item)}
-                </button>
+                </a>
               );
             })}
             </nav>
@@ -378,16 +395,18 @@ export default function Header({
                         {children.map((sub) => {
                           const isSubActive = isNodeActive(sub);
                           return (
-                            <button
+                            <a
                               key={sub.id}
-                              onClick={() => handleNav(sub)}
+                              href={nodeHref(sub)}
+                              {...(sub.kind === 'external' ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                              onClick={(e) => handleNav(sub, e)}
                               className={`block w-full text-right rtl:text-right ltr:text-left px-4 py-2.5 text-xs rounded-md transition-colors ${isSubActive
                                   ? 'bg-brand-gold text-brand-blue-dark font-bold'
                                   : 'text-white/80 hover:bg-brand-blue-light/20 hover:text-brand-gold'
                                 }`}
                             >
                               {getLabel(sub)}
-                            </button>
+                            </a>
                           );
                         })}
                       </div>
@@ -397,16 +416,18 @@ export default function Header({
               }
 
               return (
-                <button
+                <a
                   key={item.id}
-                  onClick={() => handleNav(item)}
+                  href={nodeHref(item)}
+                  {...(item.kind === 'external' ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  onClick={(e) => handleNav(item, e)}
                   className={`block w-full text-right rtl:text-right ltr:text-left px-4 py-3 rounded-lg text-sm transition-all border-b border-white/5 ${isActive
                       ? 'text-brand-gold font-bold bg-brand-blue-light/20'
                       : 'text-white/80 hover:bg-brand-blue-light/10'
                     }`}
                 >
                   {getLabel(item)}
-                </button>
+                </a>
               );
             })}
           </div>

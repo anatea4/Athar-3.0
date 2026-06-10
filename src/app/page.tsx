@@ -19,6 +19,7 @@ import FloatingChatbot from '@/components/FloatingChatbot';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import FormsSection from '@/components/FormsSection';
 import Preloader from '@/components/Preloader';
+import { scrollToSection } from '@/lib/scroll';
 import { Language } from '@/types';
 import { Sparkles } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -38,6 +39,12 @@ export default function App() {
     document.documentElement.dir = dir;
     document.documentElement.lang = currentLang;
   }, [currentLang]);
+
+  // Safety net: never let the preloader hang — dismiss it after 3s no matter what.
+  useEffect(() => {
+    const t = setTimeout(() => setIsLoading(false), 3000);
+    return () => clearTimeout(t);
+  }, []);
 
   // Read ?s=section&sub=subsection from the URL (used when arriving from a custom page's navbar)
   useEffect(() => {
@@ -86,7 +93,8 @@ export default function App() {
   const handleSectionChange = (sectionId: string, subSectionId: string = '') => {
     setActiveSection(sectionId);
     setActiveSubSection(subSectionId);
-    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+    // Smooth-scroll to the freshly-mounted section (after the enter/exit transition).
+    setTimeout(() => scrollToSection(sectionId), 360);
   };
 
   const handleExplorePrograms = () => handleSectionChange('programs', 'quran-circles');
@@ -147,6 +155,7 @@ export default function App() {
           <AnimatePresence mode="wait">
             <motion.div
               key={`${activeSection}-${activeSubSection}`}
+              id={activeSection}
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}

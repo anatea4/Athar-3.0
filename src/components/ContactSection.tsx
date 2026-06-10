@@ -15,6 +15,10 @@ export default function ContactSection({ currentLang }: ContactSectionProps) {
   const [phone, setPhone] = useState('');
   const [msg, setMsg] = useState('');
   const [sent, setSent] = useState(false);
+  // Anti-scraping: phone & email stay hidden until the visitor taps to reveal them.
+  const [revealContact, setRevealContact] = useState(false);
+  const revealHint =
+    currentLang === 'ms' ? 'Ketik untuk papar' : currentLang === 'en' ? 'Tap to reveal' : 'اضغط للإظهار';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,8 +61,9 @@ export default function ContactSection({ currentLang }: ContactSectionProps) {
 
               <div className="space-y-4 font-sans text-xs sm:text-sm text-slate-600">
                 <a
-                  href={`tel:${CONTACT_DETAILS.phone}`}
-                  className="flex items-center gap-4 bg-brand-gold/5 border border-brand-gold/10 hover:border-brand-gold/45 p-4 rounded-xl transition-colors"
+                  href={revealContact ? `tel:${CONTACT_DETAILS.phone}` : '#'}
+                  onClick={revealContact ? undefined : (e) => { e.preventDefault(); setRevealContact(true); }}
+                  className="flex items-center gap-4 bg-brand-gold/5 border border-brand-gold/10 hover:border-brand-gold/45 p-4 rounded-xl transition-colors cursor-pointer"
                 >
                   <div className="p-2.5 bg-brand-gold/10 text-brand-gold-dark rounded-lg">
                     <Phone className="h-5 w-5" />
@@ -67,13 +72,16 @@ export default function ContactSection({ currentLang }: ContactSectionProps) {
                     <span className="text-[10px] text-slate-400 block font-bold uppercase">
                       {currentLang === 'ms' ? 'No. Telefon / WhatsApp' : currentLang === 'en' ? 'Phone / WhatsApp' : 'رقم الهاتف والواتساب'}
                     </span>
-                    <span className="font-bold text-brand-blue-dark font-sans text-sm sm:text-base">{CONTACT_DETAILS.phone}</span>
+                    <span className="font-bold text-brand-blue-dark font-sans text-sm sm:text-base" dir="ltr">
+                      {revealContact ? CONTACT_DETAILS.phone : `•••• •••• •• — ${revealHint}`}
+                    </span>
                   </div>
                 </a>
 
                 <a
-                  href={`mailto:${CONTACT_DETAILS.email}`}
-                  className="flex items-center gap-4 bg-brand-gold/5 border border-brand-gold/10 hover:border-brand-gold/45 p-4 rounded-xl transition-colors"
+                  href={revealContact ? `mailto:${CONTACT_DETAILS.email}` : '#'}
+                  onClick={revealContact ? undefined : (e) => { e.preventDefault(); setRevealContact(true); }}
+                  className="flex items-center gap-4 bg-brand-gold/5 border border-brand-gold/10 hover:border-brand-gold/45 p-4 rounded-xl transition-colors cursor-pointer"
                 >
                   <div className="p-2.5 bg-brand-gold/10 text-brand-gold-dark rounded-lg">
                     <Mail className="h-5 w-5" />
@@ -82,7 +90,9 @@ export default function ContactSection({ currentLang }: ContactSectionProps) {
                     <span className="text-[10px] text-slate-400 block font-bold uppercase">
                       {currentLang === 'ms' ? 'Alamat E-mel' : currentLang === 'en' ? 'Email Address' : 'البريد الإلكتروني'}
                     </span>
-                    <span className="font-bold text-brand-blue-dark font-sans">{CONTACT_DETAILS.email}</span>
+                    <span className="font-bold text-brand-blue-dark font-sans" dir="ltr">
+                      {revealContact ? CONTACT_DETAILS.email : `••••••••@•••• — ${revealHint}`}
+                    </span>
                   </div>
                 </a>
 
