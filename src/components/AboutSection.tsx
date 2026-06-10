@@ -26,7 +26,7 @@ export default function AboutSection({ currentLang, activeSub }: AboutSectionPro
   const ACADEMY_PROFILE = useAbout();
   const TEAM_MEMBERS = useTeam();
   const PARTNERS = usePartners();
-  const [activeTab, setActiveTab] = React.useState('who-we-are');
+  const [activeTab, setActiveTab] = React.useState(activeSub || 'who-we-are');
 
   useEffect(() => {
     if (activeSub) {

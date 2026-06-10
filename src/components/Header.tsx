@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Languages, Menu, X, LogIn, ChevronDown } from 'lucide-react';
 import { Language } from '@/types';
 import { useNavigation, useForms } from '@/lib/content-provider';
+import { viewToPath } from '@/lib/sections';
 const logoSrc = '/athar-logo-white.png';
 
 interface NavNode {
@@ -177,9 +178,11 @@ export default function Header({
     setExpandedMobileItem(null);
   };
 
-  // The semantic href for a nav node (used on <a> tags for SEO / open-in-new-tab).
+  // The semantic href for a nav node (real per-section URL, e.g. /about, /programs).
   const nodeHref = (node: NavNode): string => {
-    if (node.kind === 'section') return `#${node.section || node.id}`;
+    if (node.kind === 'section') {
+      return viewToPath(node.section || node.id, node.sub);
+    }
     if (node.kind === 'page' && node.slug) return `/${node.slug}`;
     if (node.kind === 'external' && node.url) return node.url;
     return '#';

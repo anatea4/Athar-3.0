@@ -26,7 +26,7 @@ export default function MediaSection({ currentLang, activeSub }: MediaSectionPro
   const DIGITAL_LIBRARY = useDigitalLibrary();
   const GALLERY_ITEMS = useGallery();
   const CALENDAR = useCalendar();
-  const [activeTab, setActiveTab] = React.useState('news');
+  const [activeTab, setActiveTab] = React.useState(activeSub || 'news');
   const [galleryIndex, setGalleryIndex] = React.useState(0);
 
   useEffect(() => {
