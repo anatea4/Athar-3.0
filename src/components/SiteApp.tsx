@@ -214,8 +214,8 @@ export default function SiteApp({ initialSection = 'home', initialSub = '' }: Si
               )}
               {activeSection === 'media' && (
                 <>
-                  {activeSubSection === 'annual-calendar' ? (
-                    <InitiativesSection currentLang={currentLang} activeSub="annual-calendar" />
+                  {['annual-calendar', 'initiatives-list', 'events-list'].includes(activeSubSection) ? (
+                    <InitiativesSection currentLang={currentLang} activeSub={activeSubSection} />
                   ) : (
                     <MediaSection currentLang={currentLang} activeSub={activeSubSection || 'news'} />
                   )}

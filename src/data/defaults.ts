@@ -382,10 +382,19 @@ export const NAV_DEFAULTS = {
     {
       id: 'media', labelAr: 'المركز الإعلامي', labelEn: 'Media Center', labelMs: 'Pusat Media', kind: 'group',
       children: [
-        { id: 'm-news', labelAr: 'الأخبار والإعلانات', labelEn: 'News & Announcements', labelMs: 'Berita', kind: 'section', section: 'media', sub: 'news' },
-        { id: 'm-media', labelAr: 'الوسائط الإعلامية', labelEn: 'Media Gallery', labelMs: 'Galeri Media', kind: 'section', section: 'media', sub: 'gallery' },
+        { id: 'm-news', labelAr: 'الأخبار والإعلانات', labelEn: 'News & Announcements', labelMs: 'Berita & Pengumuman', kind: 'section', section: 'media', sub: 'news' },
+        { id: 'm-articles', labelAr: 'المقالات التربوية', labelEn: 'Educational Articles', labelMs: 'Artikel Pendidikan', kind: 'section', section: 'media', sub: 'articles' },
         { id: 'm-library', labelAr: 'المكتبة الرقمية', labelEn: 'Digital Library', labelMs: 'Perpustakaan Digital', kind: 'section', section: 'media', sub: 'digital-library' },
-        { id: 'm-calendar', labelAr: 'التقويم السنوي', labelEn: 'Annual Calendar', labelMs: 'Kalendar Tahunan', kind: 'section', section: 'media', sub: 'annual-calendar' },
+        { id: 'm-gallery', labelAr: 'الصور والفيديو', labelEn: 'Photo & Video Gallery', labelMs: 'Galeri Foto & Video', kind: 'section', section: 'media', sub: 'gallery' },
+        {
+          id: 'm-calendar', labelAr: 'التقويم السنوي', labelEn: 'Annual Calendar', labelMs: 'Kalendar Tahunan', kind: 'group',
+          section: 'media', sub: 'annual-calendar',
+          children: [
+            { id: 'm-cal-calendar', labelAr: 'التقويم السنوي', labelEn: 'Annual Calendar', labelMs: 'Kalendar Tahunan', kind: 'section', section: 'media', sub: 'annual-calendar' },
+            { id: 'm-cal-initiatives', labelAr: 'المبادرات والمساعدات', labelEn: 'Initiatives & Grants', labelMs: 'Inisiatif & Bantuan', kind: 'section', section: 'media', sub: 'initiatives-list' },
+            { id: 'm-cal-events', labelAr: 'الفعاليات الحالية', labelEn: 'Active Events', labelMs: 'Acara Aktif', kind: 'section', section: 'media', sub: 'events-list' },
+          ],
+        },
       ],
     },
     {

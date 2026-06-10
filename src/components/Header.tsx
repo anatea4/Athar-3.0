@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { Languages, Menu, X, LogIn, ChevronDown } from 'lucide-react';
+import { Languages, Menu, X, LogIn, ChevronDown, ChevronLeft } from 'lucide-react';
 import { Language } from '@/types';
 import { useNavigation, useForms } from '@/lib/content-provider';
 import { viewToPath } from '@/lib/sections';
@@ -180,7 +180,7 @@ export default function Header({
 
   // The semantic href for a nav node (real per-section URL, e.g. /about, /programs).
   const nodeHref = (node: NavNode): string => {
-    if (node.kind === 'section') {
+    if (node.kind === 'section' || (node.kind === 'group' && node.section)) {
       return viewToPath(node.section || node.id, node.sub);
     }
     if (node.kind === 'page' && node.slug) return `/${node.slug}`;
@@ -197,7 +197,7 @@ export default function Header({
       return;
     }
     e?.preventDefault();
-    if (node.kind === 'section') {
+    if (node.kind === 'section' || (node.kind === 'group' && node.section)) {
       menuClick(node.section || 'home', node.sub || '');
     } else if (node.kind === 'page' && node.slug) {
       window.location.href = `/${node.slug}`;
@@ -251,6 +251,46 @@ export default function Header({
                     <div className="absolute top-full right-0 rtl:left-0 rtl:right-auto mt-1 w-60 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform scale-95 origin-top-right group-hover:scale-100 z-50 bg-[#162944] border border-brand-gold/20 shadow-2xl rounded-xl p-1.5 backdrop-blur-md">
                       {children.map((sub) => {
                         const isSubActive = isNodeActive(sub);
+                        const subChildren = (sub.children || []).filter((c) => !c._hidden);
+
+                        // Nested sub-group → opens a side fly-out menu
+                        if (sub.kind === 'group') {
+                          return (
+                            <div key={sub.id} className="relative group/sub">
+                              <a
+                                href={nodeHref(sub)}
+                                onClick={(e) => handleNav(sub, e)}
+                                className={`flex items-center justify-between w-full text-right rtl:text-right ltr:text-left px-3.5 py-2.5 text-xs rounded-lg transition-colors cursor-pointer ${isSubActive
+                                    ? 'bg-brand-gold/15 text-brand-gold font-bold'
+                                    : 'text-white/90 hover:bg-brand-blue-light/20 hover:text-brand-gold'
+                                  }`}
+                              >
+                                <span>{getLabel(sub)}</span>
+                                <ChevronLeft className="h-3.5 w-3.5 opacity-60 ltr:rotate-180" />
+                              </a>
+                              <div className="absolute top-0 rtl:right-full ltr:left-full rtl:mr-1.5 ltr:ml-1.5 w-56 opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all duration-200 z-50 bg-[#162944] border border-brand-gold/20 shadow-2xl rounded-xl p-1.5 backdrop-blur-md">
+                                {subChildren.map((leaf) => {
+                                  const isLeafActive = isNodeActive(leaf);
+                                  return (
+                                    <a
+                                      key={leaf.id}
+                                      href={nodeHref(leaf)}
+                                      {...(leaf.kind === 'external' ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                                      onClick={(e) => handleNav(leaf, e)}
+                                      className={`block w-full text-right rtl:text-right ltr:text-left px-3.5 py-2.5 text-xs rounded-lg transition-colors cursor-pointer ${isLeafActive
+                                          ? 'bg-brand-gold text-brand-blue-dark font-bold'
+                                          : 'text-white/90 hover:bg-brand-blue-light/20 hover:text-brand-gold'
+                                        }`}
+                                    >
+                                      {getLabel(leaf)}
+                                    </a>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          );
+                        }
+
                         return (
                           <a
                             key={sub.id}
@@ -397,6 +437,41 @@ export default function Header({
                       <div className="bg-brand-blue-dark/50 border border-brand-gold/10 rounded-lg py-1.5 px-2.5 mt-1 space-y-0.5 animate-in slide-in-from-top-2 duration-200">
                         {children.map((sub) => {
                           const isSubActive = isNodeActive(sub);
+                          const subChildren = (sub.children || []).filter((c) => !c._hidden);
+
+                          // Nested sub-group → inline sub-header + indented items
+                          if (sub.kind === 'group') {
+                            return (
+                              <div key={sub.id} className="mt-1 pt-1 border-t border-white/5">
+                                <a
+                                  href={nodeHref(sub)}
+                                  onClick={(e) => handleNav(sub, e)}
+                                  className="flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold text-brand-gold/90 hover:text-brand-gold"
+                                >
+                                  <ChevronLeft className="h-3.5 w-3.5 ltr:rotate-180 opacity-70" />
+                                  {getLabel(sub)}
+                                </a>
+                                {subChildren.map((leaf) => {
+                                  const isLeafActive = isNodeActive(leaf);
+                                  return (
+                                    <a
+                                      key={leaf.id}
+                                      href={nodeHref(leaf)}
+                                      {...(leaf.kind === 'external' ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                                      onClick={(e) => handleNav(leaf, e)}
+                                      className={`block w-full text-right rtl:text-right ltr:text-left px-6 py-2.5 text-xs rounded-md transition-colors ${isLeafActive
+                                          ? 'bg-brand-gold text-brand-blue-dark font-bold'
+                                          : 'text-white/80 hover:bg-brand-blue-light/20 hover:text-brand-gold'
+                                        }`}
+                                    >
+                                      {getLabel(leaf)}
+                                    </a>
+                                  );
+                                })}
+                              </div>
+                            );
+                          }
+
                           return (
                             <a
                               key={sub.id}
