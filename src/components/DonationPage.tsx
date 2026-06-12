@@ -2,13 +2,37 @@
 import React, { useState } from 'react';
 import { 
   Heart, Sparkles, Gift, CheckCircle2, Award, Users, 
-  ShieldCheck, BookOpen, QrCode, Smartphone, CreditCard
+  ShieldCheck, BookOpen, QrCode, Smartphone, CreditCard,
+  Briefcase, GraduationCap
 } from 'lucide-react';
 import { Language } from '@/types';
+import { FormDef } from './DynamicForm';
 
 interface DonationPageProps {
   currentLang: Language;
+  form?: FormDef;
 }
+
+const IconComponent = ({ name, className }: { name: string; className?: string }) => {
+  switch (name) {
+    case 'Heart':
+      return <Heart className={className} />;
+    case 'Gift':
+      return <Gift className={className} />;
+    case 'Users':
+      return <Users className={className} />;
+    case 'Award':
+      return <Award className={className} />;
+    case 'Briefcase':
+      return <Briefcase className={className} />;
+    case 'BookOpen':
+      return <BookOpen className={className} />;
+    case 'GraduationCap':
+      return <GraduationCap className={className} />;
+    default:
+      return <Users className={className} />;
+  }
+};
 
 const TRANSLATIONS = {
   ar: {
@@ -157,21 +181,84 @@ const TRANSLATIONS = {
   }
 };
 
-export default function DonationPage({ currentLang }: DonationPageProps) {
+export default function DonationPage({ currentLang, form }: DonationPageProps) {
   // Translate helper
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
 
+  const pick = React.useCallback((obj: any, base: string, lang: Language): string => {
+    if (!obj) return '';
+    if (lang === 'ms') return obj[`${base}Ms`] || obj[`${base}En`] || obj[`${base}Ar`] || '';
+    if (lang === 'en') return obj[`${base}En`] || obj[`${base}Ar`] || '';
+    return obj[`${base}Ar`] || obj[`${base}En`] || '';
+  }, []);
+
+  const hasCustomSide = !!(form && (form.sideTitleAr || form.sideTitleEn || form.sideTitleMs));
+
+  const sidebarData = React.useMemo(() => {
+    if (hasCustomSide && form) {
+      const rawPerks = pick(form, 'sidePerks', currentLang);
+      const perks = rawPerks ? rawPerks.split('\n').map((p: string) => p.trim()).filter(Boolean) : [];
+      return {
+        badge: pick(form, 'sideBadge', currentLang) || t.progLabel,
+        title: pick(form, 'sideTitle', currentLang) || t.progTitle,
+        desc: pick(form, 'sideDesc', currentLang) || t.progDesc,
+        perksTitle: pick(form, 'sidePerksTitle', currentLang),
+        perks: perks,
+        statsTitle: pick(form, 'sideStatsTitle', currentLang) || t.statsTitle,
+        statsDesc: pick(form, 'sideStatsDesc', currentLang) || t.statsDesc,
+        statsVal: form.sideStatsVal || '135+',
+        statsIcon: form.sideStatsIcon || 'Users'
+      };
+    }
+    return null;
+  }, [form, currentLang, hasCustomSide, t, pick]);
+
+  const presets = React.useMemo(() => {
+    const raw = form?.presets || '50, 100, 150, 500';
+    return raw.split(',').map((n) => Number(n.trim())).filter((n) => !isNaN(n));
+  }, [form?.presets]);
+
+  const campaigns = React.useMemo(() => {
+    if (form?.campaigns && Array.isArray(form.campaigns)) {
+      const active = form.campaigns.filter((c: any) => !c._hidden);
+      if (active.length > 0) return active;
+    }
+    return [
+      { id: 'student', labelAr: t.campStudent, labelEn: t.campStudent, labelMs: t.campStudent, icon: 'Heart' },
+      { id: 'circle', labelAr: t.campCircle, labelEn: t.campCircle, labelMs: t.campCircle, icon: 'Users' },
+      { id: 'general', labelAr: t.campGeneral, labelEn: t.campGeneral, labelMs: t.campGeneral, icon: 'Gift' }
+    ];
+  }, [form?.campaigns, t]);
+
   // Donation State
-  const [selectedAmount, setSelectedAmount] = useState<number | 'custom'>(150);
+  const [selectedAmount, setSelectedAmount] = useState<number | 'custom'>(presets[2] || presets[0] || 150);
   const [customAmountText, setCustomAmountText] = useState('');
   const [donorName, setDonorName] = useState('');
   const [donationSuccess, setDonationSuccess] = useState(false);
-  const [donationTierSelected, setDonationTierSelected] = useState<'student' | 'circle' | 'general'>('student');
+  const [donationTierSelected, setDonationTierSelected] = useState<string>('');
+
+  React.useEffect(() => {
+    if (campaigns.length > 0) {
+      setDonationTierSelected((prev) => campaigns.some(c => c.id === prev) ? prev : campaigns[0].id);
+    }
+  }, [campaigns]);
   
   // Quick QR Payment states
   const [paymentMethod, setPaymentMethod] = useState<'traditional' | 'qr'>('traditional');
-  const [qrAmount, setQrAmount] = useState<number>(150);
+  const [qrAmount, setQrAmount] = useState<number>(presets[2] || presets[0] || 150);
   const [customQrText, setCustomQrText] = useState('');
+
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  const scrollToTop = () => {
+    setTimeout(() => {
+      if (containerRef.current) {
+        const offset = 100;
+        const top = containerRef.current.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    }, 100);
+  };
 
   const getDonationAmount = () => {
     if (paymentMethod === 'qr') {
@@ -188,6 +275,7 @@ export default function DonationPage({ currentLang }: DonationPageProps) {
     e.preventDefault();
     if (getDonationAmount() <= 0) return;
     setDonationSuccess(true);
+    scrollToTop();
   };
 
   const handleReset = () => {
@@ -200,7 +288,7 @@ export default function DonationPage({ currentLang }: DonationPageProps) {
   };
 
   return (
-    <div className="w-full text-slate-800 relative select-none text-right rtl:text-right ltr:text-left">
+    <div ref={containerRef} className="w-full text-slate-800 relative select-none text-right rtl:text-right ltr:text-left">
       
       {/* Decorative patterns and elements for premium style */}
       <div className="absolute inset-0 islamic-pattern opacity-[0.06] pointer-events-none" />
@@ -226,62 +314,83 @@ export default function DonationPage({ currentLang }: DonationPageProps) {
             
             <div className="bg-brand-gold-light border-2 border-brand-gold/20 rounded-3xl p-6 sm:p-8 space-y-6">
               <span className="text-[10px] uppercase font-mono font-bold tracking-widest text-brand-gold block">
-                {t.progLabel}
+                {sidebarData ? sidebarData.badge : t.progLabel}
               </span>
               
               <h3 className="text-xl font-serif font-bold text-brand-blue-dark font-classical leading-snug">
-                {t.progTitle}
+                {sidebarData ? sidebarData.title : t.progTitle}
               </h3>
               
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
-                {t.progDesc}
+                {sidebarData ? sidebarData.desc : t.progDesc}
               </p>
 
-              <div className="space-y-4 pt-2">
-                <div className="flex gap-3.5 items-start">
-                  <div className="p-2 bg-white rounded-xl border border-brand-gold/20 text-brand-gold shrink-0">
-                    <Award className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs sm:text-sm font-bold text-slate-800 font-classical">
-                      {t.featTransparentTitle}
+              {sidebarData && sidebarData.perks.length > 0 ? (
+                <div className="space-y-3 font-sans">
+                  {sidebarData.perksTitle && (
+                    <h4 className="text-xs font-extrabold text-slate-800 uppercase tracking-widest">
+                      {sidebarData.perksTitle}
                     </h4>
-                    <p className="text-[11px] text-slate-500 leading-relaxed font-sans">
-                      {t.featTransparentDesc}
-                    </p>
-                  </div>
+                  )}
+                  <ul className="space-y-2 text-xs text-slate-600 font-sans">
+                    {sidebarData.perks.map((perk, pi) => (
+                      <li key={pi} className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-brand-gold shrink-0 mt-0.5" />
+                        <span>{perk}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
+              ) : (
+                <div className="space-y-4 pt-2">
+                  <div className="flex gap-3.5 items-start">
+                    <div className="p-2 bg-white rounded-xl border border-brand-gold/20 text-brand-gold shrink-0">
+                      <Award className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs sm:text-sm font-bold text-slate-800 font-classical">
+                        {t.featTransparentTitle}
+                      </h4>
+                      <p className="text-[11px] text-slate-500 leading-relaxed font-sans">
+                        {t.featTransparentDesc}
+                      </p>
+                    </div>
+                  </div>
 
-                <div className="flex gap-3.5 items-start">
-                  <div className="p-2 bg-white rounded-xl border border-brand-gold/20 text-brand-gold shrink-0">
-                    <BookOpen className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs sm:text-sm font-bold text-slate-800 font-classical">
-                      {t.featBarakahTitle}
-                    </h4>
-                    <p className="text-[11px] text-slate-500 leading-relaxed font-sans">
-                      {t.featBarakahDesc}
-                    </p>
+                  <div className="flex gap-3.5 items-start">
+                    <div className="p-2 bg-white rounded-xl border border-brand-gold/20 text-brand-gold shrink-0">
+                      <BookOpen className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs sm:text-sm font-bold text-slate-800 font-classical">
+                        {t.featBarakahTitle}
+                      </h4>
+                      <p className="text-[11px] text-slate-500 leading-relaxed font-sans">
+                        {t.featBarakahDesc}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Monthly Impact Card */}
-            <div className="bg-white border border-brand-gold/15 rounded-3xl p-6 shadow-sm">
+            <div className="bg-white border border-brand-gold/15 rounded-3xl p-6 shadow-sm flex items-center justify-between gap-5 col-span-1">
               <div className="flex items-center gap-3">
-                <div className="p-3 bg-brand-gold-light rounded-xl text-brand-gold-dark border border-brand-gold/20">
-                  <Users className="h-5 w-5" />
+                <div className="p-3.5 bg-brand-gold-light rounded-xl text-brand-gold-dark border border-brand-gold/20">
+                  <IconComponent name={sidebarData ? sidebarData.statsIcon : 'Users'} className="h-5 w-5" />
                 </div>
                 <div>
                   <h4 className="text-xs sm:text-sm font-bold text-slate-800 font-classical">
-                    {t.statsTitle}
+                    {sidebarData ? sidebarData.statsTitle : t.statsTitle}
                   </h4>
                   <p className="text-[11px] text-slate-500 font-sans">
-                    {t.statsDesc}
+                    {sidebarData ? sidebarData.statsDesc : t.statsDesc}
                   </p>
                 </div>
+              </div>
+              <div className="text-2xl font-mono font-black text-brand-blue-dark">
+                {sidebarData ? sidebarData.statsVal : '135+'}
               </div>
             </div>
 
@@ -377,45 +486,25 @@ export default function DonationPage({ currentLang }: DonationPageProps) {
                   <label className="block text-xs font-bold text-slate-700 font-sans mb-2.5 uppercase tracking-wider">
                     {t.campaignLabel}
                   </label>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 font-sans">
-                    <button
-                      type="button"
-                      onClick={() => setDonationTierSelected('student')}
-                      className={`p-3.5 rounded-2xl border text-xs font-bold font-sans text-left rtl:text-right transition-all flex flex-col justify-between cursor-pointer ${
-                        donationTierSelected === 'student'
-                          ? 'bg-brand-blue text-brand-gold border-transparent shadow'
-                          : 'bg-white text-slate-700 border-slate-200 hover:border-brand-gold'
-                      }`}
-                    >
-                      <Heart className="h-4.5 w-4.5 mb-2.5" />
-                      <span>{t.campStudent}</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setDonationTierSelected('circle')}
-                      className={`p-3.5 rounded-2xl border text-xs font-bold font-sans text-left rtl:text-right transition-all flex flex-col justify-between cursor-pointer ${
-                        donationTierSelected === 'circle'
-                          ? 'bg-brand-blue text-brand-gold border-transparent shadow'
-                          : 'bg-white text-slate-700 border-slate-200 hover:border-brand-gold'
-                      }`}
-                    >
-                      <Users className="h-4.5 w-4.5 mb-2.5" />
-                      <span>{t.campCircle}</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setDonationTierSelected('general')}
-                      className={`p-3.5 rounded-2xl border text-xs font-bold font-sans text-left rtl:text-right transition-all flex flex-col justify-between cursor-pointer ${
-                        donationTierSelected === 'general'
-                          ? 'bg-brand-blue text-brand-gold border-transparent shadow'
-                          : 'bg-white text-slate-700 border-slate-200 hover:border-brand-gold'
-                      }`}
-                    >
-                      <Gift className="h-4.5 w-4.5 mb-2.5" />
-                      <span>{t.campGeneral}</span>
-                    </button>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 font-sans">
+                    {campaigns.map((c) => {
+                      const selected = donationTierSelected === c.id;
+                      return (
+                        <button
+                          key={c.id}
+                          type="button"
+                          onClick={() => setDonationTierSelected(c.id)}
+                          className={`p-3.5 rounded-2xl border text-xs font-bold font-sans text-left rtl:text-right transition-all flex flex-col justify-between cursor-pointer ${
+                            selected
+                              ? 'bg-brand-blue text-brand-gold border-transparent shadow'
+                              : 'bg-white text-slate-700 border-slate-200 hover:border-brand-gold'
+                          }`}
+                        >
+                          <IconComponent name={c.icon} className="h-4.5 w-4.5 mb-2.5" />
+                          <span>{pick(c, 'label', currentLang)}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -425,7 +514,7 @@ export default function DonationPage({ currentLang }: DonationPageProps) {
                     {t.amountLabel}
                   </label>
                   <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-sm">
-                    {[50, 100, 150, 500].map((amount) => (
+                    {presets.map((amount) => (
                       <button
                         key={amount}
                         type="button"
@@ -541,7 +630,7 @@ export default function DonationPage({ currentLang }: DonationPageProps) {
                     {t.qrSelectAmount}
                   </label>
                   <div className="grid grid-cols-4 gap-2 font-mono text-xs">
-                    {[50, 100, 150, 500].map((amount) => (
+                    {presets.map((amount) => (
                       <button
                         key={amount}
                         type="button"
@@ -584,64 +673,68 @@ export default function DonationPage({ currentLang }: DonationPageProps) {
                 {/* SVG Beautiful QR Code Graphic */}
                 <div className="flex flex-col items-center justify-center p-6 bg-brand-gold-light/40 border border-brand-gold/20 rounded-3xl relative">
                   <div className="absolute top-2 right-2 rtl:left-2 rtl:right-auto text-[9px] font-mono text-slate-400 bg-white border border-brand-gold/10 px-2 py-0.5 rounded-md">
-                    REF: ATH-QR-8923
+                    {form?.qrRef || 'REF: ATH-QR-8923'}
                   </div>
 
-                  <div className="relative w-44 h-44 bg-white p-3 rounded-2xl shadow-md border border-brand-gold/25 flex items-center justify-center group select-none">
+                  <div className="relative w-44 h-44 bg-white p-3 rounded-2xl shadow-md border border-brand-gold/25 flex items-center justify-center group select-none overflow-hidden">
                     {/* Animated scanning line */}
                     <div className="absolute left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-brand-gold to-transparent animate-bounce top-4" />
                     
-                    {/* Golden QR Code SVG Graphic */}
-                    <svg className="w-full h-full text-brand-blue-dark" viewBox="0 0 100 100" fill="currentColor">
-                      {/* Quiet Zone Grid blocks representing premium Islamic geometry */}
-                      <rect x="0" y="0" width="24" height="24" fill="#C09E5B" rx="1" />
-                      <rect x="3" y="3" width="18" height="18" fill="#FFFFFF" rx="1" />
-                      <rect x="6" y="6" width="12" height="12" fill="#192d4a" rx="1" />
+                    {form?.qrImage ? (
+                      <img src={form.qrImage} alt="QR Code" className="w-full h-full object-contain" />
+                    ) : (
+                      /* Golden QR Code SVG Graphic */
+                      <svg className="w-full h-full text-brand-blue-dark" viewBox="0 0 100 100" fill="currentColor">
+                        {/* Quiet Zone Grid blocks representing premium Islamic geometry */}
+                        <rect x="0" y="0" width="24" height="24" fill="#C09E5B" rx="1" />
+                        <rect x="3" y="3" width="18" height="18" fill="#FFFFFF" rx="1" />
+                        <rect x="6" y="6" width="12" height="12" fill="#192d4a" rx="1" />
 
-                      <rect x="76" y="0" width="24" height="24" fill="#C09E5B" rx="1" />
-                      <rect x="79" y="3" width="18" height="18" fill="#FFFFFF" rx="1" />
-                      <rect x="82" y="6" width="12" height="12" fill="#192d4a" rx="1" />
+                        <rect x="76" y="0" width="24" height="24" fill="#C09E5B" rx="1" />
+                        <rect x="79" y="3" width="18" height="18" fill="#FFFFFF" rx="1" />
+                        <rect x="82" y="6" width="12" height="12" fill="#192d4a" rx="1" />
 
-                      <rect x="0" y="76" width="24" height="24" fill="#C09E5B" rx="1" />
-                      <rect x="3" y="79" width="18" height="18" fill="#FFFFFF" rx="1" />
-                      <rect x="6" y="82" width="12" height="12" fill="#192d4a" rx="1" />
+                        <rect x="0" y="76" width="24" height="24" fill="#C09E5B" rx="1" />
+                        <rect x="3" y="79" width="18" height="18" fill="#FFFFFF" rx="1" />
+                        <rect x="6" y="82" width="12" height="12" fill="#192d4a" rx="1" />
 
-                      {/* Random aesthetic QR-like block data patterns */}
-                      <rect x="30" y="2" width="6" height="6" fill="#C09E5B" />
-                      <rect x="42" y="4" width="8" height="4" fill="#192d4a" />
-                      <rect x="56" y="1" width="12" height="6" fill="#C09E5B" />
-                      <rect x="30" y="12" width="14" height="4" fill="#192d4a" />
-                      <rect x="48" y="10" width="16" height="4" fill="#C09E5B" />
-                      <rect x="34" y="20" width="8" height="8" fill="#192d4a" />
+                        {/* Random aesthetic QR-like block data patterns */}
+                        <rect x="30" y="2" width="6" height="6" fill="#C09E5B" />
+                        <rect x="42" y="4" width="8" height="4" fill="#192d4a" />
+                        <rect x="56" y="1" width="12" height="6" fill="#C09E5B" />
+                        <rect x="30" y="12" width="14" height="4" fill="#192d4a" />
+                        <rect x="48" y="10" width="16" height="4" fill="#C09E5B" />
+                        <rect x="34" y="20" width="8" height="8" fill="#192d4a" />
 
-                      <rect x="2" y="30" width="12" height="8" fill="#C09E5B" />
-                      <rect x="18" y="34" width="8" height="12" fill="#192d4a" />
-                      <rect x="30" y="30" width="16" height="16" fill="#C09E5B" />
-                      <rect x="50" y="32" width="12" height="6" fill="#192d4a" />
-                      <rect x="66" y="30" width="8" height="18" fill="#C09E5B" />
+                        <rect x="2" y="30" width="12" height="8" fill="#C09E5B" />
+                        <rect x="18" y="34" width="8" height="12" fill="#192d4a" />
+                        <rect x="30" y="30" width="16" height="16" fill="#C09E5B" />
+                        <rect x="50" y="32" width="12" height="6" fill="#192d4a" />
+                        <rect x="66" y="30" width="8" height="18" fill="#C09E5B" />
 
-                      <rect x="78" y="30" width="20" height="8" fill="#C09E5B" />
-                      <rect x="90" y="42" width="8" height="14" fill="#192d4a" />
-                      <rect x="78" y="46" width="10" height="10" fill="#C09E5B" />
+                        <rect x="78" y="30" width="20" height="8" fill="#C09E5B" />
+                        <rect x="90" y="42" width="8" height="14" fill="#192d4a" />
+                        <rect x="78" y="46" width="10" height="10" fill="#C09E5B" />
 
-                      <rect x="2" y="48" width="14" height="10" fill="#192d4a" />
-                      <rect x="30" y="52" width="18" height="8" fill="#C09E5B" />
-                      <rect x="52" y="44" width="8" height="16" fill="#192d4a" />
+                        <rect x="2" y="48" width="14" height="10" fill="#192d4a" />
+                        <rect x="30" y="52" width="18" height="8" fill="#C09E5B" />
+                        <rect x="52" y="44" width="8" height="16" fill="#192d4a" />
 
-                      <rect x="26" y="66" width="14" height="14" fill="#C09E5B" />
-                      <rect x="44" y="66" width="16" height="8" fill="#192d4a" />
-                      <rect x="44" y="78" width="10" height="10" fill="#C09E5B" />
+                        <rect x="26" y="66" width="14" height="14" fill="#C09E5B" />
+                        <rect x="44" y="66" width="16" height="8" fill="#192d4a" />
+                        <rect x="44" y="78" width="10" height="10" fill="#C09E5B" />
 
-                      <rect x="66" y="60" width="14" height="14" fill="#192d4a" />
-                      <rect x="84" y="60" width="14" height="8" fill="#C09E5B" />
-                      <rect x="66" y="78" width="8" height="20" fill="#C09E5B" />
-                      <rect x="78" y="78" width="20" height="20" fill="#192d4a" />
-                      <rect x="3" y="1" width="1" height="1" fill="#FFFFFF" />
+                        <rect x="66" y="60" width="14" height="14" fill="#192d4a" />
+                        <rect x="84" y="60" width="14" height="8" fill="#C09E5B" />
+                        <rect x="66" y="78" width="8" height="20" fill="#C09E5B" />
+                        <rect x="78" y="78" width="20" height="20" fill="#192d4a" />
+                        <rect x="3" y="1" width="1" height="1" fill="#FFFFFF" />
 
-                      {/* Small gold leaf badge in center representing the Academy brand */}
-                      <rect x="43" y="43" width="14" height="14" fill="#FFFFFF" rx="4" />
-                      <circle cx="50" cy="50" r="5" fill="#C09E5B" />
-                    </svg>
+                        {/* Small gold leaf badge in center representing the Academy brand */}
+                        <rect x="43" y="43" width="14" height="14" fill="#FFFFFF" rx="4" />
+                        <circle cx="50" cy="50" r="5" fill="#C09E5B" />
+                      </svg>
+                    )}
                   </div>
 
                   <div className="mt-4 text-center font-mono text-sm font-extrabold text-brand-blue-dark flex items-center justify-center gap-1.5 bg-white border border-brand-gold/20 px-4 py-1.5 rounded-full shadow-sm">
@@ -686,6 +779,7 @@ export default function DonationPage({ currentLang }: DonationPageProps) {
                     onClick={() => {
                       if (qrAmount <= 0) return;
                       setDonationSuccess(true);
+                      scrollToTop();
                     }}
                     className="w-full bg-brand-blue-dark text-brand-gold hover:bg-brand-gold hover:text-brand-blue-dark transition-all font-serif font-bold text-xs p-4 rounded-2xl uppercase tracking-wider shadow-md hover:scale-[1.01] duration-300 font-classical cursor-pointer select-none flex items-center justify-center gap-2"
                   >

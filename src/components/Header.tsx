@@ -224,9 +224,18 @@ export default function Header({
         <div className="flex h-20 items-center justify-between gap-4 relative">
 
           {/* Logo Section */}
-          <div className="flex items-center gap-2 shrink-0 cursor-pointer rtl:translate-x-4 rtl:lg:translate-x-8 rtl:xl:translate-x-12 ltr:-translate-x-4 ltr:lg:-translate-x-8 ltr:xl:-translate-x-12" onClick={() => menuClick('home')}>
+          <a
+            href="/"
+            className="flex items-center gap-2 shrink-0 cursor-pointer rtl:translate-x-4 rtl:lg:translate-x-8 rtl:xl:translate-x-12 ltr:-translate-x-4 ltr:lg:-translate-x-8 ltr:xl:-translate-x-12"
+            onClick={(e) => {
+              if (window.location.pathname === '/') {
+                e.preventDefault();
+                menuClick('home');
+              }
+            }}
+          >
             <img src={logoSrc} alt="شعار أثر" className="h-12 w-auto object-contain" />
-          </div>
+          </a>
 
           {/* Desktop Navigation (Centered) */}
           <nav className="hidden lg:flex absolute left-1/2 -translate-x-1/2 rtl:ml-4 rtl:lg:ml-8 rtl:xl:ml-12 ltr:-ml-4 ltr:lg:-ml-8 ltr:xl:-ml-12 h-full items-center gap-1 xl:gap-2.5 whitespace-nowrap">

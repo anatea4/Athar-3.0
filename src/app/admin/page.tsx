@@ -419,8 +419,8 @@ export default function AdminPage() {
         <div className="relative w-full max-w-md">
           <div className="bg-white rounded-3xl shadow-2xl p-8 space-y-6 border-t-4 border-brand-gold">
             <div className="text-center space-y-2">
-              <div className="inline-flex p-3 bg-brand-gold-light rounded-2xl border border-brand-gold/30">
-                <Shield className="h-8 w-8 text-brand-gold-dark" />
+              <div className="inline-flex p-1 bg-white rounded-3xl border border-brand-gold/30 shadow-md h-20 w-20 items-center justify-center overflow-hidden mb-1">
+                <img src="/athar-logo.png" alt="Athar Academy Logo" className="h-full w-auto object-contain" />
               </div>
               <h1 className="text-2xl font-bold text-brand-blue-dark font-serif">لوحة إدارة أثر</h1>
               <p className="text-sm text-slate-500">Athar Academy Admin</p>
@@ -454,7 +454,7 @@ export default function AdminPage() {
                   <button
                     type="button"
                     onClick={() => setShowPass(!showPass)}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                   >
                     {showPass ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
@@ -478,6 +478,10 @@ export default function AdminPage() {
             <p className="text-xs text-center text-slate-500">
               أكاديمية أثر • التحكم الكامل في الموقع
             </p>
+            <div className="flex flex-col items-center justify-center pt-3 border-t border-slate-100 gap-1 opacity-80 hover:opacity-100 transition-opacity">
+              <span className="text-[10px] text-slate-400 font-sans">صنع بواسطة</span>
+              <img src="/logo-MEEM-2.jpg" alt="Meem Design" className="h-10 w-auto object-contain" />
+            </div>
           </div>
         </div>
       </div>
@@ -493,12 +497,21 @@ export default function AdminPage() {
       <aside className="w-64 bg-brand-blue-dark text-slate-100 flex flex-col fixed h-full border-l border-brand-gold/20">
         <div className="p-5 border-b border-brand-gold/20 relative">
           <div className="absolute inset-0 islamic-pattern-dark opacity-40 pointer-events-none" />
-          <h2 className="text-xl font-bold font-serif text-brand-gold relative">لوحة أثر</h2>
-          <p className="text-xs text-slate-400 mt-1 relative" dir="ltr">{currentAdmin?.email}</p>
+          <div className="flex items-center gap-3 relative z-10">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white border border-brand-gold/20 p-1">
+              <img src="/athar-logo.png" alt="Athar Academy Logo" className="h-full w-auto object-contain" />
+            </div>
+            <div className="min-w-0">
+              <h2 className="text-lg font-bold font-serif text-brand-gold leading-tight">لوحة أثر</h2>
+              <p className="text-[10px] text-slate-400 truncate mt-0.5" dir="ltr">{currentAdmin?.email}</p>
+            </div>
+          </div>
           {currentAdmin?.isSuper && (
-            <span className="inline-block mt-2 text-[10px] uppercase font-bold bg-brand-gold text-brand-blue-dark px-2 py-0.5 rounded relative">
-              Super Admin
-            </span>
+            <div className="mt-2 relative z-10">
+              <span className="inline-block text-[9px] uppercase font-bold bg-brand-gold text-brand-blue-dark px-2 py-0.5 rounded">
+                Super Admin
+              </span>
+            </div>
           )}
         </div>
         <nav className="flex-1 overflow-y-auto py-3">
@@ -523,8 +536,8 @@ export default function AdminPage() {
                         onClick={() => setActiveTab(s.id)}
                         className={`w-full flex items-center gap-3 px-5 py-2.5 text-sm transition-colors ${
                           activeTab === s.id
-                            ? 'bg-brand-gold/15 text-brand-gold border-r-2 border-brand-gold font-bold'
-                            : 'hover:bg-brand-blue/40 text-slate-300'
+                             ? 'bg-brand-gold/15 text-brand-gold border-r-2 border-brand-gold font-bold'
+                             : 'hover:bg-brand-blue/40 text-slate-300'
                         }`}
                       >
                         {s.icon}
@@ -537,7 +550,7 @@ export default function AdminPage() {
             );
           })}
         </nav>
-        <div className="p-3 border-t border-slate-700">
+        <div className="p-3 border-t border-slate-700 space-y-3">
           <button
             onClick={handleLogout}
             className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white py-2 rounded text-sm"
@@ -545,6 +558,10 @@ export default function AdminPage() {
             <LogOut className="h-4 w-4" />
             تسجيل الخروج
           </button>
+          <div className="flex flex-row items-center justify-center gap-2 pt-2 border-t border-slate-800 opacity-70 hover:opacity-100 transition-opacity w-full">
+            <span className="text-[10px] text-slate-400 font-sans">صنع بواسطة</span>
+            <img src="/logo-footer.png" alt="Meem Design" className="h-11 w-auto object-contain brightness-125 contrast-105" />
+          </div>
         </div>
       </aside>
 

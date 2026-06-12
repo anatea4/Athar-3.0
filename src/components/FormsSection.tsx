@@ -5,6 +5,7 @@ import { useForms } from '@/lib/content-provider';
 import DynamicForm, { FormDef } from '@/components/DynamicForm';
 import FeeCalculator from '@/components/FeeCalculator';
 import DonationPage from '@/components/DonationPage';
+import VolunteerPage from '@/components/VolunteerPage';
 import { Calculator } from 'lucide-react';
 
 interface FormsSectionProps {
@@ -52,9 +53,9 @@ export default function FormsSection({
       <div className="absolute inset-0 islamic-pattern opacity-10 pointer-events-none" />
       <div className="absolute bottom-1/4 left-0 w-80 h-80 bg-brand-gold/5 rounded-full blur-3xl pointer-events-none" />
 
-      <div className={`relative mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-500 ${activeTab === 'donate' ? 'max-w-7xl' : 'max-w-5xl'}`}>
-        {/* Heading (hidden for donate tab to prevent duplicate headers) */}
-        {activeTab !== 'donate' && (
+      <div className={`relative mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-500 ${(activeTab === 'donate' || activeTab === 'volunteer') ? 'max-w-7xl' : 'max-w-5xl'}`}>
+        {/* Heading (hidden for donate and volunteer tabs to prevent duplicate headers) */}
+        {activeTab !== 'donate' && activeTab !== 'volunteer' && (
           <div className="text-center max-w-3xl mx-auto mb-10 animate-in fade-in duration-300">
             <span className="text-xs uppercase tracking-widest font-bold text-brand-gold">
               {t(currentLang, 'أكاديمية أثر', 'Athar Academy', 'Akademi Athar')}
@@ -100,10 +101,14 @@ export default function FormsSection({
           </div>
         ) : activeTab === 'donate' ? (
           <div className="animate-in fade-in duration-300">
-            <DonationPage currentLang={currentLang} />
+            <DonationPage currentLang={currentLang} form={activeForm} />
+          </div>
+        ) : activeTab === 'volunteer' ? (
+          <div className="animate-in fade-in duration-300">
+            <VolunteerPage currentLang={currentLang} form={activeForm} />
           </div>
         ) : activeForm ? (
-          <div className="bg-white border border-brand-gold/15 rounded-3xl p-6 sm:p-10 shadow-sm">
+          <div className="animate-in fade-in duration-300">
             <DynamicForm form={activeForm} lang={currentLang} />
           </div>
         ) : (
