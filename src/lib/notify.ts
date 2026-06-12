@@ -52,22 +52,73 @@ export async function notifyNewSubmission(formType: string, data: Record<string,
     const rows = Object.entries(data || {})
       .map(
         ([k, v]) =>
-          `<tr><td style="padding:8px 14px;font-weight:bold;color:#8C7343;border-bottom:1px solid #eee;">${
-            FIELD_LABELS[k] || k
-          }</td><td style="padding:8px 14px;color:#192d4a;border-bottom:1px solid #eee;">${String(v)}</td></tr>`
+          `<tr>
+            <td style="padding:14px 16px;font-weight:bold;color:#8C7343;border-bottom:1px solid #f1f5f9;width:30%;vertical-align:top;font-size:13px;background-color:#fafaf9;">${
+              FIELD_LABELS[k] || k
+            }</td>
+            <td style="padding:14px 16px;color:#192d4a;border-bottom:1px solid #f1f5f9;line-height:1.5;font-size:14px;">${String(v)}</td>
+          </tr>`
       )
       .join('');
 
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://atharacademy.info';
+    const logoUrl = `${siteUrl}/athar-logo.png`;
+    const footerLogoUrl = `${siteUrl}/logo-footer.png`;
+    const adminUrl = `${siteUrl}/admin`;
+
     const html = `
-      <div dir="rtl" style="font-family:Tahoma,Arial,sans-serif;background:#FCF9F2;padding:24px;">
-        <div style="max-width:560px;margin:auto;background:#fff;border-radius:16px;overflow:hidden;border-top:4px solid #C09E5B;">
-          <div style="background:#192d4a;padding:18px 24px;color:#C09E5B;font-size:18px;font-weight:bold;">
-            أكاديمية أثر — ${title}
+      <div dir="rtl" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color:#FCF9F2; padding:45px 20px; text-align:right; -webkit-font-smoothing:antialiased;">
+        <div style="max-width:600px; margin:0 auto; background-color:#ffffff; border-radius:24px; overflow:hidden; border-top:6px solid #192d4a; border-bottom:6px solid #C09E5B; box-shadow: 0 20px 40px rgba(25, 45, 74, 0.06);">
+          
+          <!-- Institution Header Logo -->
+          <div style="background-color:#ffffff; padding:35px 24px 25px 24px; text-align:center; border-bottom:1px solid #f3f4f6;">
+            <img src="${logoUrl}" alt="Athar Logo" style="height:90px; width:auto; display:inline-block; margin-bottom:12px;" />
+            <h1 style="margin:0; font-size:22px; font-weight:800; color:#192d4a; font-family:'Segoe UI', system-ui, sans-serif;">أكاديمية أثر للقرآن الكريم</h1>
+            <p style="margin:4px 0 0 0; font-size:11px; color:#C09E5B; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;">ATHAR QURAN ACADEMY</p>
           </div>
-          <table style="width:100%;border-collapse:collapse;font-size:14px;">${rows}</table>
-          <div style="padding:14px 24px;color:#94a3b8;font-size:12px;">
-            وصلتك هذه الرسالة من نموذج على موقع أكاديمية أثر. افتح لوحة التحكم لعرض كل الطلبات.
+
+          <!-- Notification Banner -->
+          <div style="background-color:#192d4a; padding:20px 24px; color:#ffffff; font-size:18px; font-weight:bold; text-align:center;">
+            🔔 ${title}
           </div>
+
+          <!-- Description text -->
+          <div style="padding:28px 28px 10px 28px; text-align:right;">
+            <p style="margin:0; font-size:14px; color:#64748b; line-height:1.6;">
+              السلام عليكم ورحمة الله وبركاته،<br/>
+              تم استلام نموذج إلكتروني جديد عبر الموقع الرسمي للأكاديمية. تفاصيل الطلب المرسل أدناه:
+            </p>
+          </div>
+
+          <!-- Fields Table -->
+          <div style="padding:10px 28px 28px 28px;">
+            <div style="background-color:#fafaf9; border:1px solid #e7e5e4; border-radius:18px; overflow:hidden;">
+              <table style="width:100%; border-collapse:collapse; font-size:14px; text-align:right;">
+                <tbody>
+                  ${rows}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- CTA to Admin Dashboard -->
+          <div style="padding: 0 28px 35px 28px; text-align: center;">
+            <a href="${adminUrl}" target="_blank" style="display: inline-block; background-color: #C09E5B; color: #ffffff; padding: 14px 35px; font-size: 14px; font-weight: 800; text-decoration: none; border-radius: 14px; box-shadow: 0 6px 20px rgba(192, 158, 91, 0.25); transition: all 0.2s ease;">
+              عرض تفاصيل الطلبات في لوحة التحكم
+            </a>
+          </div>
+
+          <!-- Footer Information & Creator Logo -->
+          <div style="background-color:#f8fafc; padding:28px; text-align:center; border-top:1px solid #e2e8f0;">
+            <p style="margin:0 0 16px 0; color:#64748b; font-size:11px; line-height:1.6;">
+              تصلك هذه الرسالة بصفتك مشرفاً في أكاديمية أثر. يمكنك تعديل إعدادات البريد من لوحة التحكم.
+            </p>
+            <div style="display:inline-flex; align-items:center; justify-content:center; gap:8px;">
+              <span style="color:#94a3b8; font-size:10px; vertical-align:middle; line-height:32px;">تطوير وتصميم</span>
+              <img src="${footerLogoUrl}" alt="Meem Design" style="height:28px; width:auto; vertical-align:middle; display:inline-block;" />
+            </div>
+          </div>
+
         </div>
       </div>`;
 

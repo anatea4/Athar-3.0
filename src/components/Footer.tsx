@@ -154,7 +154,7 @@ export default function Footer({ currentLang }: FooterProps) {
           </div>
           <div className="flex items-center gap-3">
             <span>{currentLang === 'ms' ? 'Dibuat oleh' : currentLang === 'en' ? 'Made by' : 'صنع بواسطة'}</span>
-            <img src={logoFooter} alt="Meem Design" className="h-16 w-auto" />
+            <img src={logoFooter} alt="Meem Design" className="h-12 w-auto object-contain brightness-125 contrast-105 opacity-90 hover:opacity-100 transition-opacity duration-300" />
           </div>
         </div>
 

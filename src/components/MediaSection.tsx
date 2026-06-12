@@ -68,11 +68,10 @@ export default function MediaSection({ currentLang, activeSub, onNavigate }: Med
               <button
                 key={tab.id}
                 onClick={() => (onNavigate ? onNavigate('media', tab.id) : setActiveTab(tab.id))}
-                className={`flex items-center gap-2 px-5 py-3.5 text-xs font-bold rounded-full border transition-all duration-300 w-max shrink-0 cursor-pointer ${
-                  isSelected
+                className={`flex items-center gap-2 px-5 py-3.5 text-xs font-bold rounded-full border transition-all duration-300 w-max shrink-0 cursor-pointer ${isSelected
                     ? 'bg-brand-blue-dark border-brand-gold text-brand-gold shadow-md'
                     : 'bg-white border-brand-gold/10 text-slate-600 hover:border-brand-gold/30 hover:text-brand-blue-dark'
-                }`}
+                  }`}
               >
                 <span>{tab.icon}</span>
                 <span>{currentLang === 'ms' ? tab.labelMs : currentLang === 'en' ? tab.labelEn : tab.labelAr}</span>

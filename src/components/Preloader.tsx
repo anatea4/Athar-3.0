@@ -155,6 +155,20 @@ export default function Preloader({ currentLang, onComplete }: PreloaderProps) {
 
         </div>
       </motion.div>
+
+      {/* Footer Logo at the bottom */}
+      <motion.div
+        className="absolute bottom-10 z-20 flex flex-col items-center justify-center opacity-90 hover:opacity-100 transition-opacity"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.9 }}
+        transition={{ delay: 0.6, duration: 0.8 }}
+      >
+        <img
+          src="/logo-footer.png"
+          alt="Athar Footer Logo"
+          className="h-14 w-auto object-contain select-none pointer-events-none brightness-125 contrast-105"
+        />
+      </motion.div>
     </motion.div>
   );
 }

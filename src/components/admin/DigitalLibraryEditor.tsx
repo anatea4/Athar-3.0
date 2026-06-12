@@ -179,6 +179,20 @@ function ItemCard({
                   </a>
                 )}
                 <p className="text-[11px] text-slate-400">PDF / Word / Excel / PowerPoint / صورة — حتى 25MB. يُحسب الحجم والنوع تلقائياً.</p>
+                <div className="flex items-center gap-2 pt-1">
+                  <span className="text-[10px] text-slate-400 font-bold shrink-0">أو الصق رابط:</span>
+                  <input
+                    type="text"
+                    value={item.url || ''}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      onUpdate({ url: v, type: detectType(v) });
+                    }}
+                    placeholder="https://..."
+                    dir="ltr"
+                    className="flex-1 min-w-0 px-3 py-1.5 border border-slate-200 rounded-lg text-[11px] focus:outline-none focus:border-brand-gold bg-white"
+                  />
+                </div>
               </div>
             </div>
             <input
@@ -218,3 +232,4 @@ function Field({ label, value, onChange, dir }: { label: string; value: string; 
     </div>
   );
 }
+

@@ -107,6 +107,7 @@ export default function SiteApp({ initialSection = 'home', initialSub = '' }: Si
   };
 
   const handleSectionChange = (sectionId: string, subSectionId: string = '') => {
+    const isSameSection = activeSection === sectionId;
     setActiveSection(sectionId);
     setActiveSubSection(subSectionId);
     // Update the address bar to the section's real URL (shallow — no full reload).
@@ -117,7 +118,9 @@ export default function SiteApp({ initialSection = 'home', initialSub = '' }: Si
       const path = viewToPath(sectionId, subSectionId);
       try { window.history.pushState(null, '', path); } catch { /* ignore */ }
     }
-    setTimeout(() => scrollToSection(sectionId), 360);
+    if (!isSameSection) {
+      setTimeout(() => scrollToSection(sectionId), 360);
+    }
   };
 
   const handleExplorePrograms = () => handleSectionChange('programs', 'quran-circles');

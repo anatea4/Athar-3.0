@@ -179,6 +179,154 @@ export default function FormsManager({ onToast }: { onToast: Toast }) {
           <MultiLangField label="رسالة النجاح" obj={editing} fieldBase="success" onChange={(f, v) => updateEditing({ [f]: v })} multiline />
         </div>
 
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
+          <div className="flex items-center gap-2 text-brand-gold-dark font-bold">
+            <ClipboardList className="h-5 w-5" /> محتوى عمود المعلومات الجانبي (يمين النموذج)
+          </div>
+          <p className="text-xs text-slate-400">
+            أدخل محتوى الشريط التعريفي الذي يظهر بجانب حقول النموذج في الموقع. اترك العنوان الجانبي فارغاً لاستخدام المحتوى الافتراضي.
+          </p>
+          <MultiLangField label="العلامة العليا الجانبية (Badge)" obj={editing} fieldBase="sideBadge" onChange={(f, v) => updateEditing({ [f]: v })} />
+          <MultiLangField label="العنوان الجانبي الرئيسي" obj={editing} fieldBase="sideTitle" onChange={(f, v) => updateEditing({ [f]: v })} />
+          <MultiLangField label="الوصف الجانبي" obj={editing} fieldBase="sideDesc" onChange={(f, v) => updateEditing({ [f]: v })} multiline />
+          <MultiLangField label="عنوان قائمة المميزات" obj={editing} fieldBase="sidePerksTitle" onChange={(f, v) => updateEditing({ [f]: v })} />
+          <MultiLangField label="المميزات (اكتب كل ميزة في سطر منفصل)" obj={editing} fieldBase="sidePerks" onChange={(f, v) => updateEditing({ [f]: v })} multiline />
+          
+          <div className="border-t border-slate-100 pt-4 space-y-4">
+            <h4 className="text-sm font-bold text-slate-700">قسم الإحصائيات الجانبي</h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <MultiLangField label="عنوان الإحصائية" obj={editing} fieldBase="sideStatsTitle" onChange={(f, v) => updateEditing({ [f]: v })} />
+              <MultiLangField label="وصف الإحصائية" obj={editing} fieldBase="sideStatsDesc" onChange={(f, v) => updateEditing({ [f]: v })} />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <TextField label="قيمة الإحصائية (مثال: +48 أو 1,240+)" value={editing.sideStatsVal || ''} onChange={(v) => updateEditing({ sideStatsVal: v })} />
+              <div className="space-y-1.5">
+                <label className="block text-[13px] font-semibold text-slate-700">أيقونة الإحصائية</label>
+                <select 
+                  value={editing.sideStatsIcon || 'Award'} 
+                  onChange={(e) => updateEditing({ sideStatsIcon: e.target.value })} 
+                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm bg-white focus:outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/30"
+                >
+                  <option value="Users">Users (أشخاص)</option>
+                  <option value="Award">Award (تميز)</option>
+                  <option value="Briefcase">Briefcase (توظيف)</option>
+                  <option value="BookOpen">BookOpen (قرآن/كتاب)</option>
+                  <option value="GraduationCap">GraduationCap (تعليم)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
+          <div className="flex items-center gap-2 text-brand-gold-dark font-bold">
+            <ClipboardList className="h-5 w-5" /> خيارات الدفع السريع والـ QR (خاصة بالتبرعات والرسوم)
+          </div>
+          <p className="text-xs text-slate-400">
+            تتيح للمستخدمين السداد مباشرة عبر كود الـ QR بدلاً من ملء حقول النموذج.
+          </p>
+          <TextField label="خيارات المبالغ المحددة مسبقاً (افصل بفاصلة، مثال: 50, 100, 150, 500)" value={editing.presets || ''} onChange={(v) => updateEditing({ presets: v })} placeholder="50, 100, 150, 500" />
+          <ImageField label="كود الـ QR للدفع (اختياري)" value={editing.qrImage || ''} onChange={(v) => updateEditing({ qrImage: v })} onToast={onToast} />
+          <TextField label="رمز المرجع المعروض للتحويل (مثال: REF: ATH-QR-8923)" value={editing.qrRef || ''} onChange={(v) => updateEditing({ qrRef: v })} placeholder="REF: ATH-QR-8923" />
+        </div>
+
+        {editing.id === 'donate' && (() => {
+          const defaultCampaigns = [
+            { id: 'student', labelAr: 'دعم طالب علم', labelEn: 'Support a Student', labelMs: 'Sokong Pelajar', icon: 'Heart' },
+            { id: 'circle', labelAr: 'دعم حلقة متكاملة', labelEn: 'Support Quran Circle', labelMs: 'Sokong Halaqah Al-Quran', icon: 'Users' },
+            { id: 'general', labelAr: 'الوقف العام المفتوح', labelEn: 'General Endowment', labelMs: 'Wakaf Am Terbuka', icon: 'Gift' }
+          ];
+          const arr = editing.campaigns && editing.campaigns.length > 0 ? editing.campaigns : defaultCampaigns;
+          return (
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
+              <div className="flex items-center gap-2 text-brand-gold-dark font-bold">
+                <ClipboardList className="h-5 w-5" /> إدارة مسارات التبرع المستهدفة
+              </div>
+              <p className="text-xs text-slate-400">
+                أضف أو عدّل مسارات التبرع التي يمكن للمتبرع تحديدها (تظهر كخيارات في صفحة التبرع).
+              </p>
+              <div className="space-y-3">
+                {arr.map((c: any, i: number) => (
+                  <ArrayItemCard
+                    key={c.id || i}
+                    index={i}
+                    total={arr.length}
+                    title={c.labelAr || `مسار ${i + 1}`}
+                    hidden={c._hidden}
+                    onMoveUp={() => {
+                      if (i > 0) {
+                        const nextC = [...arr];
+                        [nextC[i - 1], nextC[i]] = [nextC[i], nextC[i - 1]];
+                        updateEditing({ campaigns: nextC });
+                      }
+                    }}
+                    onMoveDown={() => {
+                      if (i < arr.length - 1) {
+                        const nextC = [...arr];
+                        [nextC[i + 1], nextC[i]] = [nextC[i], nextC[i + 1]];
+                        updateEditing({ campaigns: nextC });
+                      }
+                    }}
+                    onDelete={() => {
+                      if (confirm('حذف هذا المسار؟')) {
+                        updateEditing({ campaigns: arr.filter((_: any, idx: number) => idx !== i) });
+                      }
+                    }}
+                    onToggleHide={() => {
+                      const nextC = [...arr];
+                      nextC[i] = { ...nextC[i], _hidden: !c._hidden };
+                      updateEditing({ campaigns: nextC });
+                    }}
+                  >
+                    <div className="space-y-4">
+                      <MultiLangField
+                        label="اسم المسار"
+                        obj={c}
+                        fieldBase="label"
+                        onChange={(field, v) => {
+                          const nextC = [...arr];
+                          nextC[i] = { ...nextC[i], [field]: v };
+                          updateEditing({ campaigns: nextC });
+                        }}
+                      />
+                      <div className="space-y-1.5">
+                        <label className="block text-[13px] font-semibold text-slate-700">الأيقونة</label>
+                        <select
+                          value={c.icon || 'Heart'}
+                          onChange={(e) => {
+                            const nextC = [...arr];
+                            nextC[i] = { ...nextC[i], icon: e.target.value };
+                            updateEditing({ campaigns: nextC });
+                          }}
+                          className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm bg-white focus:outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/30"
+                        >
+                          <option value="Heart">Heart (قلب)</option>
+                          <option value="Users">Users (أشخاص)</option>
+                          <option value="Gift">Gift (هدية/وقف)</option>
+                          <option value="BookOpen">BookOpen (قرآن/كتاب)</option>
+                          <option value="GraduationCap">GraduationCap (تعليم)</option>
+                          <option value="Award">Award (جائزة)</option>
+                        </select>
+                      </div>
+                    </div>
+                  </ArrayItemCard>
+                ))}
+                <AddItemButton
+                  onClick={() => {
+                    updateEditing({
+                      campaigns: [
+                        ...arr,
+                        { id: `camp_${rid()}`, labelAr: 'مسار جديد', labelEn: 'New Campaign', labelMs: '', icon: 'Heart', _hidden: false }
+                      ]
+                    });
+                  }}
+                  label="إضافة مسار مستهدف جديد"
+                />
+              </div>
+            </div>
+          );
+        })()}
+
         <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-3">
           <div className="font-bold text-slate-700">حقول النموذج</div>
           {flds.map((fld: any, i: number) => (
