@@ -17,6 +17,7 @@ interface FormsSectionProps {
   subEn?: string;
   subMs?: string;
   includeCalculator?: boolean;  // finance section adds a Fee Calculator tab
+  onNavigate?: (section: string, sub: string) => void;
 }
 
 const t = (lang: Language, ar: string, en: string, ms?: string) =>
@@ -27,7 +28,7 @@ const formLabel = (f: FormDef, lang: Language) =>
 
 export default function FormsSection({
   currentLang, sectionKey, activeSub,
-  headingAr, headingEn, headingMs, subAr, subEn, subMs, includeCalculator,
+  headingAr, headingEn, headingMs, subAr, subEn, subMs, includeCalculator, onNavigate,
 }: FormsSectionProps) {
   const allForms = useForms() as FormDef[];
   const forms = (allForms || [])
@@ -74,7 +75,7 @@ export default function FormsSection({
               return (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => (onNavigate ? onNavigate(sectionKey, tab.id) : setActiveTab(tab.id))}
                   className={`flex items-center gap-2 px-5 py-3 text-xs font-bold rounded-full border transition-all duration-300 w-max shrink-0 cursor-pointer ${
                     selected
                       ? 'bg-brand-blue-dark border-brand-gold text-brand-gold shadow-md'
