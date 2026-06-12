@@ -13,7 +13,7 @@ export default function InitiativesSection({ currentLang, activeSub }: Initiativ
   const INITIATIVES_LIST = useInitiatives();
   const EVENTS_LIST = useEvents() as any[];
   const CALENDAR = useCalendar() as any;
-  const [activeTab, setActiveTab] = React.useState(activeSub || 'initiatives-list');
+  const [activeTab, setActiveTab] = React.useState(activeSub || 'annual-calendar');
 
   useEffect(() => {
     if (activeSub) {
@@ -23,10 +23,11 @@ export default function InitiativesSection({ currentLang, activeSub }: Initiativ
     }
   }, [activeSub]);
 
+  // Order: Annual Calendar → Active Events → Initiatives & Grants
   const tabs = [
-    { id: 'initiatives-list', labelAr: 'المبادرات والمساعدات', labelEn: 'Initiatives & Grants', labelMs: 'Inisiatif & Bantuan' },
-    { id: 'events-list', labelAr: 'الفعاليات الحالية', labelEn: 'Active Events', labelMs: 'Acara Aktif' },
     { id: 'annual-calendar', labelAr: 'التقويم السنوي', labelEn: 'Annual Calendar', labelMs: 'Kalendar Tahunan' },
+    { id: 'events-list', labelAr: 'الفعاليات الحالية', labelEn: 'Active Events', labelMs: 'Acara Aktif' },
+    { id: 'initiatives-list', labelAr: 'المبادرات والمساعدات', labelEn: 'Initiatives & Grants', labelMs: 'Inisiatif & Bantuan' },
   ];
 
   const calendarEvents = (CALENDAR?.events || []) as any[];

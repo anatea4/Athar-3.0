@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useRef, createContext, useContext } from 'react';
-import { Upload, Loader2, Image as ImageIcon, Trash2, ChevronUp, ChevronDown, Eye, EyeOff, Plus, GripVertical } from 'lucide-react';
+import { Upload, Loader2, Image as ImageIcon, Trash2, ChevronUp, ChevronDown, Eye, EyeOff, Plus, GripVertical, FileText, ExternalLink } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
 // Active editing-language context (so the whole form shows one language at a time)
@@ -218,6 +218,117 @@ export function ImageField({
         ref={inputRef}
         type="file"
         accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          if (f) handleFile(f);
+          e.target.value = '';
+        }}
+      />
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// File upload field — for documents/PDF + images (digital library, attachments)
+// ---------------------------------------------------------------------------
+export function FileField({
+  label,
+  value,
+  onChange,
+  onToast,
+}: {
+  label: string;
+  value: string;
+  onChange: (url: string) => void;
+  onToast?: (type: 'success' | 'error', msg: string) => void;
+}) {
+  const [uploading, setUploading] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const isImg = !!value && /\.(png|jpe?g|gif|webp|svg|avif)(\?|#|$)/i.test(value);
+  const fileName = value ? decodeURIComponent(value.split('/').pop()!.split('?')[0]) : '';
+
+  const handleFile = async (file: File) => {
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch('/api/upload', { method: 'POST', body: fd });
+      const data = await res.json();
+      if (res.ok) {
+        onChange(data.url);
+        onToast?.('success', 'تم رفع الملف ✓');
+      } else {
+        onToast?.('error', data.error || 'فشل الرفع');
+      }
+    } catch {
+      onToast?.('error', 'خطأ في رفع الملف');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      <label className="block text-[13px] font-semibold text-slate-700">{label}</label>
+      <div
+        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDragOver(false);
+          const f = e.dataTransfer.files?.[0];
+          if (f) handleFile(f);
+        }}
+        className={`flex items-center gap-4 p-3 rounded-2xl border-2 border-dashed transition ${
+          dragOver ? 'border-brand-gold bg-brand-gold-light' : 'border-slate-200 bg-slate-50/50'
+        }`}
+      >
+        <div className="h-16 w-16 rounded-xl border border-slate-200 bg-white overflow-hidden flex items-center justify-center shrink-0 shadow-sm">
+          {isImg ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={value} alt="preview" className="h-full w-full object-cover" />
+          ) : (
+            <FileText className={`h-7 w-7 ${value ? 'text-brand-gold-dark' : 'text-slate-300'}`} />
+          )}
+        </div>
+        <div className="flex-1 space-y-2 min-w-0">
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            disabled={uploading}
+            className="flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white text-sm font-bold px-4 py-2 rounded-xl disabled:opacity-60 transition"
+          >
+            {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+            {uploading ? 'جارٍ الرفع...' : 'رفع ملف'}
+          </button>
+          {value && (
+            <a
+              href={value}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-[11px] text-brand-gold-dark hover:underline truncate"
+            >
+              <ExternalLink className="h-3 w-3 shrink-0" />
+              <span className="truncate" dir="ltr">{fileName}</span>
+            </a>
+          )}
+          <p className="text-[11px] text-slate-400">PDF / Word / Excel / صورة — حتى 25MB</p>
+          <input
+            type="text"
+            value={value || ''}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder="أو الصق رابط الملف"
+            dir="ltr"
+            className="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-[11px] focus:outline-none focus:border-brand-gold bg-white"
+          />
+        </div>
+      </div>
+      <input
+        ref={inputRef}
+        type="file"
         className="hidden"
         onChange={(e) => {
           const f = e.target.files?.[0];

@@ -1,14 +1,21 @@
 'use client';
 import React, { useState } from 'react';
-import { TextField, MultiLangField, ImageField, ArrayItemCard, AddItemButton, EditLangProvider, LanguageTabs } from './FieldEditors';
+import { TextField, MultiLangField, ImageField, FileField, ArrayItemCard, AddItemButton, EditLangProvider, LanguageTabs } from './FieldEditors';
 
 type Toast = (type: 'success' | 'error', msg: string) => void;
 type EditLang = 'Ar' | 'En' | 'Ms';
 
-const IMAGE_KEYS = ['image', 'img', 'avatar', 'logo', 'photo', 'picture', 'cover', 'thumbnail', 'url'];
+const IMAGE_KEYS = ['image', 'img', 'avatar', 'logo', 'photo', 'picture', 'cover', 'thumbnail'];
 const isImageKey = (k: string) => {
   const lk = k.toLowerCase();
   return IMAGE_KEYS.some((ik) => lk.includes(ik));
+};
+
+// File/document fields (PDF, attachments, downloads) and generic media urls
+const FILE_KEYS = ['url', 'file', 'document', 'attachment', 'download', 'pdf'];
+const isFileKey = (k: string) => {
+  const lk = k.toLowerCase();
+  return FILE_KEYS.some((fk) => lk.includes(fk));
 };
 
 // Technical keys the non-technical admin should never see/edit
@@ -155,6 +162,19 @@ function ObjectFields({
         if (langKeys.has(key)) return null;
         if (HIDDEN_KEYS.has(key)) return null; // technical keys hidden from admin
         const val = obj[key];
+
+        // File / document / media-url fields (PDF, attachments, gallery url, ...)
+        if (typeof val === 'string' && isFileKey(key)) {
+          return (
+            <FileField
+              key={key}
+              label={friendlyLabel(key)}
+              value={val}
+              onChange={(v) => updateField(key, v)}
+              onToast={onToast}
+            />
+          );
+        }
 
         // Image fields
         if (typeof val === 'string' && isImageKey(key)) {
