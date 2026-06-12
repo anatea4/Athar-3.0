@@ -98,7 +98,7 @@ export const NAVIGATION_ITEMS: NavItem[] = [
     labelMs: 'Sokongan',
     subItems: [
       { id: 'volunteer', labelAr: 'فرص التطوع', labelEn: 'Volunteering', labelMs: 'Peluang Sukarelawan' },
-      { id: 'support-athar', labelAr: 'ادعم الأثر (الكفالات)', labelEn: 'Support Athar (Sponsoring)', labelMs: 'Sokong Athar (Penajaan)' },
+      { id: 'support-athar', labelAr: 'ادعم الأثر', labelEn: 'Support Athar', labelMs: 'Sokong Athar' },
       { id: 'initiatives-list', labelAr: 'المبادرات والمساعدات', labelEn: 'Initiatives & Grants', labelMs: 'Inisiatif & Bantuan' },
     ]
   },
