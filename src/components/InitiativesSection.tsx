@@ -7,13 +7,14 @@ import { useInitiatives, useEvents, useCalendar } from '@/lib/content-provider';
 interface InitiativesSectionProps {
   currentLang: Language;
   activeSub?: string;
+  onNavigate?: (section: string, sub: string) => void;
 }
 
-export default function InitiativesSection({ currentLang, activeSub }: InitiativesSectionProps) {
+export default function InitiativesSection({ currentLang, activeSub, onNavigate }: InitiativesSectionProps) {
   const INITIATIVES_LIST = useInitiatives();
   const EVENTS_LIST = useEvents() as any[];
   const CALENDAR = useCalendar() as any;
-  const [activeTab, setActiveTab] = React.useState(activeSub || 'initiatives-list');
+  const [activeTab, setActiveTab] = React.useState(activeSub || 'annual-calendar');
 
   useEffect(() => {
     if (activeSub) {
@@ -23,10 +24,11 @@ export default function InitiativesSection({ currentLang, activeSub }: Initiativ
     }
   }, [activeSub]);
 
+  // Order: Annual Calendar → Active Events → Initiatives & Grants
   const tabs = [
-    { id: 'initiatives-list', labelAr: 'المبادرات والمساعدات', labelEn: 'Initiatives & Grants', labelMs: 'Inisiatif & Bantuan' },
-    { id: 'events-list', labelAr: 'الفعاليات الحالية', labelEn: 'Active Events', labelMs: 'Acara Aktif' },
     { id: 'annual-calendar', labelAr: 'التقويم السنوي', labelEn: 'Annual Calendar', labelMs: 'Kalendar Tahunan' },
+    { id: 'events-list', labelAr: 'الفعاليات الحالية', labelEn: 'Active Events', labelMs: 'Acara Aktif' },
+    { id: 'initiatives-list', labelAr: 'المبادرات والمساعدات', labelEn: 'Initiatives & Grants', labelMs: 'Inisiatif & Bantuan' },
   ];
 
   const calendarEvents = (CALENDAR?.events || []) as any[];
@@ -55,7 +57,7 @@ export default function InitiativesSection({ currentLang, activeSub }: Initiativ
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => (onNavigate ? onNavigate('media', tab.id) : setActiveTab(tab.id))}
                 className={`px-5 py-3 rounded-full text-xs sm:text-sm font-bold border transition-all duration-300 w-max shrink-0 cursor-pointer ${
                   isSelected
                     ? 'bg-brand-blue-dark border-brand-gold text-brand-gold shadow-md'

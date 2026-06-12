@@ -177,7 +177,7 @@ export default function SiteApp({ initialSection = 'home', initialSub = '' }: Si
         <main className="flex-grow">
           <AnimatePresence mode="wait">
             <motion.div
-              key={`${activeSection}-${activeSubSection}`}
+              key={activeSection}
               id={activeSection}
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -194,12 +194,12 @@ export default function SiteApp({ initialSection = 'home', initialSub = '' }: Si
                   ) : activeSubSection === 'faq' ? (
                     <FAQ currentLang={currentLang} />
                   ) : (
-                    <AboutSection currentLang={currentLang} activeSub={activeSubSection || 'who-we-are'} />
+                    <AboutSection currentLang={currentLang} activeSub={activeSubSection || 'who-we-are'} onNavigate={handleSectionChange} />
                   )}
                 </>
               )}
               {activeSection === 'programs' && (
-                <ProgramCatalog currentLang={currentLang} activeSub={activeSubSection || 'quran-circles'} onSelectProgram={handleAccessPortal} />
+                <ProgramCatalog currentLang={currentLang} activeSub={activeSubSection || 'quran-circles'} onSelectProgram={handleAccessPortal} onNavigate={handleSectionChange} />
               )}
               {activeSection === 'solutions' && (
                 <>
@@ -215,9 +215,9 @@ export default function SiteApp({ initialSection = 'home', initialSub = '' }: Si
               {activeSection === 'media' && (
                 <>
                   {['annual-calendar', 'initiatives-list', 'events-list'].includes(activeSubSection) ? (
-                    <InitiativesSection currentLang={currentLang} activeSub={activeSubSection} />
+                    <InitiativesSection currentLang={currentLang} activeSub={activeSubSection} onNavigate={handleSectionChange} />
                   ) : (
-                    <MediaSection currentLang={currentLang} activeSub={activeSubSection || 'news'} />
+                    <MediaSection currentLang={currentLang} activeSub={activeSubSection || 'news'} onNavigate={handleSectionChange} />
                   )}
                 </>
               )}
@@ -226,6 +226,7 @@ export default function SiteApp({ initialSection = 'home', initialSub = '' }: Si
                   currentLang={currentLang}
                   sectionKey="support"
                   activeSub={activeSubSection}
+                  onNavigate={handleSectionChange}
                   headingAr="المشاركة والدعم"
                   headingEn="Participate & Support"
                   headingMs="Sertai & Sokong"
@@ -238,6 +239,7 @@ export default function SiteApp({ initialSection = 'home', initialSub = '' }: Si
                   currentLang={currentLang}
                   sectionKey="admission"
                   activeSub={activeSubSection}
+                  onNavigate={handleSectionChange}
                   headingAr="القبول والتسجيل"
                   headingEn="Admission & Registration"
                   headingMs="Kemasukan & Pendaftaran"
@@ -251,6 +253,7 @@ export default function SiteApp({ initialSection = 'home', initialSub = '' }: Si
                   sectionKey="finance"
                   activeSub={activeSubSection}
                   includeCalculator
+                  onNavigate={handleSectionChange}
                   headingAr="التبرعات والرسوم"
                   headingEn="Donations & Fees"
                   headingMs="Derma & Yuran"

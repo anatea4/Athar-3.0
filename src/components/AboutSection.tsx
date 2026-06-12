@@ -7,6 +7,7 @@ import { useAbout, useTeam, usePartners } from '@/lib/content-provider';
 interface AboutSectionProps {
   currentLang: Language;
   activeSub?: string;
+  onNavigate?: (section: string, sub: string) => void;
 }
 
 // A logo can be either a short emoji/initials (text) or an uploaded image URL.
@@ -22,7 +23,7 @@ function isImageSrc(v?: string): boolean {
   );
 }
 
-export default function AboutSection({ currentLang, activeSub }: AboutSectionProps) {
+export default function AboutSection({ currentLang, activeSub, onNavigate }: AboutSectionProps) {
   const ACADEMY_PROFILE = useAbout();
   const TEAM_MEMBERS = useTeam();
   const PARTNERS = usePartners();
@@ -85,7 +86,7 @@ export default function AboutSection({ currentLang, activeSub }: AboutSectionPro
               return (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => (onNavigate ? onNavigate('about', tab.id) : setActiveTab(tab.id))}
                   className={`flex items-center gap-3 px-5 py-4 text-xs font-bold rounded-2xl border transition-all duration-300 w-max lg:w-full shrink-0 cursor-pointer ${
                     isSelected
                       ? 'bg-brand-blue-dark border-brand-gold text-brand-gold shadow-lg shadow-brand-blue-dark/20 scale-[1.02]'

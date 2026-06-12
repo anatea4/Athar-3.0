@@ -15,6 +15,7 @@ import PageBuilder from '@/components/admin/PageBuilder';
 import SubmissionsInbox from '@/components/admin/SubmissionsInbox';
 import NavManager from '@/components/admin/NavManager';
 import FormsManager from '@/components/admin/FormsManager';
+import DigitalLibraryEditor from '@/components/admin/DigitalLibraryEditor';
 
 type AdminUser = { id: string; email: string; isSuper: boolean };
 type Tab =
@@ -557,6 +558,7 @@ export default function AdminPage() {
           <div className={`flex gap-6 ${showPreview ? '' : ''}`}>
             <div className="flex-1 min-w-0">
               <SectionEditor
+                sectionId={activeTab}
                 label={SECTIONS.find((s) => s.id === activeTab)?.label || activeTab}
                 currentData={content[activeTab]}
                 editorData={editorData}
@@ -741,6 +743,7 @@ function StatCard({ label, value, icon, color }: { label: string; value: number 
 }
 
 function SectionEditor({
+  sectionId,
   label,
   currentData,
   editorData,
@@ -794,7 +797,11 @@ function SectionEditor({
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-slate-200 p-6">
-          <SmartEditor data={editorData} onChange={setEditorData} onToast={addToast} />
+          {sectionId === 'digital_library' ? (
+            <DigitalLibraryEditor value={editorData} onChange={setEditorData} onToast={addToast} />
+          ) : (
+            <SmartEditor data={editorData} onChange={setEditorData} onToast={addToast} />
+          )}
         </div>
       )}
 

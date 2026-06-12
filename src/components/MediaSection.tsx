@@ -7,6 +7,8 @@ import { useMediaNews, useMediaArticles, useDigitalLibrary, useGallery, useCalen
 interface MediaSectionProps {
   currentLang: Language;
   activeSub?: string;
+  // When provided, tab clicks navigate (update the URL to /media/<tab>) instead of switching locally.
+  onNavigate?: (section: string, sub: string) => void;
 }
 
 // Detect media type from any pasted URL (image / YouTube / Vimeo / direct video)
@@ -20,7 +22,7 @@ function getMedia(url: string): { kind: 'image' | 'youtube' | 'vimeo' | 'video';
   return { kind: 'image', src: u };
 }
 
-export default function MediaSection({ currentLang, activeSub }: MediaSectionProps) {
+export default function MediaSection({ currentLang, activeSub, onNavigate }: MediaSectionProps) {
   const MEDIA_NEWS = useMediaNews();
   const MEDIA_ARTICLES = useMediaArticles();
   const DIGITAL_LIBRARY = useDigitalLibrary();
@@ -65,7 +67,7 @@ export default function MediaSection({ currentLang, activeSub }: MediaSectionPro
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => (onNavigate ? onNavigate('media', tab.id) : setActiveTab(tab.id))}
                 className={`flex items-center gap-2 px-5 py-3.5 text-xs font-bold rounded-full border transition-all duration-300 w-max shrink-0 cursor-pointer ${
                   isSelected
                     ? 'bg-brand-blue-dark border-brand-gold text-brand-gold shadow-md'

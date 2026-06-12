@@ -11,9 +11,10 @@ interface ProgramCatalogProps {
   currentLang: Language;
   activeSub?: string;
   onSelectProgram?: (id: string) => void;
+  onNavigate?: (section: string, sub: string) => void;
 }
 
-export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram }: ProgramCatalogProps) {
+export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram, onNavigate }: ProgramCatalogProps) {
   const DETAILED_PROGRAMS = useDetailedPrograms();
   const ACADEMY_STATS = useStats();
   const PROGRAMS = usePrograms();
@@ -85,7 +86,7 @@ export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => (onNavigate ? onNavigate('programs', tab.id) : setActiveTab(tab.id))}
                 className={`flex items-center gap-2 px-5 py-3.5 text-xs font-bold rounded-full border transition-all duration-300 w-max shrink-0 cursor-pointer ${
                   isSelected
                     ? 'bg-brand-blue-dark border-brand-gold text-brand-gold shadow-md'
