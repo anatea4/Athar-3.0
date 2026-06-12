@@ -177,7 +177,7 @@ export default function SiteApp({ initialSection = 'home', initialSub = '' }: Si
         <main className="flex-grow">
           <AnimatePresence mode="wait">
             <motion.div
-              key={`${activeSection}-${activeSubSection}`}
+              key={activeSection}
               id={activeSection}
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -217,7 +217,7 @@ export default function SiteApp({ initialSection = 'home', initialSub = '' }: Si
                   {['annual-calendar', 'initiatives-list', 'events-list'].includes(activeSubSection) ? (
                     <InitiativesSection currentLang={currentLang} activeSub={activeSubSection} />
                   ) : (
-                    <MediaSection currentLang={currentLang} activeSub={activeSubSection || 'news'} />
+                    <MediaSection currentLang={currentLang} activeSub={activeSubSection || 'news'} onNavigate={handleSectionChange} />
                   )}
                 </>
               )}
