@@ -1071,17 +1071,49 @@ function SettingsTab({ settings, onSave }: { settings: Record<string, string>; o
   const [resendKey, setResendKey] = useState(settings.resend_api_key || '');
   const [emailFrom, setEmailFrom] = useState(settings.email_from || '');
   const [geminiKey, setGeminiKey] = useState(settings.gemini_api_key || '');
+  const [maintenance, setMaintenance] = useState(settings.maintenance_mode === 'true');
   useEffect(() => {
     setSiteName(settings.site_name || 'Athar Academy');
     setNotifyEmail(settings.notify_email || '');
     setResendKey(settings.resend_api_key || '');
     setEmailFrom(settings.email_from || '');
     setGeminiKey(settings.gemini_api_key || '');
+    setMaintenance(settings.maintenance_mode === 'true');
   }, [settings]);
 
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-brand-blue-dark font-serif">الإعدادات العامة</h1>
+
+      {/* Maintenance mode */}
+      <div className={`rounded-2xl border-2 p-6 shadow-sm transition-colors ${maintenance ? 'bg-red-50 border-red-300' : 'bg-emerald-50 border-emerald-300'}`}>
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <h2 className="text-lg font-bold text-brand-blue-dark flex items-center gap-2">
+              {maintenance ? '🔴' : '🟢'} وضع الصيانة
+            </h2>
+            <p className="text-xs text-slate-600 mt-1 max-w-md leading-relaxed">
+              عند التفعيل، يُغلق الموقع أمام الزوّار وتظهر صفحة «الموقع تحت الصيانة» بثلاث لغات.
+              لوحة التحكم تبقى تعمل لتقدر تعيد تشغيل الموقع.
+            </p>
+            <p className="text-xs font-bold mt-2">
+              الحالة الآن: {maintenance
+                ? <span className="text-red-600">الموقع مُغلق (تحت الصيانة)</span>
+                : <span className="text-emerald-700">الموقع يعمل ومتاح للزوّار</span>}
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              const v = !maintenance;
+              setMaintenance(v);
+              onSave('maintenance_mode', v ? 'true' : 'false');
+            }}
+            className={`px-5 py-2.5 rounded-xl font-bold text-sm text-white shrink-0 transition-colors ${maintenance ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-red-600 hover:bg-red-700'}`}
+          >
+            {maintenance ? '▶ تشغيل الموقع' : '⏸ إغلاق للصيانة'}
+          </button>
+        </div>
+      </div>
 
       <div className="bg-white rounded-2xl border border-brand-gold/20 p-6 space-y-4 shadow-sm">
         <div>
