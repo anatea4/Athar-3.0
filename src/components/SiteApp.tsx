@@ -106,6 +106,26 @@ export default function SiteApp({ initialSection = 'home', initialSub = '' }: Si
     setTimeout(() => setShowNotification(false), 4500);
   };
 
+  // Show a confirmation after returning from Stripe Checkout (?payment=success|cancelled)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const status = new URLSearchParams(window.location.search).get('payment');
+    if (status === 'success') {
+      triggerBannerNotification(
+        'Payment successful — thank you! A receipt has been emailed to you.',
+        'تم الدفع بنجاح — جزاك الله خيراً! وصلك إيصال على بريدك.',
+        'Pembayaran berjaya — terima kasih! Resit telah dihantar ke e-mel anda.'
+      );
+    } else if (status === 'cancelled') {
+      triggerBannerNotification(
+        'Payment was cancelled.',
+        'تم إلغاء عملية الدفع.',
+        'Pembayaran dibatalkan.'
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleSectionChange = (sectionId: string, subSectionId: string = '') => {
     const isSameSection = activeSection === sectionId;
     setActiveSection(sectionId);
