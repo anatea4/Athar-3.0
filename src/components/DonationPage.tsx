@@ -1,9 +1,9 @@
 'use client';
 import React, { useState } from 'react';
 import { 
-  Heart, Sparkles, Gift, CheckCircle2, Award, Users, 
+  Heart, Sparkles, Gift, CheckCircle2, Award, Users,
   ShieldCheck, BookOpen, QrCode, Smartphone, CreditCard,
-  Briefcase, GraduationCap
+  Briefcase, GraduationCap, Loader2
 } from 'lucide-react';
 import { Language } from '@/types';
 import { FormDef } from './DynamicForm';
@@ -236,6 +236,9 @@ export default function DonationPage({ currentLang, form }: DonationPageProps) {
   const [donorName, setDonorName] = useState('');
   const [donationSuccess, setDonationSuccess] = useState(false);
   const [donationTierSelected, setDonationTierSelected] = useState<string>('');
+  const [donorEmail, setDonorEmail] = useState('');
+  const [processing, setProcessing] = useState(false);
+  const [payError, setPayError] = useState('');
 
   React.useEffect(() => {
     if (campaigns.length > 0) {
@@ -271,11 +274,34 @@ export default function DonationPage({ currentLang, form }: DonationPageProps) {
     return selectedAmount;
   };
 
-  const handleDonationSubmit = (e: React.FormEvent) => {
+  const handleDonationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (getDonationAmount() <= 0) return;
-    setDonationSuccess(true);
-    scrollToTop();
+    const amount = getDonationAmount();
+    if (amount <= 0) return;
+    setPayError('');
+    setProcessing(true);
+    try {
+      const campaign = campaigns.find((c) => c.id === donationTierSelected);
+      const description = `${t.title}${campaign ? ' — ' + pick(campaign, 'label', currentLang) : ''}`;
+      const res = await fetch('/api/payments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount, currency: 'MYR', description, customerEmail: donorEmail }),
+      });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        window.location.href = data.url; // → Stripe Checkout (hosted)
+        return;
+      }
+      setPayError(
+        data.error ||
+          (currentLang === 'ms' ? 'Pembayaran belum diaktifkan.' : currentLang === 'en' ? 'Payments are not enabled yet.' : 'المدفوعات غير مفعّلة بعد، يرجى المحاولة لاحقاً.')
+      );
+    } catch {
+      setPayError(currentLang === 'ms' ? 'Ralat sambungan.' : currentLang === 'en' ? 'Connection error.' : 'حدث خطأ في الاتصال، حاول مجدداً.');
+    } finally {
+      setProcessing(false);
+    }
   };
 
   const handleReset = () => {
@@ -589,6 +615,8 @@ export default function DonationPage({ currentLang, form }: DonationPageProps) {
                       <input
                         type="email"
                         required
+                        value={donorEmail}
+                        onChange={(e) => setDonorEmail(e.target.value)}
                         placeholder={t.emailPlaceholder}
                         className="w-full bg-white border border-slate-200 focus:border-brand-gold outline-none p-3 px-4 rounded-xl text-xs sm:text-sm font-sans text-left rtl:text-right"
                       />
@@ -598,15 +626,24 @@ export default function DonationPage({ currentLang, form }: DonationPageProps) {
 
                 {/* Submit button */}
                 <div className="pt-2">
+                  {payError && (
+                    <p className="mb-3 text-[11px] text-red-600 font-sans text-center bg-red-50 border border-red-200 rounded-xl py-2 px-3">
+                      {payError}
+                    </p>
+                  )}
                   <button
                     type="submit"
-                    className="w-full bg-brand-blue-dark text-brand-gold hover:bg-brand-gold hover:text-brand-blue-dark transition-all font-serif font-bold text-xs p-4 rounded-2xl uppercase tracking-wider shadow-md hover:scale-[1.01] duration-300 font-classical cursor-pointer select-none"
+                    disabled={processing}
+                    className="w-full bg-brand-blue-dark text-brand-gold hover:bg-brand-gold hover:text-brand-blue-dark transition-all font-serif font-bold text-xs p-4 rounded-2xl uppercase tracking-wider shadow-md hover:scale-[1.01] duration-300 font-classical cursor-pointer select-none disabled:opacity-60 flex items-center justify-center gap-2"
                   >
-                    {t.submitBtn(getDonationAmount())}
+                    {processing && <Loader2 className="h-4 w-4 animate-spin" />}
+                    {processing
+                      ? (currentLang === 'ms' ? 'Mengalihkan ke pembayaran...' : currentLang === 'en' ? 'Redirecting to payment...' : 'جارٍ التحويل لصفحة الدفع...')
+                      : t.submitBtn(getDonationAmount())}
                   </button>
                   <div className="flex items-center justify-center gap-1.5 mt-3 text-[10px] text-slate-400 font-sans select-none">
                     <ShieldCheck className="h-4 w-4 text-emerald-600" />
-                    <span>{t.secureLabel}</span>
+                    <span>{currentLang === 'ms' ? 'Pembayaran selamat melalui Stripe' : currentLang === 'en' ? 'Secure payment via Stripe' : 'دفع آمن عبر Stripe'}</span>
                   </div>
                 </div>
 

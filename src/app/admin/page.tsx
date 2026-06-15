@@ -971,11 +971,13 @@ function AdminsTab({
 function PaymentsTab({ settings, onSave }: { settings: Record<string, string>; onSave: (k: string, v: string) => void }) {
   const [pubKey, setPubKey] = useState(settings.stripe_publishable_key || '');
   const [secretKey, setSecretKey] = useState(settings.stripe_secret_key || '');
+  const [webhookSecret, setWebhookSecret] = useState(settings.stripe_webhook_secret || '');
   const [enabled, setEnabled] = useState(settings.payment_enabled === 'true');
 
   useEffect(() => {
     setPubKey(settings.stripe_publishable_key || '');
     setSecretKey(settings.stripe_secret_key || '');
+    setWebhookSecret(settings.stripe_webhook_secret || '');
     setEnabled(settings.payment_enabled === 'true');
   }, [settings]);
 
@@ -1031,6 +1033,26 @@ function PaymentsTab({ settings, onSave }: { settings: Record<string, string>; o
           >
             حفظ
           </button>
+        </div>
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-1">Stripe Webhook Secret</label>
+          <input
+            type="password"
+            value={webhookSecret}
+            onChange={(e) => setWebhookSecret(e.target.value)}
+            placeholder="whsec_..."
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg font-mono text-xs"
+            dir="ltr"
+          />
+          <button
+            onClick={() => onSave('stripe_webhook_secret', webhookSecret)}
+            className="mt-2 text-xs bg-brand-gold hover:bg-brand-gold-dark text-white px-3 py-1 rounded"
+          >
+            حفظ
+          </button>
+          <p className="text-[11px] text-slate-400 mt-1.5">
+            لتأكيد الدفع تلقائياً: أنشئ Webhook في Stripe على المسار <span className="font-mono" dir="ltr">/api/payments/webhook</span> وانسخ سرّه هنا.
+          </p>
         </div>
         <div className="text-xs text-slate-500 bg-slate-50 p-3 rounded">
           💡 أنشئ المفاتيح من Dashboard Stripe الخاص بك في{' '}
