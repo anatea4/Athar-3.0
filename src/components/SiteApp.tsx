@@ -18,6 +18,7 @@ import FloatingChatbot from '@/components/FloatingChatbot';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import FormsSection from '@/components/FormsSection';
 import Preloader from '@/components/Preloader';
+import MaintenanceScreen from '@/components/MaintenanceScreen';
 import { scrollToSection } from '@/lib/scroll';
 import { viewToPath, pathToView } from '@/lib/sections';
 import { Language } from '@/types';
@@ -34,6 +35,7 @@ export default function SiteApp({ initialSection = 'home', initialSub = '' }: Si
   const [activeSection, setActiveSection] = useState<string>(initialSection);
   const [activeSubSection, setActiveSubSection] = useState<string>(initialSub);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [maintenance, setMaintenance] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   const [notifyMsgEn, setNotifyMsgEn] = useState('');
   const [notifyMsgAr, setNotifyMsgAr] = useState('');
@@ -49,6 +51,19 @@ export default function SiteApp({ initialSection = 'home', initialSub = '' }: Si
   useEffect(() => {
     const t = setTimeout(() => setIsLoading(false), 3000);
     return () => clearTimeout(t);
+  }, []);
+
+  // Maintenance mode: if turned on from the dashboard, show the maintenance page to visitors.
+  // Skipped inside the admin live-preview so editors can still preview content.
+  useEffect(() => {
+    const inPreview =
+      typeof window !== 'undefined' &&
+      (window.parent !== window || new URLSearchParams(window.location.search).get('preview') === '1');
+    if (inPreview) return;
+    fetch('/api/maintenance')
+      .then((r) => r.json())
+      .then((d) => setMaintenance(!!d.maintenance))
+      .catch(() => {});
   }, []);
 
   // Back/forward buttons: sync the visible section to the URL path.
@@ -155,6 +170,11 @@ export default function SiteApp({ initialSection = 'home', initialSub = '' }: Si
   };
 
   const handlePreloaderComplete = React.useCallback(() => setIsLoading(false), []);
+
+  // Maintenance mode → show the trilingual maintenance page instead of the site.
+  if (maintenance) {
+    return <MaintenanceScreen />;
+  }
 
   return (
     <>

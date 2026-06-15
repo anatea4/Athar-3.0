@@ -66,7 +66,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Stripe is not configured' }, { status: 503 });
   }
 
-  const stripe = new Stripe(stripeKey, { apiVersion: '2024-12-18.acacia' as any });
+  // Fetch-based HTTP client works on both Node and the Cloudflare Workers runtime.
+  const stripe = new Stripe(stripeKey, {
+    apiVersion: '2024-12-18.acacia' as any,
+    httpClient: Stripe.createFetchHttpClient(),
+  });
 
   try {
     // Create a Stripe Checkout Session for hosted payment flow
