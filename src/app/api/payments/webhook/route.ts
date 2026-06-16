@@ -41,7 +41,11 @@ export async function POST(req: NextRequest) {
       const session = event.data.object as Stripe.Checkout.Session;
       await supabaseAdmin
         .from('payments')
-        .update({ status: 'paid' })
+        .update({
+          status: 'paid',
+          customer_email: session.customer_details?.email || session.customer_email || null,
+          customer_name: session.customer_details?.name || null,
+        })
         .eq('stripe_payment_id', session.id);
 
       // Send a branded thank-you / receipt email to the donor.

@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { Language } from '@/types';
 import { FormDef } from './DynamicForm';
+import EmbeddedDonateCheckout from './EmbeddedDonateCheckout';
 
 interface DonationPageProps {
   currentLang: Language;
@@ -239,6 +240,15 @@ export default function DonationPage({ currentLang, form }: DonationPageProps) {
   const [donorEmail, setDonorEmail] = useState('');
   const [processing, setProcessing] = useState(false);
   const [payError, setPayError] = useState('');
+  const [publishableKey, setPublishableKey] = useState('');
+  const [showCheckout, setShowCheckout] = useState(false);
+
+  React.useEffect(() => {
+    fetch('/api/payments/config')
+      .then((r) => r.json())
+      .then((d) => setPublishableKey(d.publishableKey || ''))
+      .catch(() => {});
+  }, []);
 
   React.useEffect(() => {
     if (campaigns.length > 0) {
@@ -279,6 +289,8 @@ export default function DonationPage({ currentLang, form }: DonationPageProps) {
     const amount = getDonationAmount();
     if (amount <= 0) return;
     setPayError('');
+    // In-site embedded checkout (preferred). Falls back to hosted redirect if no key.
+    if (publishableKey) { setShowCheckout(true); return; }
     setProcessing(true);
     try {
       const campaign = campaigns.find((c) => c.id === donationTierSelected);
@@ -838,6 +850,18 @@ export default function DonationPage({ currentLang, form }: DonationPageProps) {
         </div>
 
       </div>
+
+      {showCheckout && publishableKey && (
+        <EmbeddedDonateCheckout
+          publishableKey={publishableKey}
+          amount={getDonationAmount()}
+          currency="MYR"
+          description={t.title}
+          email={donorEmail}
+          name={donorName}
+          onClose={() => setShowCheckout(false)}
+        />
+      )}
     </div>
   );
 }

@@ -45,7 +45,7 @@ export async function GET() {
 // POST: create a payment intent / checkout session
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { amount, currency = 'MYR', description, programId, customerEmail } = body;
+  const { amount, currency = 'MYR', description, programId, customerEmail, customerName, embedded } = body;
 
   if (!amount || amount <= 0) {
     return NextResponse.json({ error: 'Amount required' }, { status: 400 });
@@ -73,9 +73,9 @@ export async function POST(req: NextRequest) {
   });
 
   try {
-    // Create a Stripe Checkout Session for hosted payment flow
-    const sessionStripe = await stripe.checkout.sessions.create({
-      mode: 'payment',
+    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+    const common = {
+      mode: 'payment' as const,
       line_items: [
         {
           price_data: {
@@ -86,22 +86,39 @@ export async function POST(req: NextRequest) {
           quantity: 1,
         },
       ],
-      customer_email: customerEmail,
-      success_url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/?payment=cancelled`,
+      customer_email: customerEmail || undefined,
       metadata: { programId: programId || '' },
-    });
+    };
 
-    // Store payment record
+    // embedded = in-site checkout (returns a client_secret); otherwise hosted (returns a url)
+    const sessionStripe = embedded
+      ? await stripe.checkout.sessions.create({
+          ...common,
+          ui_mode: 'embedded' as any,
+          return_url: `${baseUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+        } as any)
+      : await stripe.checkout.sessions.create({
+          ...common,
+          success_url: `${baseUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+          cancel_url: `${baseUrl}/?payment=cancelled`,
+        });
+
+    // Store payment record (with payer details for the dashboard)
     await supabaseAdmin.from('payments').insert({
       amount,
       currency,
       status: 'pending',
       description: description || 'Tuition',
       stripe_payment_id: sessionStripe.id,
+      customer_email: customerEmail || null,
+      customer_name: customerName || null,
     });
 
-    return NextResponse.json({ url: sessionStripe.url, id: sessionStripe.id });
+    return NextResponse.json(
+      embedded
+        ? { clientSecret: sessionStripe.client_secret, id: sessionStripe.id }
+        : { url: sessionStripe.url, id: sessionStripe.id }
+    );
   } catch (e: any) {
     return NextResponse.json({ error: e.message || 'Stripe error' }, { status: 500 });
   }

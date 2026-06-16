@@ -1026,6 +1026,8 @@ function PaymentsTab() {
               <thead className="bg-slate-50 text-slate-500 text-xs">
                 <tr>
                   <th className="px-4 py-2.5 font-bold">المبلغ</th>
+                  <th className="px-4 py-2.5 font-bold">الاسم</th>
+                  <th className="px-4 py-2.5 font-bold">البريد</th>
                   <th className="px-4 py-2.5 font-bold">الوصف</th>
                   <th className="px-4 py-2.5 font-bold">الحالة</th>
                   <th className="px-4 py-2.5 font-bold">التاريخ</th>
@@ -1035,6 +1037,8 @@ function PaymentsTab() {
                 {payments.slice(0, 100).map((p) => (
                   <tr key={p.id} className="border-t border-slate-100">
                     <td className="px-4 py-2.5 font-bold text-brand-blue-dark whitespace-nowrap">{Number(p.amount).toLocaleString()} {p.currency || 'MYR'}</td>
+                    <td className="px-4 py-2.5 text-slate-700">{p.customer_name || '—'}</td>
+                    <td className="px-4 py-2.5 text-slate-500 text-xs" dir="ltr">{p.customer_email || '—'}</td>
                     <td className="px-4 py-2.5 text-slate-600">{p.description || '—'}</td>
                     <td className="px-4 py-2.5">
                       <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${p.status === 'paid' ? 'bg-emerald-100 text-emerald-700' : p.status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'}`}>
