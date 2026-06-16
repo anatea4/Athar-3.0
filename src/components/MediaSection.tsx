@@ -31,6 +31,16 @@ function fileLink(url: string): string {
   return u;
 }
 
+// Clean short badge for the digital-library item ("PDF" / "ملف" …).
+// Guards against a URL fragment accidentally stored in the type field.
+function docBadge(type: string, url: string): string {
+  const t = (type || '').trim();
+  const looksBad = !t || t.length > 6 || /[\/:?=]/.test(t) || /https?|www|com|file|view|drive|sharing/i.test(t);
+  if (!looksBad) return t.toUpperCase();
+  const ext = (url || '').split(/[?#]/)[0].match(/\.([a-z0-9]{2,5})$/i);
+  return ext ? ext[1].toUpperCase() : 'ملف';
+}
+
 export default function MediaSection({ currentLang, activeSub, onNavigate }: MediaSectionProps) {
   const MEDIA_NEWS = useMediaNews();
   const MEDIA_ARTICLES = useMediaArticles();
@@ -159,7 +169,7 @@ export default function MediaSection({ currentLang, activeSub, onNavigate }: Med
                   <div key={idx} className="p-4 bg-brand-sand/60 border border-brand-gold/15 rounded-xl hover:bg-brand-gold/5 hover:border-brand-gold/45 transition-colors duration-300 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
                       <div className="p-2.5 bg-brand-gold/10 text-brand-gold-dark rounded-lg font-bold text-xs uppercase font-sans">
-                        {doc.type}
+                        {docBadge(doc.type, (doc as any).url)}
                       </div>
                       <div className="text-right rtl:text-right ltr:text-left space-y-0.5">
                         <h4 className="text-xs sm:text-sm font-bold text-brand-blue-dark">
