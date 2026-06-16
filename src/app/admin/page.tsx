@@ -1164,6 +1164,8 @@ function SettingsTab({ settings, onSave }: { settings: Record<string, string>; o
   const [seoDesc, setSeoDesc] = useState(settings.seo_description || '');
   const [seoKeywords, setSeoKeywords] = useState(settings.seo_keywords || '');
   const [seoImage, setSeoImage] = useState(settings.seo_image || '');
+  const [tsSite, setTsSite] = useState(settings.turnstile_site_key || '');
+  const [tsSecret, setTsSecret] = useState(settings.turnstile_secret_key || '');
   const [maintenance, setMaintenance] = useState(settings.maintenance_mode === 'true');
   const [testMsg, setTestMsg] = useState('');
   const [testing, setTesting] = useState(false);
@@ -1189,6 +1191,8 @@ function SettingsTab({ settings, onSave }: { settings: Record<string, string>; o
     setSeoDesc(settings.seo_description || '');
     setSeoKeywords(settings.seo_keywords || '');
     setSeoImage(settings.seo_image || '');
+    setTsSite(settings.turnstile_site_key || '');
+    setTsSecret(settings.turnstile_secret_key || '');
     setMaintenance(settings.maintenance_mode === 'true');
   }, [settings]);
 
@@ -1372,6 +1376,32 @@ function SettingsTab({ settings, onSave }: { settings: Record<string, string>; o
             className="w-full px-4 py-2 border border-slate-300 rounded-lg text-xs focus:outline-none focus:border-brand-gold" />
           <button onClick={() => onSave('seo_image', seoImage)} className="mt-2 text-xs bg-brand-gold hover:bg-brand-gold-dark text-white px-4 py-1.5 rounded-lg font-bold">حفظ</button>
           <p className="text-[11px] text-slate-400 mt-1.5">هذه الصورة تظهر عند مشاركة رابط الموقع. يُفضّل 1200×630 بكسل.</p>
+        </div>
+      </div>
+
+      {/* Cloudflare Turnstile protection */}
+      <div className="bg-white rounded-2xl border border-brand-gold/20 p-6 space-y-4 shadow-sm">
+        <div>
+          <h2 className="text-lg font-bold text-brand-blue-dark">حماية Cloudflare (Turnstile)</h2>
+          <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+            تمنع البوتات والإرسال المزعج عن نماذج التسجيل والتواصل. احصل على المفتاحين من{' '}
+            <a href="https://dash.cloudflare.com/?to=/:account/turnstile" target="_blank" rel="noopener noreferrer" className="text-brand-blue underline font-bold">Cloudflare → Turnstile</a>
+            {' '}(أضف موقعاً، النوع Managed). تظهر الحماية تلقائياً بمجرد حفظ المفتاحين.
+          </p>
+        </div>
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-1">Site Key (علني)</label>
+          <input type="text" value={tsSite} onChange={(e) => setTsSite(e.target.value)} dir="ltr"
+            placeholder="0x4AAAAAAA..."
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg font-mono text-xs focus:outline-none focus:border-brand-gold" />
+          <button onClick={() => onSave('turnstile_site_key', tsSite)} className="mt-2 text-xs bg-brand-gold hover:bg-brand-gold-dark text-white px-4 py-1.5 rounded-lg font-bold">حفظ</button>
+        </div>
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-1">Secret Key (سرّي)</label>
+          <input type="password" value={tsSecret} onChange={(e) => setTsSecret(e.target.value)} dir="ltr"
+            placeholder="0x4AAAAAAA...secret"
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg font-mono text-xs focus:outline-none focus:border-brand-gold" />
+          <button onClick={() => onSave('turnstile_secret_key', tsSecret)} className="mt-2 text-xs bg-brand-gold hover:bg-brand-gold-dark text-white px-4 py-1.5 rounded-lg font-bold">حفظ</button>
         </div>
       </div>
 

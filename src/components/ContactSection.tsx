@@ -4,6 +4,7 @@ import { Phone, Mail, Globe, Send, CheckCircle2 } from 'lucide-react';
 import { Language } from '@/types';
 import { useContact } from '@/lib/content-provider';
 import { submitForm } from '@/lib/submit-form';
+import TurnstileWidget from '@/components/TurnstileWidget';
 
 interface ContactSectionProps {
   currentLang: Language;
@@ -15,6 +16,7 @@ export default function ContactSection({ currentLang }: ContactSectionProps) {
   const [phone, setPhone] = useState('');
   const [msg, setMsg] = useState('');
   const [sent, setSent] = useState(false);
+  const [tsToken, setTsToken] = useState('');
   // Anti-scraping: phone & email stay hidden until the visitor taps to reveal them.
   const [revealContact, setRevealContact] = useState(false);
   const revealHint =
@@ -23,7 +25,7 @@ export default function ContactSection({ currentLang }: ContactSectionProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !phone || !msg) return;
-    submitForm('contact', { name, phone, message: msg });
+    submitForm('contact', { name, phone, message: msg }, tsToken);
     setSent(true);
     setTimeout(() => {
       setSent(false);
@@ -206,6 +208,8 @@ export default function ContactSection({ currentLang }: ContactSectionProps) {
                       required
                     />
                   </div>
+
+                  <TurnstileWidget onVerify={setTsToken} />
 
                   <button
                     type="submit"

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { createClient } from '@supabase/supabase-js';
 import { notifyNewSubmission } from '@/lib/notify';
+import { verifyTurnstile } from '@/lib/turnstile';
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -23,6 +24,11 @@ async function getSession() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+
+    // Cloudflare Turnstile anti-bot check (no-op if not configured)
+    const ok = await verifyTurnstile(body.turnstileToken);
+    if (!ok) return NextResponse.json({ error: 'فشل التحقق الأمني، حاول مرة أخرى.' }, { status: 403 });
+
     const form_type = (body.form_type || 'general').toString().slice(0, 50);
     const data = body.data && typeof body.data === 'object' ? body.data : {};
 

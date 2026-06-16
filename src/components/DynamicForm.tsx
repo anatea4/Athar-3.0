@@ -7,6 +7,7 @@ import {
   CreditCard, ShieldCheck, Sparkles
 } from 'lucide-react';
 import { submitForm } from '@/lib/submit-form';
+import TurnstileWidget from '@/components/TurnstileWidget';
 
 export interface FormField {
   key: string;
@@ -287,6 +288,7 @@ export default function DynamicForm({ form, lang }: { form: FormDef; lang: Langu
   const [done, setDone] = useState(false);
   const [consentChecked, setConsentChecked] = useState(false);
   const [error, setError] = useState('');
+  const [tsToken, setTsToken] = useState('');
 
   // Payment states if QR is enabled
   const [method, setMethod] = useState<'form' | 'qr'>('form');
@@ -324,7 +326,7 @@ export default function DynamicForm({ form, lang }: { form: FormDef; lang: Langu
       payload[label] = values[f.key] || '';
     }
 
-    const ok = await submitForm(form.submitType || 'registration', payload);
+    const ok = await submitForm(form.submitType || 'registration', payload, tsToken);
     setSending(false);
     if (ok) {
       setDone(true);
@@ -351,7 +353,7 @@ export default function DynamicForm({ form, lang }: { form: FormDef; lang: Langu
       'المبلغ بالرنجت': `${qrAmount} RM`,
       'المرجع': form.qrRef || 'ATH-QR-8923',
     };
-    const ok = await submitForm(form.submitType || 'registration', payload);
+    const ok = await submitForm(form.submitType || 'registration', payload, tsToken);
     setSending(false);
     if (ok) {
       setQrDone(true);
@@ -702,6 +704,8 @@ export default function DynamicForm({ form, lang }: { form: FormDef; lang: Langu
                 {pickConsentText(form.id, lang)}
               </span>
             </label>
+
+            <TurnstileWidget onVerify={setTsToken} />
 
             <div className="pt-2">
               <button
