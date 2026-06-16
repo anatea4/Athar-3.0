@@ -22,6 +22,15 @@ function getMedia(url: string): { kind: 'image' | 'youtube' | 'vimeo' | 'video';
   return { kind: 'image', src: u };
 }
 
+// Normalize a pasted file link so the download button opens the actual file.
+// Google Drive "…/file/d/<ID>/view?usp=sharing" → direct-download link.
+function fileLink(url: string): string {
+  const u = (url || '').trim();
+  const drive = u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:.*&)?id=)([\w-]{20,})/i);
+  if (drive) return `https://drive.google.com/uc?export=download&id=${drive[1]}`;
+  return u;
+}
+
 export default function MediaSection({ currentLang, activeSub, onNavigate }: MediaSectionProps) {
   const MEDIA_NEWS = useMediaNews();
   const MEDIA_ARTICLES = useMediaArticles();
@@ -162,7 +171,7 @@ export default function MediaSection({ currentLang, activeSub, onNavigate }: Med
                     {/* Download / open the file link if provided */}
                     {(doc as any).url ? (
                       <a
-                        href={(doc as any).url}
+                        href={fileLink((doc as any).url)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="p-2.5 bg-brand-blue hover:bg-brand-gold text-white hover:text-brand-blue-dark rounded-xl transition-all duration-300 shadow"
