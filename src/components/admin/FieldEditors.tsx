@@ -1,6 +1,8 @@
 'use client';
 import React, { useState, useRef, createContext, useContext } from 'react';
-import { Upload, Loader2, Image as ImageIcon, Trash2, ChevronUp, ChevronDown, Eye, EyeOff, Plus, GripVertical, FileText, ExternalLink } from 'lucide-react';
+import { Upload, Loader2, Image as ImageIcon, Trash2, ChevronUp, ChevronDown, Eye, EyeOff, Plus, GripVertical, FileText, ExternalLink, SlidersHorizontal, Crop } from 'lucide-react';
+import { parseImg, buildImg, imgStyle, type ImgSettings } from '@/lib/img';
+import ImageCropper from '@/components/admin/ImageCropper';
 
 // ---------------------------------------------------------------------------
 // Active editing-language context (so the whole form shows one language at a time)
@@ -147,7 +149,12 @@ export function ImageField({
 }) {
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const [showAdjust, setShowAdjust] = useState(false);
+  const [cropping, setCropping] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const { src, settings } = parseImg(value);
+  const update = (patch: Partial<ImgSettings>) => onChange(buildImg(src, { ...settings, ...patch }));
 
   const handleFile = async (file: File) => {
     setUploading(true);
@@ -157,7 +164,7 @@ export function ImageField({
       const res = await fetch('/api/upload', { method: 'POST', body: fd });
       const data = await res.json();
       if (res.ok) {
-        onChange(data.url);
+        onChange(buildImg(data.url, settings)); // keep current adjustments
         onToast?.('success', 'تم رفع الصورة ✓');
       } else {
         onToast?.('error', data.error || 'فشل الرفع');
@@ -168,6 +175,16 @@ export function ImageField({
       setUploading(false);
     }
   };
+
+  // 3×3 focal grid → object-position values
+  const POS_GRID: { pos: string; label: string }[] = [
+    { pos: 'left top', label: '↖' }, { pos: 'center top', label: '↑' }, { pos: 'right top', label: '↗' },
+    { pos: 'left center', label: '←' }, { pos: 'center center', label: '●' }, { pos: 'right center', label: '→' },
+    { pos: 'left bottom', label: '↙' }, { pos: 'center bottom', label: '↓' }, { pos: 'right bottom', label: '↘' },
+  ];
+  const curPos = settings.pos || 'center center';
+  const curFit = settings.fit || 'cover';
+  const curZoom = settings.zoom || 100;
 
   return (
     <div className="space-y-2">
@@ -186,34 +203,122 @@ export function ImageField({
         }`}
       >
         <div className="h-24 w-24 rounded-xl border border-slate-200 bg-white overflow-hidden flex items-center justify-center shrink-0 shadow-sm">
-          {value ? (
+          {src ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={value} alt="preview" className="h-full w-full object-cover" />
+            <img src={src} alt="preview" className="h-full w-full" style={{ objectFit: curFit, ...imgStyle(settings) }} />
           ) : (
             <ImageIcon className="h-7 w-7 text-slate-300" />
           )}
         </div>
         <div className="flex-1 space-y-2">
-          <button
-            type="button"
-            onClick={() => inputRef.current?.click()}
-            disabled={uploading}
-            className="flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white text-sm font-bold px-4 py-2 rounded-xl disabled:opacity-60 transition"
-          >
-            {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-            {uploading ? 'جارٍ الرفع...' : 'رفع صورة'}
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              disabled={uploading}
+              className="flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white text-sm font-bold px-4 py-2 rounded-xl disabled:opacity-60 transition"
+            >
+              {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+              {uploading ? 'جارٍ الرفع...' : 'رفع صورة'}
+            </button>
+            {src && (
+              <button
+                type="button"
+                onClick={() => setCropping(true)}
+                className="flex items-center gap-1.5 text-sm font-bold px-3 py-2 rounded-xl border bg-white border-slate-200 text-slate-600 hover:border-brand-gold transition"
+              >
+                <Crop className="h-4 w-4" />
+                قصّ مربّع
+              </button>
+            )}
+            {src && (
+              <button
+                type="button"
+                onClick={() => setShowAdjust((s) => !s)}
+                className={`flex items-center gap-1.5 text-sm font-bold px-3 py-2 rounded-xl border transition ${
+                  showAdjust ? 'bg-brand-gold-light border-brand-gold text-brand-gold-dark' : 'bg-white border-slate-200 text-slate-600 hover:border-brand-gold'
+                }`}
+              >
+                <SlidersHorizontal className="h-4 w-4" />
+                تعديل الصورة
+              </button>
+            )}
+          </div>
           <p className="text-[11px] text-slate-400">اسحب الصورة هنا أو اضغط الزر — JPG/PNG/WEBP حتى 5MB</p>
           <input
             type="text"
-            value={value || ''}
-            onChange={(e) => onChange(e.target.value)}
+            value={src || ''}
+            onChange={(e) => onChange(buildImg(e.target.value, settings))}
             placeholder="أو الصق رابط صورة"
             dir="ltr"
             className="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-[11px] focus:outline-none focus:border-brand-gold bg-white"
           />
         </div>
       </div>
+
+      {/* Adjustment panel */}
+      {src && showAdjust && (
+        <div className="rounded-2xl border border-brand-gold/30 bg-brand-gold-light/30 p-4 space-y-4 animate-in fade-in slide-in-from-top-1 duration-200">
+          {/* Fit */}
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <span className="text-[12px] font-bold text-slate-700">طريقة العرض</span>
+            <div className="inline-flex rounded-lg bg-white border border-slate-200 p-0.5">
+              <button type="button" onClick={() => update({ fit: 'cover' })}
+                className={`px-3 py-1.5 text-[12px] font-bold rounded-md transition ${curFit === 'cover' ? 'bg-brand-blue text-white' : 'text-slate-500'}`}>
+                تغطية (تملأ الإطار)
+              </button>
+              <button type="button" onClick={() => update({ fit: 'contain' })}
+                className={`px-3 py-1.5 text-[12px] font-bold rounded-md transition ${curFit === 'contain' ? 'bg-brand-blue text-white' : 'text-slate-500'}`}>
+                احتواء (الصورة كاملة)
+              </button>
+            </div>
+          </div>
+
+          {/* Focal position grid */}
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <span className="text-[12px] font-bold text-slate-700">موضع القصّ (الجزء الظاهر)</span>
+            <div className="grid grid-cols-3 gap-1 w-[108px]">
+              {POS_GRID.map((p) => (
+                <button key={p.pos} type="button" onClick={() => update({ pos: p.pos })}
+                  className={`h-8 rounded-md text-sm font-bold transition ${curPos === p.pos ? 'bg-brand-gold text-white' : 'bg-white border border-slate-200 text-slate-400 hover:border-brand-gold'}`}>
+                  {p.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Alignment */}
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <span className="text-[12px] font-bold text-slate-700">المحاذاة</span>
+            <div className="inline-flex rounded-lg bg-white border border-slate-200 p-0.5">
+              {([['right', 'يمين'], ['center', 'وسط'], ['left', 'يسار']] as const).map(([a, lbl]) => (
+                <button key={a} type="button" onClick={() => update({ align: a })}
+                  className={`px-3 py-1.5 text-[12px] font-bold rounded-md transition ${settings.align === a ? 'bg-brand-blue text-white' : 'text-slate-500'}`}>
+                  {lbl}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Zoom */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[12px] font-bold text-slate-700">الحجم / التكبير</span>
+              <span className="text-[12px] font-mono text-brand-gold-dark font-bold">{curZoom}%</span>
+            </div>
+            <input type="range" min={100} max={250} step={5} value={curZoom}
+              onChange={(e) => update({ zoom: Number(e.target.value) })}
+              className="w-full accent-brand-gold" />
+          </div>
+
+          <button type="button"
+            onClick={() => onChange(src)}
+            className="text-[11px] text-slate-500 hover:text-brand-gold-dark underline">
+            إعادة ضبط الإعدادات
+          </button>
+        </div>
+      )}
+
       <input
         ref={inputRef}
         type="file"
@@ -225,6 +330,15 @@ export function ImageField({
           e.target.value = '';
         }}
       />
+
+      {cropping && src && (
+        <ImageCropper
+          src={src}
+          onCropped={(url) => { onChange(buildImg(url, settings)); setCropping(false); }}
+          onCancel={() => setCropping(false)}
+          onToast={onToast}
+        />
+      )}
     </div>
   );
 }

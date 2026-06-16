@@ -8,6 +8,7 @@ import {
 import { Language } from '@/types';
 import { FormDef } from './DynamicForm';
 import EmbeddedDonateCheckout from './EmbeddedDonateCheckout';
+import SmartImg from '@/components/SmartImg';
 
 interface DonationPageProps {
   currentLang: Language;
@@ -730,7 +731,7 @@ export default function DonationPage({ currentLang, form }: DonationPageProps) {
                     <div className="absolute left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-brand-gold to-transparent animate-bounce top-4" />
                     
                     {form?.qrImage ? (
-                      <img src={form.qrImage} alt="QR Code" className="w-full h-full object-contain" />
+                      <SmartImg src={form.qrImage} alt="QR Code" className="w-full h-full object-contain" />
                     ) : (
                       /* Golden QR Code SVG Graphic */
                       <svg className="w-full h-full text-brand-blue-dark" viewBox="0 0 100 100" fill="currentColor">

@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { Newspaper, FileText, Download, Play, Image, Calendar, User, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Language, getLangField } from '@/types';
 import { useMediaNews, useMediaArticles, useDigitalLibrary, useGallery, useCalendar } from '@/lib/content-provider';
+import SmartImg from '@/components/SmartImg';
 
 interface MediaSectionProps {
   currentLang: Language;
@@ -222,7 +223,7 @@ export default function MediaSection({ currentLang, activeSub, onNavigate }: Med
                     {/* Main stage */}
                     <div className="relative rounded-3xl overflow-hidden bg-brand-blue-dark border border-brand-gold/20 shadow-lg aspect-video">
                       {media.kind === 'image' ? (
-                        <img src={media.src} alt={getLangField(cur, 'title', currentLang)} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+                        <SmartImg src={media.src} alt={getLangField(cur, 'title', currentLang)} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                       ) : media.kind === 'video' ? (
                         <video src={media.src} controls className="w-full h-full object-contain bg-black" />
                       ) : (
@@ -258,7 +259,7 @@ export default function MediaSection({ currentLang, activeSub, onNavigate }: Med
                               className={`h-14 w-20 rounded-lg overflow-hidden border-2 transition ${i === idx ? 'border-brand-gold scale-105' : 'border-transparent opacity-60 hover:opacity-100'}`}
                             >
                               {m.kind === 'image' ? (
-                                <img src={m.src} alt="" className="w-full h-full object-cover" />
+                                <SmartImg src={m.src} alt="" className="w-full h-full object-cover" />
                               ) : (
                                 <div className="w-full h-full bg-brand-blue-dark flex items-center justify-center">
                                   <Play className="h-5 w-5 text-brand-gold" />
@@ -288,7 +289,7 @@ export default function MediaSection({ currentLang, activeSub, onNavigate }: Med
               )}
 
               {CALENDAR.image && (
-                <img src={CALENDAR.image} alt={getLangField(CALENDAR, 'title', currentLang)} className="w-full rounded-2xl border border-brand-gold/15 shadow-sm object-cover max-h-[480px]" />
+                <SmartImg src={CALENDAR.image} alt={getLangField(CALENDAR, 'title', currentLang)} className="w-full rounded-2xl border border-brand-gold/15 shadow-sm object-cover max-h-[480px]" />
               )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
