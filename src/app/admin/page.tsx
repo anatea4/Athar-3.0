@@ -47,6 +47,7 @@ type Tab =
   | 'submissions'
   | 'admins'
   | 'payments'
+  | 'payment_settings'
   | 'settings';
 
 interface ToastMsg {
@@ -89,6 +90,7 @@ const SECTIONS: { id: Tab; label: string; icon: React.ReactNode; group: string }
   // Management
   { id: 'admins', label: 'إدارة المشرفين', icon: <UserPlus className="h-4 w-4" />, group: 'manage' },
   { id: 'payments', label: 'المدفوعات', icon: <CreditCard className="h-4 w-4" />, group: 'manage' },
+  { id: 'payment_settings', label: 'إعدادات الدفع', icon: <CreditCard className="h-4 w-4" />, group: 'manage' },
   { id: 'settings', label: 'الإعدادات', icon: <Settings className="h-4 w-4" />, group: 'manage' },
 ];
 
@@ -632,7 +634,8 @@ export default function AdminPage() {
 
         {activeTab === 'submissions' && <SubmissionsInbox onToast={addToast} />}
 
-        {activeTab === 'payments' && <PaymentsTab settings={settings} onSave={saveSetting} />}
+        {activeTab === 'payments' && <PaymentsTab />}
+        {activeTab === 'payment_settings' && <PaymentSettingsTab settings={settings} onSave={saveSetting} />}
 
         {activeTab === 'settings' && <SettingsTab settings={settings} onSave={saveSetting} />}
       </main>
@@ -968,20 +971,9 @@ function AdminsTab({
   );
 }
 
-function PaymentsTab({ settings, onSave }: { settings: Record<string, string>; onSave: (k: string, v: string) => void }) {
-  const [pubKey, setPubKey] = useState(settings.stripe_publishable_key || '');
-  const [secretKey, setSecretKey] = useState(settings.stripe_secret_key || '');
-  const [webhookSecret, setWebhookSecret] = useState(settings.stripe_webhook_secret || '');
-  const [enabled, setEnabled] = useState(settings.payment_enabled === 'true');
+function PaymentsTab() {
   const [payments, setPayments] = useState<any[]>([]);
   const [loadingPay, setLoadingPay] = useState(true);
-
-  useEffect(() => {
-    setPubKey(settings.stripe_publishable_key || '');
-    setSecretKey(settings.stripe_secret_key || '');
-    setWebhookSecret(settings.stripe_webhook_secret || '');
-    setEnabled(settings.payment_enabled === 'true');
-  }, [settings]);
 
   useEffect(() => {
     fetch('/api/payments')
@@ -999,7 +991,7 @@ function PaymentsTab({ settings, onSave }: { settings: Record<string, string>; o
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-brand-blue-dark font-serif">المدفوعات (Stripe)</h1>
+      <h1 className="text-2xl font-bold text-brand-blue-dark font-serif">المدفوعات</h1>
 
       {/* Totals summary */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -1058,7 +1050,25 @@ function PaymentsTab({ settings, onSave }: { settings: Record<string, string>; o
         )}
       </div>
 
-      <h2 className="text-lg font-bold text-brand-blue-dark pt-2">الإعدادات</h2>
+    </div>
+  );
+}
+
+function PaymentSettingsTab({ settings, onSave }: { settings: Record<string, string>; onSave: (k: string, v: string) => void }) {
+  const [pubKey, setPubKey] = useState(settings.stripe_publishable_key || '');
+  const [secretKey, setSecretKey] = useState(settings.stripe_secret_key || '');
+  const [webhookSecret, setWebhookSecret] = useState(settings.stripe_webhook_secret || '');
+  const [enabled, setEnabled] = useState(settings.payment_enabled === 'true');
+  useEffect(() => {
+    setPubKey(settings.stripe_publishable_key || '');
+    setSecretKey(settings.stripe_secret_key || '');
+    setWebhookSecret(settings.stripe_webhook_secret || '');
+    setEnabled(settings.payment_enabled === 'true');
+  }, [settings]);
+
+  return (
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold text-brand-blue-dark font-serif">إعدادات الدفع (Stripe)</h1>
       <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
         <div>
           <label className="block text-sm font-bold text-slate-700 mb-1">حالة المدفوعات</label>
@@ -1147,6 +1157,20 @@ function SettingsTab({ settings, onSave }: { settings: Record<string, string>; o
   const [emailFrom, setEmailFrom] = useState(settings.email_from || '');
   const [geminiKey, setGeminiKey] = useState(settings.gemini_api_key || '');
   const [maintenance, setMaintenance] = useState(settings.maintenance_mode === 'true');
+  const [testMsg, setTestMsg] = useState('');
+  const [testing, setTesting] = useState(false);
+  const sendTestEmail = async () => {
+    setTesting(true);
+    setTestMsg('');
+    try {
+      const res = await fetch('/api/notify-test', { method: 'POST' });
+      setTestMsg(res.ok ? '✓ تم إرسال إيميل تجريبي — تحقّق من صندوق الوارد (وصندوق السبام).' : '✗ تعذّر الإرسال، تأكد من إعدادات Resend.');
+    } catch {
+      setTestMsg('✗ خطأ في الاتصال.');
+    } finally {
+      setTesting(false);
+    }
+  };
   useEffect(() => {
     setSiteName(settings.site_name || 'Athar Academy');
     setNotifyEmail(settings.notify_email || '');
@@ -1231,12 +1255,22 @@ function SettingsTab({ settings, onSave }: { settings: Record<string, string>; o
             className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-brand-gold resize-y"
           />
           <p className="text-[11px] text-slate-500 mt-1">يمكنك إضافة أكثر من بريد، افصل بينها بفاصلة أو سطر جديد.</p>
-          <button
-            onClick={() => onSave('notify_email', notifyEmail)}
-            className="mt-2 text-xs bg-brand-gold hover:bg-brand-gold-dark text-white px-4 py-1.5 rounded-lg font-bold"
-          >
-            حفظ البريد
-          </button>
+          <div className="flex items-center gap-2 mt-2 flex-wrap">
+            <button
+              onClick={() => onSave('notify_email', notifyEmail)}
+              className="text-xs bg-brand-gold hover:bg-brand-gold-dark text-white px-4 py-1.5 rounded-lg font-bold"
+            >
+              حفظ البريد
+            </button>
+            <button
+              onClick={sendTestEmail}
+              disabled={testing}
+              className="text-xs bg-brand-blue-dark hover:bg-brand-blue text-white px-4 py-1.5 rounded-lg font-bold disabled:opacity-60"
+            >
+              {testing ? 'جارٍ الإرسال...' : '✉ إرسال إيميل تجريبي'}
+            </button>
+          </div>
+          {testMsg && <p className="text-[11px] mt-2 font-bold text-slate-600">{testMsg}</p>}
         </div>
 
         <div>
