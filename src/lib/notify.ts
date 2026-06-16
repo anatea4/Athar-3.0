@@ -61,7 +61,7 @@ export async function notifyNewSubmission(formType: string, data: Record<string,
       )
       .join('');
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://athar.my';
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.athar.my';
     const logoUrl = `${siteUrl}/athar-logo.png`;
     const footerLogoUrl = `${siteUrl}/logo-footer.png`;
     const adminUrl = `${siteUrl}/admin`;
@@ -163,7 +163,7 @@ export async function notifyDonorThankYou(
     if (!apiKey) return;
 
     const fromAddress = (await getSetting('email_from')) || 'Athar Academy <no-reply@athar.my>';
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://athar.my';
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.athar.my';
     const logoUrl = `${siteUrl}/athar-logo.png`;
     const footerLogoUrl = `${siteUrl}/logo-footer.png`;
     const name = opts.name || 'فاعل الخير';
