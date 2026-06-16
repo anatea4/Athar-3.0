@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { notifyNewSubmission } from '@/lib/notify';
+import { verifyTurnstile } from '@/lib/turnstile';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,6 +16,10 @@ const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+
+    const okTs = await verifyTurnstile(body.turnstileToken);
+    if (!okTs) return NextResponse.json({ success: false, error: 'فشل التحقق الأمني، حاول مرة أخرى.' }, { status: 403 });
+
     const email = (body.email || '').toString().trim().slice(0, 200);
     const message = (body.message || '').toString().trim().slice(0, 4000);
     const name = (body.name || '').toString().trim().slice(0, 120);

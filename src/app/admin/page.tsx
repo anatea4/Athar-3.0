@@ -1160,6 +1160,12 @@ function SettingsTab({ settings, onSave }: { settings: Record<string, string>; o
   const [resendKey, setResendKey] = useState(settings.resend_api_key || '');
   const [emailFrom, setEmailFrom] = useState(settings.email_from || '');
   const [geminiKey, setGeminiKey] = useState(settings.gemini_api_key || '');
+  const [seoTitle, setSeoTitle] = useState(settings.seo_title || '');
+  const [seoDesc, setSeoDesc] = useState(settings.seo_description || '');
+  const [seoKeywords, setSeoKeywords] = useState(settings.seo_keywords || '');
+  const [seoImage, setSeoImage] = useState(settings.seo_image || '');
+  const [tsSite, setTsSite] = useState(settings.turnstile_site_key || '');
+  const [tsSecret, setTsSecret] = useState(settings.turnstile_secret_key || '');
   const [maintenance, setMaintenance] = useState(settings.maintenance_mode === 'true');
   const [testMsg, setTestMsg] = useState('');
   const [testing, setTesting] = useState(false);
@@ -1181,6 +1187,12 @@ function SettingsTab({ settings, onSave }: { settings: Record<string, string>; o
     setResendKey(settings.resend_api_key || '');
     setEmailFrom(settings.email_from || '');
     setGeminiKey(settings.gemini_api_key || '');
+    setSeoTitle(settings.seo_title || '');
+    setSeoDesc(settings.seo_description || '');
+    setSeoKeywords(settings.seo_keywords || '');
+    setSeoImage(settings.seo_image || '');
+    setTsSite(settings.turnstile_site_key || '');
+    setTsSecret(settings.turnstile_secret_key || '');
     setMaintenance(settings.maintenance_mode === 'true');
   }, [settings]);
 
@@ -1325,6 +1337,71 @@ function SettingsTab({ settings, onSave }: { settings: Record<string, string>; o
             <a href="https://resend.com/domains" target="_blank" rel="noopener noreferrer" className="text-brand-blue underline font-bold">resend.com/domains</a>
             {' '}ثم ضع هنا في خانة «المُرسِل»: <code>Athar Academy &lt;noreply@athar.my&gt;</code>. بعدها تصل لكل البُرُد.
           </div>
+        </div>
+      </div>
+
+      {/* SEO / search appearance */}
+      <div className="bg-white rounded-2xl border border-brand-gold/20 p-6 space-y-4 shadow-sm">
+        <div>
+          <h2 className="text-lg font-bold text-brand-blue-dark">تحسين الظهور في البحث (SEO)</h2>
+          <p className="text-xs text-slate-500 mt-1">
+            يتحكم في عنوان ووصف الموقع وصورته كما تظهر في Google ومشاركات واتساب/تويتر. اتركها فارغة لاستخدام الافتراضي.
+          </p>
+        </div>
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-1">عنوان الموقع (Title)</label>
+          <input type="text" value={seoTitle} onChange={(e) => setSeoTitle(e.target.value)}
+            placeholder="أكاديمية أثر | Athar Academy"
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-brand-gold" />
+          <button onClick={() => onSave('seo_title', seoTitle)} className="mt-2 text-xs bg-brand-gold hover:bg-brand-gold-dark text-white px-4 py-1.5 rounded-lg font-bold">حفظ</button>
+        </div>
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-1">وصف الموقع (Description)</label>
+          <textarea value={seoDesc} onChange={(e) => setSeoDesc(e.target.value)} rows={2}
+            placeholder="أكاديمية أثر تهتم بتعليم القرآن الكريم وعلومه واللغة العربية..."
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-brand-gold resize-y" />
+          <button onClick={() => onSave('seo_description', seoDesc)} className="mt-2 text-xs bg-brand-gold hover:bg-brand-gold-dark text-white px-4 py-1.5 rounded-lg font-bold">حفظ</button>
+        </div>
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-1">الكلمات المفتاحية (Keywords)</label>
+          <input type="text" value={seoKeywords} onChange={(e) => setSeoKeywords(e.target.value)}
+            placeholder="أكاديمية أثر, تحفيظ القرآن, Quran, Malaysia"
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-brand-gold" />
+          <button onClick={() => onSave('seo_keywords', seoKeywords)} className="mt-2 text-xs bg-brand-gold hover:bg-brand-gold-dark text-white px-4 py-1.5 rounded-lg font-bold">حفظ</button>
+        </div>
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-1">صورة المشاركة (رابط صورة 1200×630)</label>
+          <input type="text" value={seoImage} onChange={(e) => setSeoImage(e.target.value)} dir="ltr"
+            placeholder="https://athar.my/athar-logo.png"
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg text-xs focus:outline-none focus:border-brand-gold" />
+          <button onClick={() => onSave('seo_image', seoImage)} className="mt-2 text-xs bg-brand-gold hover:bg-brand-gold-dark text-white px-4 py-1.5 rounded-lg font-bold">حفظ</button>
+          <p className="text-[11px] text-slate-400 mt-1.5">هذه الصورة تظهر عند مشاركة رابط الموقع. يُفضّل 1200×630 بكسل.</p>
+        </div>
+      </div>
+
+      {/* Cloudflare Turnstile protection */}
+      <div className="bg-white rounded-2xl border border-brand-gold/20 p-6 space-y-4 shadow-sm">
+        <div>
+          <h2 className="text-lg font-bold text-brand-blue-dark">حماية Cloudflare (Turnstile)</h2>
+          <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+            تمنع البوتات والإرسال المزعج عن نماذج التسجيل والتواصل. احصل على المفتاحين من{' '}
+            <a href="https://dash.cloudflare.com/?to=/:account/turnstile" target="_blank" rel="noopener noreferrer" className="text-brand-blue underline font-bold">Cloudflare → Turnstile</a>
+            {' '}(أضف موقعاً، النوع Managed). تظهر الحماية تلقائياً بمجرد حفظ المفتاحين.
+          </p>
+        </div>
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-1">Site Key (علني)</label>
+          <input type="text" value={tsSite} onChange={(e) => setTsSite(e.target.value)} dir="ltr"
+            placeholder="0x4AAAAAAA..."
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg font-mono text-xs focus:outline-none focus:border-brand-gold" />
+          <button onClick={() => onSave('turnstile_site_key', tsSite)} className="mt-2 text-xs bg-brand-gold hover:bg-brand-gold-dark text-white px-4 py-1.5 rounded-lg font-bold">حفظ</button>
+        </div>
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-1">Secret Key (سرّي)</label>
+          <input type="password" value={tsSecret} onChange={(e) => setTsSecret(e.target.value)} dir="ltr"
+            placeholder="0x4AAAAAAA...secret"
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg font-mono text-xs focus:outline-none focus:border-brand-gold" />
+          <button onClick={() => onSave('turnstile_secret_key', tsSecret)} className="mt-2 text-xs bg-brand-gold hover:bg-brand-gold-dark text-white px-4 py-1.5 rounded-lg font-bold">حفظ</button>
         </div>
       </div>
 
