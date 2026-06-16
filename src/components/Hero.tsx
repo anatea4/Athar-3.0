@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { Language } from '@/types';
 import { useHero } from '@/lib/content-provider';
+import SmartImg from '@/components/SmartImg';
 const logoSrc = '/athar-logo.png';
 
 interface HeroProps {
@@ -148,7 +149,7 @@ export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }:
                         }`}
                     >
                       {/* Background Unsplash Image */}
-                      <img
+                      <SmartImg
                         src={slide.image}
                         alt={currentLang === 'ms' ? (slide.titleMs || slide.titleEn) : (currentLang === 'en' ? slide.titleEn : slide.titleAr)}
                         referrerPolicy="no-referrer"
@@ -274,7 +275,7 @@ export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }:
               >
                 {/* Visual Thumbnail Image */}
                 <div className="h-36 w-full overflow-hidden relative">
-                  <img
+                  <SmartImg
                     src={p.img}
                     alt={currentLang === 'ms' ? (p.titleMs || p.titleEn) : (currentLang === 'en' ? p.titleEn : p.titleAr)}
                     referrerPolicy="no-referrer"

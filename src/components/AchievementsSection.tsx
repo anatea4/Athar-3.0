@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { Award, Users, BookOpen, Heart, Sparkles, Star, Target } from 'lucide-react';
 import { Language, getLangField } from '@/types';
 import { useStats, useStudentProfiles } from '@/lib/content-provider';
+import SmartImg from '@/components/SmartImg';
 
 interface AchievementsSectionProps {
   currentLang: Language;
@@ -139,7 +140,7 @@ export default function AchievementsSection({ currentLang, activeSub }: Achievem
                 {STUDENT_PROFILES.map((student) => (
                   <div key={student.id} className="p-6 bg-white border-2 border-brand-gold/10 rounded-3xl shadow-sm hover:border-brand-gold/30 hover:shadow-md transition-all duration-300">
                     <div className="flex gap-4 items-center mb-4 border-b border-slate-100 pb-3">
-                      <img
+                      <SmartImg
                         src={student.avatar}
                         alt={getLangField(student, 'name', currentLang)}
                         className="h-14 w-14 rounded-full object-cover border-2 border-brand-gold/35"

@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { Sparkles, Calendar, Gift, Heart, ArrowRight } from 'lucide-react';
 import { Language, getLangField } from '@/types';
 import { useInitiatives, useEvents, useCalendar } from '@/lib/content-provider';
+import SmartImg from '@/components/SmartImg';
 
 interface InitiativesSectionProps {
   currentLang: Language;
@@ -123,7 +124,7 @@ export default function InitiativesSection({ currentLang, activeSub, onNavigate 
                         {img && (
                           <div className="h-44 overflow-hidden relative">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={img} alt={getLangField(ev, 'title', currentLang) as string} loading="lazy" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+                            <SmartImg src={img} alt={getLangField(ev, 'title', currentLang) as string} loading="lazy" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                             {badge && (
                               <span className="absolute bottom-3 right-3 bg-brand-gold text-brand-blue-dark text-[10px] font-bold px-3 py-1 rounded-full uppercase">
@@ -164,7 +165,7 @@ export default function InitiativesSection({ currentLang, activeSub, onNavigate 
               {CALENDAR?.image && (
                 <div className="overflow-hidden rounded-2xl border border-brand-gold/15 shadow-sm">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={CALENDAR.image} alt={getLangField(CALENDAR, 'title', currentLang) as string} loading="lazy" referrerPolicy="no-referrer" className="w-full object-cover max-h-[420px]" />
+                  <SmartImg src={CALENDAR.image} alt={getLangField(CALENDAR, 'title', currentLang) as string} loading="lazy" referrerPolicy="no-referrer" className="w-full object-cover max-h-[420px]" />
                 </div>
               )}
 

@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import FloatingChatbot from '@/components/FloatingChatbot';
 import WhatsAppButton from '@/components/WhatsAppButton';
+import SmartImg from '@/components/SmartImg';
 import { Send, CheckCircle2, Loader2 } from 'lucide-react';
 import { submitForm } from '@/lib/submit-form';
 
@@ -132,7 +133,7 @@ function BlockView({ block, lang }: { block: Block; lang: Language }) {
         <div className="relative rounded-3xl overflow-hidden bg-brand-blue-dark text-white shadow-xl">
           {block.image && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={block.image} alt="" className="absolute inset-0 w-full h-full object-cover opacity-30" />
+            <SmartImg src={block.image} alt="" className="absolute inset-0 w-full h-full object-cover opacity-30" />
           )}
           <div className="relative p-10 sm:p-14 text-center space-y-4">
             <h2 className="text-3xl sm:text-4xl font-extrabold">{pick(block, 'title', lang)}</h2>
@@ -158,7 +159,7 @@ function BlockView({ block, lang }: { block: Block; lang: Language }) {
             <div key={idx} className="bg-white rounded-2xl border border-brand-gold/15 overflow-hidden shadow-sm">
               {card.image && (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={card.image} alt="" className="w-full h-40 object-cover" />
+                <SmartImg src={card.image} alt="" className="w-full h-40 object-cover" />
               )}
               <div className="p-5 space-y-2">
                 <h3 className="font-bold text-brand-blue-dark">{pick(card, 'title', lang)}</h3>

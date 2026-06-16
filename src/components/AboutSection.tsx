@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { Target, Users, Landmark, BookOpen, Compass, Award, Quote, UserCircle2 } from 'lucide-react';
 import { Language, getLangField } from '@/types';
 import { useAbout, useTeam, usePartners } from '@/lib/content-provider';
+import SmartImg from '@/components/SmartImg';
 
 interface AboutSectionProps {
   currentLang: Language;
@@ -195,7 +196,7 @@ export default function AboutSection({ currentLang, activeSub, onNavigate }: Abo
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                   {TEAM_MEMBERS.map((member, i) => (
                     <div key={i} className="flex gap-4 p-4 bg-brand-gold/5 border border-brand-gold/10 rounded-2xl hover:border-brand-gold/30 hover:bg-brand-gold/10 transition-all duration-300">
-                      <img
+                      <SmartImg
                         src={member.image}
                         alt={getLangField(member, 'name', currentLang)}
                         className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl object-cover border border-brand-gold/25"
@@ -231,7 +232,7 @@ export default function AboutSection({ currentLang, activeSub, onNavigate }: Abo
                       {isImageSrc(partner.logo) ? (
                         <div className="h-14 w-14 shrink-0 rounded-xl border border-brand-gold/20 bg-white overflow-hidden flex items-center justify-center shadow-sm">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
+                          <SmartImg
                             src={partner.logo}
                             alt={getLangField(partner, 'name', currentLang) as string}
                             className="h-full w-full object-contain"
@@ -276,7 +277,7 @@ export default function AboutSection({ currentLang, activeSub, onNavigate }: Abo
                     <div className="shrink-0">
                       {image ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={image} alt={name} className="h-28 w-28 sm:h-36 sm:w-36 rounded-2xl object-cover border-2 border-brand-gold/30 shadow-md" />
+                        <SmartImg src={image} alt={name} className="h-28 w-28 sm:h-36 sm:w-36 rounded-2xl object-cover border-2 border-brand-gold/30 shadow-md" />
                       ) : (
                         <div className="h-28 w-28 sm:h-36 sm:w-36 rounded-2xl bg-brand-blue-dark/5 border-2 border-brand-gold/20 flex items-center justify-center">
                           <UserCircle2 className="h-16 w-16 text-brand-gold/40" />
