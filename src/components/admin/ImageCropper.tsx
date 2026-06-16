@@ -84,9 +84,13 @@ export default function ImageCropper({
     setSaving(true);
     try {
       const factor = el.naturalWidth / el.clientWidth; // displayed → natural
-      const sx = box.x * factor;
-      const sy = box.y * factor;
-      const sSize = box.size * factor;
+      // Clamp the source rect to the real image bounds so no transparent edge is drawn.
+      let sSize = box.size * factor;
+      let sx = box.x * factor;
+      let sy = box.y * factor;
+      sx = Math.max(0, Math.min(sx, el.naturalWidth - 1));
+      sy = Math.max(0, Math.min(sy, el.naturalHeight - 1));
+      sSize = Math.min(sSize, el.naturalWidth - sx, el.naturalHeight - sy);
       const out = Math.min(Math.round(sSize), 1400); // cap output resolution
       const canvas = document.createElement('canvas');
       canvas.width = out;
@@ -94,10 +98,15 @@ export default function ImageCropper({
       const ctx = canvas.getContext('2d');
       if (!ctx) throw new Error('no ctx');
       ctx.drawImage(el, sx, sy, sSize, sSize, 0, 0, out, out);
-      const blob: Blob | null = await new Promise((res) => canvas.toBlob(res, 'image/jpeg', 0.92));
+      // Keep the SAME format as the source: PNG/WEBP/SVG → PNG (preserves
+      // transparency, no black background); photos → JPEG (smaller file).
+      const keepAlpha = /\.(png|webp|svg|gif)(\?|#|$)/i.test(src) || src.startsWith('data:image/png');
+      const type = keepAlpha ? 'image/png' : 'image/jpeg';
+      const ext = keepAlpha ? 'png' : 'jpg';
+      const blob: Blob | null = await new Promise((res) => canvas.toBlob(res, type, 0.92));
       if (!blob) throw new Error('crop failed');
       const fd = new FormData();
-      fd.append('file', new File([blob], 'cropped.jpg', { type: 'image/jpeg' }));
+      fd.append('file', new File([blob], `cropped.${ext}`, { type }));
       const r = await fetch('/api/upload', { method: 'POST', body: fd });
       const data = await r.json();
       if (!r.ok) throw new Error(data.error || 'upload failed');
