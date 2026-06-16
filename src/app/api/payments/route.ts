@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
         },
       ],
       customer_email: customerEmail,
-      success_url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/?payment=success`,
+      success_url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/?payment=cancelled`,
       metadata: { programId: programId || '' },
     });

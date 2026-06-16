@@ -973,6 +973,8 @@ function PaymentsTab({ settings, onSave }: { settings: Record<string, string>; o
   const [secretKey, setSecretKey] = useState(settings.stripe_secret_key || '');
   const [webhookSecret, setWebhookSecret] = useState(settings.stripe_webhook_secret || '');
   const [enabled, setEnabled] = useState(settings.payment_enabled === 'true');
+  const [payments, setPayments] = useState<any[]>([]);
+  const [loadingPay, setLoadingPay] = useState(true);
 
   useEffect(() => {
     setPubKey(settings.stripe_publishable_key || '');
@@ -981,9 +983,82 @@ function PaymentsTab({ settings, onSave }: { settings: Record<string, string>; o
     setEnabled(settings.payment_enabled === 'true');
   }, [settings]);
 
+  useEffect(() => {
+    fetch('/api/payments')
+      .then((r) => r.json())
+      .then((d) => setPayments(Array.isArray(d.payments) ? d.payments : []))
+      .catch(() => {})
+      .finally(() => setLoadingPay(false));
+  }, []);
+
+  const paid = payments.filter((p) => p.status === 'paid');
+  const pending = payments.filter((p) => p.status === 'pending');
+  const totalIn = paid.reduce((s, p) => s + (Number(p.amount) || 0), 0);
+  const currency = paid[0]?.currency || 'MYR';
+  const fmtDate = (d: string) => { try { return new Date(d).toLocaleDateString('ar-EG'); } catch { return ''; } };
+
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-brand-blue-dark font-serif">إعدادات المدفوعات (Stripe)</h1>
+      <h1 className="text-2xl font-bold text-brand-blue-dark font-serif">المدفوعات (Stripe)</h1>
+
+      {/* Totals summary */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-center">
+          <div className="text-2xl font-extrabold text-emerald-700">{totalIn.toLocaleString()}</div>
+          <div className="text-[11px] text-emerald-700/80 font-bold mt-1">إجمالي الدخل ({currency})</div>
+        </div>
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 text-center">
+          <div className="text-2xl font-extrabold text-brand-blue-dark">{paid.length}</div>
+          <div className="text-[11px] text-slate-500 font-bold mt-1">عمليات مدفوعة</div>
+        </div>
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 text-center">
+          <div className="text-2xl font-extrabold text-amber-600">{pending.length}</div>
+          <div className="text-[11px] text-slate-500 font-bold mt-1">قيد المعالجة</div>
+        </div>
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 text-center">
+          <div className="text-2xl font-extrabold text-slate-700">{payments.length}</div>
+          <div className="text-[11px] text-slate-500 font-bold mt-1">الإجمالي</div>
+        </div>
+      </div>
+
+      {/* Transactions table */}
+      <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+        <div className="px-5 py-3 border-b border-slate-100 font-bold text-brand-blue-dark text-sm">سجلّ العمليات</div>
+        {loadingPay ? (
+          <div className="p-8 text-center text-slate-400"><Loader2 className="h-5 w-5 animate-spin inline" /></div>
+        ) : payments.length === 0 ? (
+          <div className="p-8 text-center text-slate-400 text-sm">لا توجد عمليات بعد.</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-right">
+              <thead className="bg-slate-50 text-slate-500 text-xs">
+                <tr>
+                  <th className="px-4 py-2.5 font-bold">المبلغ</th>
+                  <th className="px-4 py-2.5 font-bold">الوصف</th>
+                  <th className="px-4 py-2.5 font-bold">الحالة</th>
+                  <th className="px-4 py-2.5 font-bold">التاريخ</th>
+                </tr>
+              </thead>
+              <tbody>
+                {payments.slice(0, 100).map((p) => (
+                  <tr key={p.id} className="border-t border-slate-100">
+                    <td className="px-4 py-2.5 font-bold text-brand-blue-dark whitespace-nowrap">{Number(p.amount).toLocaleString()} {p.currency || 'MYR'}</td>
+                    <td className="px-4 py-2.5 text-slate-600">{p.description || '—'}</td>
+                    <td className="px-4 py-2.5">
+                      <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${p.status === 'paid' ? 'bg-emerald-100 text-emerald-700' : p.status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'}`}>
+                        {p.status === 'paid' ? 'مدفوع' : p.status === 'pending' ? 'قيد المعالجة' : p.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2.5 text-slate-400 text-xs whitespace-nowrap">{fmtDate(p.created_at)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      <h2 className="text-lg font-bold text-brand-blue-dark pt-2">الإعدادات</h2>
       <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
         <div>
           <label className="block text-sm font-bold text-slate-700 mb-1">حالة المدفوعات</label>

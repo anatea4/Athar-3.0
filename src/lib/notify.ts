@@ -61,7 +61,7 @@ export async function notifyNewSubmission(formType: string, data: Record<string,
       )
       .join('');
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://atharacademy.info';
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://athar.my';
     const logoUrl = `${siteUrl}/athar-logo.png`;
     const footerLogoUrl = `${siteUrl}/logo-footer.png`;
     const adminUrl = `${siteUrl}/admin`;
@@ -146,5 +146,71 @@ export async function notifyNewSubmission(formType: string, data: Record<string,
     );
   } catch (e) {
     console.error('[notify] error:', e);
+  }
+}
+
+/**
+ * Send a professional, branded thank-you email to a donor after a successful payment.
+ * No-ops silently if Resend isn't configured or the email is missing.
+ */
+export async function notifyDonorThankYou(
+  toEmail: string,
+  opts: { amount?: number; currency?: string; name?: string; description?: string } = {}
+): Promise<void> {
+  try {
+    if (!toEmail || !toEmail.includes('@')) return;
+    const apiKey = (await getSetting('resend_api_key')) || process.env.RESEND_API_KEY || '';
+    if (!apiKey) return;
+
+    const fromAddress = (await getSetting('email_from')) || 'Athar Academy <no-reply@athar.my>';
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://athar.my';
+    const logoUrl = `${siteUrl}/athar-logo.png`;
+    const footerLogoUrl = `${siteUrl}/logo-footer.png`;
+    const name = opts.name || 'فاعل الخير';
+    const amountText = opts.amount ? `${opts.amount} ${opts.currency || 'MYR'}` : '';
+
+    const html = `
+      <div dir="rtl" style="font-family:'Segoe UI', Tahoma, sans-serif; background-color:#FCF9F2; padding:45px 20px; text-align:right;">
+        <div style="max-width:600px; margin:0 auto; background:#ffffff; border-radius:24px; overflow:hidden; border-top:6px solid #192d4a; border-bottom:6px solid #C09E5B; box-shadow:0 20px 40px rgba(25,45,74,0.06);">
+          <div style="background:#ffffff; padding:35px 24px 22px; text-align:center; border-bottom:1px solid #f3f4f6;">
+            <img src="${logoUrl}" alt="Athar" style="height:90px; width:auto; margin-bottom:10px;" />
+            <h1 style="margin:0; font-size:22px; font-weight:800; color:#192d4a;">أكاديمية أثر للقرآن الكريم</h1>
+            <p style="margin:4px 0 0; font-size:11px; color:#C09E5B; font-weight:700; letter-spacing:1.5px;">ATHAR QURAN ACADEMY</p>
+          </div>
+          <div style="background:#192d4a; padding:20px 24px; color:#C09E5B; font-size:19px; font-weight:bold; text-align:center;">
+            🤍 جزاك الله خيراً على دعمك
+          </div>
+          <div style="padding:30px 32px; text-align:right; color:#334155; font-size:15px; line-height:1.9;">
+            <p style="margin:0 0 14px;">السلام عليكم ورحمة الله وبركاته، <b>${name}</b></p>
+            <p style="margin:0 0 14px;">
+              نشكرك من القلب على مساهمتك الكريمة في دعم طلاب القرآن الكريم وحلقات التحفيظ بأكاديمية أثر.
+              ${amountText ? `تم استلام تبرّعك بقيمة <b style="color:#192d4a;">${amountText}</b> بنجاح.` : 'تم استلام تبرّعك بنجاح.'}
+            </p>
+            <p style="margin:0; color:#64748b; font-size:13px;">
+              نسأل الله أن يجعله في ميزان حسناتك، وأن ينفع به، ويجعلك من الباقيات الصالحات. هذه الرسالة بمثابة إيصال إلكتروني لتبرّعك.
+            </p>
+          </div>
+          <div style="text-align:center; padding:0 32px 32px;">
+            <a href="${siteUrl}" target="_blank" style="display:inline-block; background:#C09E5B; color:#fff; padding:13px 34px; font-size:14px; font-weight:800; text-decoration:none; border-radius:14px;">زيارة موقع الأكاديمية</a>
+          </div>
+          <div style="background:#f8fafc; padding:24px; text-align:center; border-top:1px solid #e2e8f0;">
+            <p style="margin:0 0 14px; color:#64748b; font-size:11px;">أكاديمية أثر — صدقة جارية وأثر باقٍ بإذن الله.</p>
+            <div style="display:inline-flex; align-items:center; gap:8px;">
+              <span style="color:#94a3b8; font-size:10px; line-height:28px;">تطوير وتصميم</span>
+              <img src="${footerLogoUrl}" alt="Meem" style="height:26px; width:auto; vertical-align:middle;" />
+            </div>
+          </div>
+        </div>
+      </div>`;
+
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ from: fromAddress, to: [toEmail], subject: 'أكاديمية أثر • شكراً لدعمك الكريم 🤍', html }),
+    });
+    if (!res.ok) console.error('[notify donor] failed:', res.status, await res.text());
+    else console.log('[notify donor] thank-you sent to:', toEmail);
+  } catch (e) {
+    console.error('[notify donor] error:', e);
   }
 }
