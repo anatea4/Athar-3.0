@@ -76,6 +76,8 @@ export async function POST(req: NextRequest) {
     const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
     const common = {
       mode: 'payment' as const,
+      // Force the plain card form first (disables Stripe "Link" wallet prompt).
+      payment_method_types: ['card'] as Stripe.Checkout.SessionCreateParams.PaymentMethodType[],
       line_items: [
         {
           price_data: {
