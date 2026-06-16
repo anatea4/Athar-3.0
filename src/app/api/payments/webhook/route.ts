@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
+import { notifyDonorThankYou } from '@/lib/notify';
 
 export const dynamic = 'force-dynamic';
 
@@ -40,8 +41,22 @@ export async function POST(req: NextRequest) {
       const session = event.data.object as Stripe.Checkout.Session;
       await supabaseAdmin
         .from('payments')
-        .update({ status: 'paid' })
+        .update({
+          status: 'paid',
+          customer_email: session.customer_details?.email || session.customer_email || null,
+          customer_name: session.customer_details?.name || null,
+        })
         .eq('stripe_payment_id', session.id);
+
+      // Send a branded thank-you / receipt email to the donor.
+      const donorEmail = session.customer_email || session.customer_details?.email || '';
+      if (donorEmail) {
+        await notifyDonorThankYou(donorEmail, {
+          amount: session.amount_total ? session.amount_total / 100 : undefined,
+          currency: (session.currency || 'MYR').toUpperCase(),
+          name: session.customer_details?.name || '',
+        });
+      }
     } else if (event.type === 'checkout.session.expired') {
       const session = event.data.object as Stripe.Checkout.Session;
       await supabaseAdmin.from('payments').update({ status: 'expired' }).eq('stripe_payment_id', session.id);

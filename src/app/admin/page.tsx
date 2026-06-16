@@ -47,6 +47,7 @@ type Tab =
   | 'submissions'
   | 'admins'
   | 'payments'
+  | 'payment_settings'
   | 'settings';
 
 interface ToastMsg {
@@ -89,6 +90,7 @@ const SECTIONS: { id: Tab; label: string; icon: React.ReactNode; group: string }
   // Management
   { id: 'admins', label: 'إدارة المشرفين', icon: <UserPlus className="h-4 w-4" />, group: 'manage' },
   { id: 'payments', label: 'المدفوعات', icon: <CreditCard className="h-4 w-4" />, group: 'manage' },
+  { id: 'payment_settings', label: 'إعدادات الدفع', icon: <CreditCard className="h-4 w-4" />, group: 'manage' },
   { id: 'settings', label: 'الإعدادات', icon: <Settings className="h-4 w-4" />, group: 'manage' },
 ];
 
@@ -632,7 +634,8 @@ export default function AdminPage() {
 
         {activeTab === 'submissions' && <SubmissionsInbox onToast={addToast} />}
 
-        {activeTab === 'payments' && <PaymentsTab settings={settings} onSave={saveSetting} />}
+        {activeTab === 'payments' && <PaymentsTab />}
+        {activeTab === 'payment_settings' && <PaymentSettingsTab settings={settings} onSave={saveSetting} />}
 
         {activeTab === 'settings' && <SettingsTab settings={settings} onSave={saveSetting} />}
       </main>
@@ -968,12 +971,98 @@ function AdminsTab({
   );
 }
 
-function PaymentsTab({ settings, onSave }: { settings: Record<string, string>; onSave: (k: string, v: string) => void }) {
+function PaymentsTab() {
+  const [payments, setPayments] = useState<any[]>([]);
+  const [loadingPay, setLoadingPay] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/payments')
+      .then((r) => r.json())
+      .then((d) => setPayments(Array.isArray(d.payments) ? d.payments : []))
+      .catch(() => {})
+      .finally(() => setLoadingPay(false));
+  }, []);
+
+  const paid = payments.filter((p) => p.status === 'paid');
+  const pending = payments.filter((p) => p.status === 'pending');
+  const totalIn = paid.reduce((s, p) => s + (Number(p.amount) || 0), 0);
+  const currency = paid[0]?.currency || 'MYR';
+  const fmtDate = (d: string) => { try { return new Date(d).toLocaleDateString('ar-EG'); } catch { return ''; } };
+
+  return (
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold text-brand-blue-dark font-serif">المدفوعات</h1>
+
+      {/* Totals summary */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-center">
+          <div className="text-2xl font-extrabold text-emerald-700">{totalIn.toLocaleString()}</div>
+          <div className="text-[11px] text-emerald-700/80 font-bold mt-1">إجمالي الدخل ({currency})</div>
+        </div>
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 text-center">
+          <div className="text-2xl font-extrabold text-brand-blue-dark">{paid.length}</div>
+          <div className="text-[11px] text-slate-500 font-bold mt-1">عمليات مدفوعة</div>
+        </div>
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 text-center">
+          <div className="text-2xl font-extrabold text-amber-600">{pending.length}</div>
+          <div className="text-[11px] text-slate-500 font-bold mt-1">قيد المعالجة</div>
+        </div>
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 text-center">
+          <div className="text-2xl font-extrabold text-slate-700">{payments.length}</div>
+          <div className="text-[11px] text-slate-500 font-bold mt-1">الإجمالي</div>
+        </div>
+      </div>
+
+      {/* Transactions table */}
+      <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+        <div className="px-5 py-3 border-b border-slate-100 font-bold text-brand-blue-dark text-sm">سجلّ العمليات</div>
+        {loadingPay ? (
+          <div className="p-8 text-center text-slate-400"><Loader2 className="h-5 w-5 animate-spin inline" /></div>
+        ) : payments.length === 0 ? (
+          <div className="p-8 text-center text-slate-400 text-sm">لا توجد عمليات بعد.</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-right">
+              <thead className="bg-slate-50 text-slate-500 text-xs">
+                <tr>
+                  <th className="px-4 py-2.5 font-bold">المبلغ</th>
+                  <th className="px-4 py-2.5 font-bold">الاسم</th>
+                  <th className="px-4 py-2.5 font-bold">البريد</th>
+                  <th className="px-4 py-2.5 font-bold">الوصف</th>
+                  <th className="px-4 py-2.5 font-bold">الحالة</th>
+                  <th className="px-4 py-2.5 font-bold">التاريخ</th>
+                </tr>
+              </thead>
+              <tbody>
+                {payments.slice(0, 100).map((p) => (
+                  <tr key={p.id} className="border-t border-slate-100">
+                    <td className="px-4 py-2.5 font-bold text-brand-blue-dark whitespace-nowrap">{Number(p.amount).toLocaleString()} {p.currency || 'MYR'}</td>
+                    <td className="px-4 py-2.5 text-slate-700">{p.customer_name || '—'}</td>
+                    <td className="px-4 py-2.5 text-slate-500 text-xs" dir="ltr">{p.customer_email || '—'}</td>
+                    <td className="px-4 py-2.5 text-slate-600">{p.description || '—'}</td>
+                    <td className="px-4 py-2.5">
+                      <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${p.status === 'paid' ? 'bg-emerald-100 text-emerald-700' : p.status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'}`}>
+                        {p.status === 'paid' ? 'مدفوع' : p.status === 'pending' ? 'قيد المعالجة' : p.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2.5 text-slate-400 text-xs whitespace-nowrap">{fmtDate(p.created_at)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+    </div>
+  );
+}
+
+function PaymentSettingsTab({ settings, onSave }: { settings: Record<string, string>; onSave: (k: string, v: string) => void }) {
   const [pubKey, setPubKey] = useState(settings.stripe_publishable_key || '');
   const [secretKey, setSecretKey] = useState(settings.stripe_secret_key || '');
   const [webhookSecret, setWebhookSecret] = useState(settings.stripe_webhook_secret || '');
   const [enabled, setEnabled] = useState(settings.payment_enabled === 'true');
-
   useEffect(() => {
     setPubKey(settings.stripe_publishable_key || '');
     setSecretKey(settings.stripe_secret_key || '');
@@ -983,7 +1072,7 @@ function PaymentsTab({ settings, onSave }: { settings: Record<string, string>; o
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-brand-blue-dark font-serif">إعدادات المدفوعات (Stripe)</h1>
+      <h1 className="text-2xl font-bold text-brand-blue-dark font-serif">إعدادات الدفع (Stripe)</h1>
       <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
         <div>
           <label className="block text-sm font-bold text-slate-700 mb-1">حالة المدفوعات</label>
@@ -1072,6 +1161,20 @@ function SettingsTab({ settings, onSave }: { settings: Record<string, string>; o
   const [emailFrom, setEmailFrom] = useState(settings.email_from || '');
   const [geminiKey, setGeminiKey] = useState(settings.gemini_api_key || '');
   const [maintenance, setMaintenance] = useState(settings.maintenance_mode === 'true');
+  const [testMsg, setTestMsg] = useState('');
+  const [testing, setTesting] = useState(false);
+  const sendTestEmail = async () => {
+    setTesting(true);
+    setTestMsg('');
+    try {
+      const res = await fetch('/api/notify-test', { method: 'POST' });
+      setTestMsg(res.ok ? '✓ تم إرسال إيميل تجريبي — تحقّق من صندوق الوارد (وصندوق السبام).' : '✗ تعذّر الإرسال، تأكد من إعدادات Resend.');
+    } catch {
+      setTestMsg('✗ خطأ في الاتصال.');
+    } finally {
+      setTesting(false);
+    }
+  };
   useEffect(() => {
     setSiteName(settings.site_name || 'Athar Academy');
     setNotifyEmail(settings.notify_email || '');
@@ -1156,12 +1259,22 @@ function SettingsTab({ settings, onSave }: { settings: Record<string, string>; o
             className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-brand-gold resize-y"
           />
           <p className="text-[11px] text-slate-500 mt-1">يمكنك إضافة أكثر من بريد، افصل بينها بفاصلة أو سطر جديد.</p>
-          <button
-            onClick={() => onSave('notify_email', notifyEmail)}
-            className="mt-2 text-xs bg-brand-gold hover:bg-brand-gold-dark text-white px-4 py-1.5 rounded-lg font-bold"
-          >
-            حفظ البريد
-          </button>
+          <div className="flex items-center gap-2 mt-2 flex-wrap">
+            <button
+              onClick={() => onSave('notify_email', notifyEmail)}
+              className="text-xs bg-brand-gold hover:bg-brand-gold-dark text-white px-4 py-1.5 rounded-lg font-bold"
+            >
+              حفظ البريد
+            </button>
+            <button
+              onClick={sendTestEmail}
+              disabled={testing}
+              className="text-xs bg-brand-blue-dark hover:bg-brand-blue text-white px-4 py-1.5 rounded-lg font-bold disabled:opacity-60"
+            >
+              {testing ? 'جارٍ الإرسال...' : '✉ إرسال إيميل تجريبي'}
+            </button>
+          </div>
+          {testMsg && <p className="text-[11px] mt-2 font-bold text-slate-600">{testMsg}</p>}
         </div>
 
         <div>
