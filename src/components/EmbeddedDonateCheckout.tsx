@@ -2,7 +2,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js';
-import { X } from 'lucide-react';
+import { X, ArrowRight } from 'lucide-react';
 
 interface Props {
   publishableKey: string;
