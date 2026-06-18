@@ -1167,6 +1167,29 @@ function SettingsTab({ settings, onSave }: { settings: Record<string, string>; o
   const [tsSite, setTsSite] = useState(settings.turnstile_site_key || '');
   const [tsSecret, setTsSecret] = useState(settings.turnstile_secret_key || '');
   const [maintenance, setMaintenance] = useState(settings.maintenance_mode === 'true');
+  const [launchOn, setLaunchOn] = useState(settings.launch_enabled === 'true');
+  const [launchCount, setLaunchCount] = useState(settings.launch_count || '5');
+  const [launchTitle, setLaunchTitle] = useState(settings.launch_title_ar || '');
+  const [launchMsg, setLaunchMsg] = useState(settings.launch_message_ar || '');
+  const [launchBeat, setLaunchBeat] = useState(settings.launch_beat_ms || '1000');
+  const [launchCurtain, setLaunchCurtain] = useState(settings.launch_curtain_ms || '3200');
+  const [launchGolden, setLaunchGolden] = useState(settings.launch_golden_ms || '6000');
+  const [launchThanks, setLaunchThanks] = useState(settings.launch_thanks_secs || '0');
+  const [launchVerse, setLaunchVerse] = useState(settings.launch_verse_ar || '');
+  const [preloaderShow, setPreloaderShow] = useState(settings.preloader_enabled !== 'false');
+  const [launchSaved, setLaunchSaved] = useState(false);
+  const saveLaunchAll = () => {
+    onSave('launch_count', String(Math.max(0, Math.min(10, Number(launchCount) || 5))));
+    onSave('launch_beat_ms', String(Math.max(400, Math.min(2500, Number(launchBeat) || 1000))));
+    onSave('launch_curtain_ms', String(Math.max(1200, Math.min(8000, Number(launchCurtain) || 3200))));
+    onSave('launch_golden_ms', String(Math.max(2000, Math.min(12000, Number(launchGolden) || 6000))));
+    onSave('launch_thanks_secs', String(Math.max(0, Math.min(60, Number(launchThanks) || 0))));
+    onSave('launch_title_ar', launchTitle);
+    onSave('launch_verse_ar', launchVerse);
+    onSave('launch_message_ar', launchMsg);
+    setLaunchSaved(true);
+    setTimeout(() => setLaunchSaved(false), 2500);
+  };
   const [testMsg, setTestMsg] = useState('');
   const [testing, setTesting] = useState(false);
   const sendTestEmail = async () => {
@@ -1194,6 +1217,16 @@ function SettingsTab({ settings, onSave }: { settings: Record<string, string>; o
     setTsSite(settings.turnstile_site_key || '');
     setTsSecret(settings.turnstile_secret_key || '');
     setMaintenance(settings.maintenance_mode === 'true');
+    setLaunchOn(settings.launch_enabled === 'true');
+    setLaunchCount(settings.launch_count || '5');
+    setLaunchTitle(settings.launch_title_ar || '');
+    setLaunchMsg(settings.launch_message_ar || '');
+    setLaunchBeat(settings.launch_beat_ms || '1000');
+    setLaunchCurtain(settings.launch_curtain_ms || '3200');
+    setLaunchGolden(settings.launch_golden_ms || '6000');
+    setLaunchThanks(settings.launch_thanks_secs || '0');
+    setLaunchVerse(settings.launch_verse_ar || '');
+    setPreloaderShow(settings.preloader_enabled !== 'false');
   }, [settings]);
 
   return (
@@ -1226,6 +1259,137 @@ function SettingsTab({ settings, onSave }: { settings: Record<string, string>; o
             className={`px-5 py-2.5 rounded-xl font-bold text-sm text-white shrink-0 transition-colors ${maintenance ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-red-600 hover:bg-red-700'}`}
           >
             {maintenance ? '▶ تشغيل الموقع' : '⏸ إغلاق للصيانة'}
+          </button>
+        </div>
+      </div>
+
+      {/* Launch / Countdown intro */}
+      <div className={`rounded-2xl border-2 p-6 shadow-sm transition-colors ${launchOn ? 'bg-amber-50 border-amber-300' : 'bg-slate-50 border-slate-200'}`}>
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <h2 className="text-lg font-bold text-brand-blue-dark flex items-center gap-2">
+              {launchOn ? '🚀' : '🎬'} مشهد التدشين (عدّاد + رسالة ترحيب)
+            </h2>
+            <p className="text-xs text-slate-600 mt-1 max-w-md leading-relaxed">
+              عند التفعيل، يرى كل زائر عدّاداً تنازلياً قصيراً (مثلاً ٥…١) ثم رسالة شكر/ترحيب، ثم يُفتح الموقع.
+            </p>
+            <p className="text-xs font-bold mt-2">
+              الحالة الآن: {launchOn
+                ? <span className="text-amber-700">مفعّل — يظهر للزوّار</span>
+                : <span className="text-slate-500">مُطفأ</span>}
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              const v = !launchOn;
+              setLaunchOn(v);
+              onSave('launch_enabled', v ? 'true' : 'false');
+            }}
+            className={`px-5 py-2.5 rounded-xl font-bold text-sm text-white shrink-0 transition-colors ${launchOn ? 'bg-slate-600 hover:bg-slate-700' : 'bg-amber-500 hover:bg-amber-600'}`}
+          >
+            {launchOn ? '⏹ إيقاف التدشين' : '🚀 تشغيل التدشين'}
+          </button>
+        </div>
+
+        {launchOn && (
+          <div className="mt-5 pt-5 border-t border-amber-200 space-y-5">
+            {/* Timings */}
+            <div>
+              <h3 className="text-xs font-extrabold text-amber-700 uppercase tracking-wider mb-3">⏱ التوقيتات (التحكّم بالسرعة)</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">رقم بداية العدّ (٠–١٠)</label>
+                  <input type="number" min={0} max={10} value={launchCount} onChange={(e) => setLaunchCount(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-amber-400" />
+                  <p className="text-[10px] text-slate-400 mt-1">٠ = بدون عدّاد</p>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">سرعة العدّ (مللي ثانية للرقم)</label>
+                  <input type="number" min={400} max={2500} step={50} value={launchBeat} onChange={(e) => setLaunchBeat(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-amber-400" />
+                  <p className="text-[10px] text-slate-400 mt-1">أكبر = أبطأ (١٠٠٠ = ثانية)</p>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">مدة الستارة (مللي ثانية)</label>
+                  <input type="number" min={1200} max={8000} step={100} value={launchCurtain} onChange={(e) => setLaunchCurtain(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-amber-400" />
+                  <p className="text-[10px] text-slate-400 mt-1">سرعة فتح الستارة</p>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">مدة «بسم الله + الآية» (مللي ثانية)</label>
+                  <input type="number" min={2000} max={12000} step={200} value={launchGolden} onChange={(e) => setLaunchGolden(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-amber-400" />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">مدة ارتفاع الشكر (ثانية)</label>
+                  <input type="number" min={0} max={60} value={launchThanks} onChange={(e) => setLaunchThanks(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-amber-400" />
+                  <p className="text-[10px] text-slate-400 mt-1">٠ = تلقائي (متوسّط)</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Texts */}
+            <div>
+              <h3 className="text-xs font-extrabold text-amber-700 uppercase tracking-wider mb-3">📝 النصوص</h3>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">العنوان (يظهر في النهاية مع الشعار)</label>
+                  <input type="text" value={launchTitle} placeholder="تدشين أكاديمية أثر للقرآن الكريم"
+                    onChange={(e) => setLaunchTitle(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-amber-400" />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">الآية القرآنية</label>
+                  <input type="text" value={launchVerse} placeholder="﴿ وَقُل رَّبِّ زِدْنِي عِلْمًا ﴾"
+                    onChange={(e) => setLaunchVerse(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-amber-400" />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">رسالة الشكر (ترتفع كتترات الأفلام — اضغط Enter لسطر جديد)</label>
+                  <textarea value={launchMsg} rows={6} placeholder="شكرٌ من القلب لكل من كان له أثر…"
+                    onChange={(e) => setLaunchMsg(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-amber-400 leading-7" />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button onClick={saveLaunchAll}
+                className="text-sm bg-amber-500 hover:bg-amber-600 text-white px-6 py-2.5 rounded-xl font-bold shadow-sm">
+                💾 حفظ كل إعدادات الافتتاحية
+              </button>
+              {launchSaved && <span className="text-emerald-600 text-sm font-bold">✓ تم الحفظ</span>}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Preloader (loading screen) toggle */}
+      <div className="rounded-2xl border-2 border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <h2 className="text-lg font-bold text-brand-blue-dark flex items-center gap-2">
+              ⏳ شاشة التحميل (البري‑لود)
+            </h2>
+            <p className="text-xs text-slate-600 mt-1 max-w-md leading-relaxed">
+              شاشة شعار أثر التي تظهر عند فتح الموقع. تأتي <b>بعد</b> مشهد التدشين مباشرةً (إن كان مفعّلاً)، ثم يبدأ الموقع.
+            </p>
+            <p className="text-xs font-bold mt-2">
+              الحالة الآن: {preloaderShow
+                ? <span className="text-emerald-700">ظاهرة</span>
+                : <span className="text-slate-500">مخفيّة (يفتح الموقع مباشرة)</span>}
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              const v = !preloaderShow;
+              setPreloaderShow(v);
+              onSave('preloader_enabled', v ? 'true' : 'false');
+            }}
+            className={`px-5 py-2.5 rounded-xl font-bold text-sm text-white shrink-0 transition-colors ${preloaderShow ? 'bg-slate-600 hover:bg-slate-700' : 'bg-emerald-600 hover:bg-emerald-700'}`}
+          >
+            {preloaderShow ? '🚫 إخفاء شاشة التحميل' : '✓ إظهار شاشة التحميل'}
           </button>
         </div>
       </div>
