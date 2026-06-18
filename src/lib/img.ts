@@ -61,3 +61,6 @@ export function alignClass(settings: ImgSettings): string {
   if (settings.align === 'center') return 'mx-auto';
   return '';
 }
+
+// deploy check — no functional effect
+
