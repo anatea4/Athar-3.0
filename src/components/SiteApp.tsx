@@ -19,6 +19,7 @@ import WhatsAppButton from '@/components/WhatsAppButton';
 import FormsSection from '@/components/FormsSection';
 import Preloader from '@/components/Preloader';
 import MaintenanceScreen from '@/components/MaintenanceScreen';
+import LaunchOverlay from '@/components/LaunchOverlay';
 import { scrollToSection } from '@/lib/scroll';
 import { viewToPath, pathToView } from '@/lib/sections';
 import { Language } from '@/types';
@@ -35,6 +36,8 @@ export default function SiteApp({ initialSection = 'home', initialSub = '' }: Si
   const [activeSection, setActiveSection] = useState<string>(initialSection);
   const [activeSubSection, setActiveSubSection] = useState<string>(initialSub);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [launchDone, setLaunchDone] = useState(false);
+  const [preloaderOn, setPreloaderOn] = useState(true);
   const [maintenance, setMaintenance] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   const [notifyMsgEn, setNotifyMsgEn] = useState('');
@@ -47,9 +50,19 @@ export default function SiteApp({ initialSection = 'home', initialSub = '' }: Si
     document.documentElement.lang = currentLang;
   }, [currentLang]);
 
-  // Safety net: never let the preloader hang — dismiss it after 3s no matter what.
+  // The preloader runs AFTER the launch intro finishes. If the preloader is
+  // turned off from the dashboard, skip it entirely; otherwise show it then
+  // dismiss after 3s max (safety net so it never hangs).
   useEffect(() => {
+    if (!launchDone) return;
+    if (!preloaderOn) { setIsLoading(false); return; }
     const t = setTimeout(() => setIsLoading(false), 3000);
+    return () => clearTimeout(t);
+  }, [launchDone, preloaderOn]);
+
+  // Guard: if the launch intro can't load/finish, hand off after 12s no matter what.
+  useEffect(() => {
+    const t = setTimeout(() => setLaunchDone(true), 12000);
     return () => clearTimeout(t);
   }, []);
 
@@ -178,6 +191,12 @@ export default function SiteApp({ initialSection = 'home', initialSub = '' }: Si
 
   return (
     <>
+      <LaunchOverlay
+        currentLang={currentLang}
+        onFinish={() => setLaunchDone(true)}
+        onConfig={(c) => setPreloaderOn(c?.preloaderEnabled !== false)}
+      />
+
       <AnimatePresence>
         {isLoading && (
           <motion.div
@@ -187,7 +206,7 @@ export default function SiteApp({ initialSection = 'home', initialSub = '' }: Si
             transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
             className="fixed inset-0 z-[100] pointer-events-auto"
           >
-            <Preloader currentLang={currentLang} onComplete={handlePreloaderComplete} />
+            <Preloader currentLang={currentLang} onComplete={handlePreloaderComplete} start={launchDone} />
           </motion.div>
         )}
       </AnimatePresence>

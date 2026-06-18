@@ -7,9 +7,12 @@ import { Language } from '@/types';
 interface PreloaderProps {
   currentLang: Language;
   onComplete: () => void;
+  // When false, the logo stays on screen but the exit timer doesn't start yet
+  // (used so the launch intro plays first, then the preloader).
+  start?: boolean;
 }
 
-export default function Preloader({ currentLang, onComplete }: PreloaderProps) {
+export default function Preloader({ currentLang, onComplete, start = true }: PreloaderProps) {
   const [isFinishing, setIsFinishing] = useState(false);
 
   useEffect(() => {
@@ -21,6 +24,7 @@ export default function Preloader({ currentLang, onComplete }: PreloaderProps) {
   }, []);
 
   useEffect(() => {
+    if (!start) return; // wait until the launch intro has finished
     // Elegant, fast-paced logo loading duration (2.2 seconds total display, then exit)
     const timer = setTimeout(() => {
       setIsFinishing(true);
@@ -31,7 +35,7 @@ export default function Preloader({ currentLang, onComplete }: PreloaderProps) {
     }, 2200);
 
     return () => clearTimeout(timer);
-  }, [onComplete]);
+  }, [onComplete, start]);
 
   // Generate very subtle gold particles on mount to maintain the premium backdrop
   const particles = useMemo(() => {
