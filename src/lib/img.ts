@@ -62,5 +62,5 @@ export function alignClass(settings: ImgSettings): string {
   return '';
 }
 
-// deploy check — no functional effect
+// deploy check 2 — no functional effect
 
