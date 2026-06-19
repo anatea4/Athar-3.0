@@ -338,6 +338,7 @@ export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram
                         <span className="text-slate-600 block leading-relaxed">{getLangField(PROGRAMS[0], 'ageRules', currentLang)}</span>
                       </div>
 
+                      {getLangField(PROGRAMS[0], 'teacher', currentLang) && (
                       <div className="space-y-1 border-t sm:border-t-0 pt-3 sm:pt-0">
                         <span className="flex items-center gap-1.5 text-brand-gold-dark font-bold">
                           <Award className="h-4 w-4 text-brand-gold-dark shrink-0" />
@@ -345,6 +346,7 @@ export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram
                         </span>
                         <span className="text-slate-600 block leading-relaxed">{getLangField(PROGRAMS[0], 'teacher', currentLang)}</span>
                       </div>
+                      )}
                     </div>
 
                     <button
@@ -454,6 +456,7 @@ export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram
                         <span className="text-slate-600 block leading-relaxed">{getLangField(PROGRAMS[1], 'ageRules', currentLang)}</span>
                       </div>
 
+                      {getLangField(PROGRAMS[1], 'teacher', currentLang) && (
                       <div className="space-y-1 border-t sm:border-t-0 pt-3 sm:pt-0">
                         <span className="flex items-center gap-1.5 text-brand-gold-dark font-bold">
                           <Award className="h-4 w-4 text-brand-gold-dark shrink-0" />
@@ -461,6 +464,7 @@ export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram
                         </span>
                         <span className="text-slate-600 block leading-relaxed">{getLangField(PROGRAMS[1], 'teacher', currentLang)}</span>
                       </div>
+                      )}
                     </div>
 
                     <button
