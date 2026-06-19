@@ -144,12 +144,11 @@ export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }:
 
     pollInterval = setInterval(initPlayer, 100);
 
-    // Fallback: If the video has not loaded/started playing after 3.5 seconds,
-    // display it anyway so the user doesn't see a blank background.
+    // Reveal the video almost immediately — the poster (thumbnail) sits behind it,
+    // so there's never a blank frame, and the video fades in fast with no delay.
     fallbackTimer = setTimeout(() => {
       setIsVideoLoaded(true);
-      clearInterval(pollInterval);
-    }, 3500);
+    }, 350);
 
     return () => {
       clearInterval(pollInterval);
@@ -220,7 +219,7 @@ export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }:
             <iframe
               id={`hero-youtube-bg-${videoId}`}
               src={iframeSrc}
-              className={`absolute top-1/2 left-1/2 w-[300%] h-[300%] sm:w-[160%] sm:h-[160%] lg:w-[115%] lg:h-[115%] aspect-video -translate-x-1/2 -translate-y-1/2 object-cover transition-opacity duration-[1200ms] ${isVideoLoaded ? 'opacity-85' : 'opacity-0'}`}
+              className={`absolute top-1/2 left-1/2 w-[300%] h-[300%] sm:w-[160%] sm:h-[160%] lg:w-[115%] lg:h-[115%] aspect-video -translate-x-1/2 -translate-y-1/2 object-cover transition-opacity duration-500 ${isVideoLoaded ? 'opacity-85' : 'opacity-0'}`}
               allow="autoplay; encrypted-media"
               tabIndex={-1}
             />
@@ -233,7 +232,7 @@ export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }:
               playsInline
               onCanPlay={() => setIsVideoLoaded(true)}
               onLoadedData={() => setIsVideoLoaded(true)}
-              className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-[1200ms] ${isVideoLoaded ? 'opacity-85' : 'opacity-0'}`}
+              className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-500 ${isVideoLoaded ? 'opacity-85' : 'opacity-0'}`}
             >
               <source src={videoUrl} />
             </video>
