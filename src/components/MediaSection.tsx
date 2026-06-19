@@ -112,7 +112,7 @@ export default function MediaSection({ currentLang, activeSub, onNavigate }: Med
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                {MEDIA_NEWS.map((item) => (
+                {MEDIA_NEWS.filter((x: any) => !x._hidden).map((item) => (
                   <div key={item.id} className="p-5.5 bg-brand-gold/5 border border-brand-gold/10 rounded-2xl hover:border-brand-gold/30 transition-all duration-300 space-y-3">
                     <span className="text-[10px] text-brand-gold-dark font-sans font-bold flex items-center gap-1.5">
                       <Calendar className="h-3.5 w-3.5" />
@@ -139,7 +139,7 @@ export default function MediaSection({ currentLang, activeSub, onNavigate }: Med
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                {MEDIA_ARTICLES.map((art) => (
+                {MEDIA_ARTICLES.filter((x: any) => !x._hidden).map((art) => (
                   <div key={art.id} className="p-6 bg-white border-2 border-brand-gold/10 hover:border-brand-gold/30 rounded-2xl shadow-sm transition-all duration-300 space-y-3">
                     <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
                       <User className="h-3.5 w-3.5 text-brand-gold" />
@@ -166,7 +166,7 @@ export default function MediaSection({ currentLang, activeSub, onNavigate }: Med
               </h3>
 
               <div className="space-y-3 pt-2">
-                {DIGITAL_LIBRARY.map((doc, idx) => (
+                {DIGITAL_LIBRARY.filter((x: any) => !x._hidden).map((doc, idx) => (
                   <div key={idx} className="p-4 bg-brand-sand/60 border border-brand-gold/15 rounded-xl hover:bg-brand-gold/5 hover:border-brand-gold/45 transition-colors duration-300 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
                       <div className="p-2.5 bg-brand-gold/10 text-brand-gold-dark rounded-lg font-bold text-xs uppercase font-sans">
@@ -293,7 +293,7 @@ export default function MediaSection({ currentLang, activeSub, onNavigate }: Med
               )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                {(CALENDAR.events || []).map((ev: any, i: number) => (
+                {(CALENDAR.events || []).filter((ev: any) => !ev._hidden).map((ev: any, i: number) => (
                   <div key={i} className="flex items-center gap-4 bg-brand-gold/5 border border-brand-gold/15 rounded-2xl p-4">
                     <div className="flex flex-col items-center justify-center h-16 w-16 shrink-0 rounded-2xl bg-brand-blue-dark text-brand-gold font-bold">
                       <Calendar className="h-5 w-5" />

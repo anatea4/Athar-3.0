@@ -83,7 +83,7 @@ export default function InitiativesSection({ currentLang, activeSub, onNavigate 
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                {INITIATIVES_LIST.map((init) => (
+                {INITIATIVES_LIST.filter((x: any) => !x._hidden).map((init) => (
                   <div key={init.id} className="p-6 bg-gradient-to-tr from-brand-sand via-white to-white border-2 border-brand-gold/15 hover:border-brand-gold/45 rounded-2xl shadow-sm transition-all duration-300 flex items-start gap-4">
                     <div className="p-3 bg-brand-gold/10 text-brand-gold-dark rounded-xl shrink-0">
                       <Heart className="h-6 w-6" />
@@ -116,7 +116,7 @@ export default function InitiativesSection({ currentLang, activeSub, onNavigate 
                 </p>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                  {EVENTS_LIST.map((ev, i) => {
+                  {EVENTS_LIST.filter((x: any) => !x._hidden).map((ev, i) => {
                     const badge = getLangField(ev, 'badge', currentLang) as string;
                     const img = (ev.image || '').toString();
                     return (
@@ -175,7 +175,7 @@ export default function InitiativesSection({ currentLang, activeSub, onNavigate 
                 </p>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
-                  {calendarEvents.map((item, idx) => {
+                  {calendarEvents.filter((x: any) => !x._hidden).map((item, idx) => {
                     let statusTextAr = 'قريباً';
                     let statusTextEn = 'Upcoming';
                     let statusTextMs = 'Akan Datang';

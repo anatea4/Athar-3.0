@@ -126,7 +126,7 @@ export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram
     if (progId) {
       const prog = findProg(progId);
       if (prog && prog.gallery && Array.isArray(prog.gallery) && prog.gallery.length > 0) {
-        programImages[tabId] = prog.gallery.map((item: any) => ({
+        programImages[tabId] = prog.gallery.filter((item: any) => !item._hidden).map((item: any) => ({
           src: item.img || item.image || item.src || '',
           titleAr: item.titleAr || '',
           titleEn: item.titleEn || '',
@@ -656,7 +656,7 @@ export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram
                 <span>{currentLang === 'ms' ? 'Program Sampingan' : currentLang === 'en' ? 'Accompanying Programs' : 'البرامج المصاحبة'}</span>
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {(DETAILED_PROGRAMS.accompanying || []).map((p: any, i: number) => (
+                {(DETAILED_PROGRAMS.accompanying || []).filter((p: any) => !p._hidden).map((p: any, i: number) => (
                   <div key={i} className="bg-white border-2 border-brand-gold/15 hover:border-brand-gold/30 rounded-3xl p-6 space-y-3 transition-all duration-300">
                     <h4 className="text-lg font-bold text-brand-blue-dark">{getLangField(p, 'title', currentLang)}</h4>
                     <p className="text-slate-500 font-sans text-xs sm:text-sm leading-relaxed">{getLangField(p, 'desc', currentLang)}</p>

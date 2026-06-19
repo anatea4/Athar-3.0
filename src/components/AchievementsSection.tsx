@@ -137,7 +137,7 @@ export default function AchievementsSection({ currentLang, activeSub }: Achievem
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                {STUDENT_PROFILES.map((student) => (
+                {STUDENT_PROFILES.filter((s: any) => !s._hidden).map((student) => (
                   <div key={student.id} className="p-6 bg-white border-2 border-brand-gold/10 rounded-3xl shadow-sm hover:border-brand-gold/30 hover:shadow-md transition-all duration-300">
                     <div className="flex gap-4 items-center mb-4 border-b border-slate-100 pb-3">
                       <SmartImg

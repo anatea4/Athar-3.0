@@ -57,12 +57,12 @@ function isImageSrc(v?: string): boolean {
 
 export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }: HeroProps) {
   const hero = useHero();
-  const partners = usePartners();
-  
+  const partners = (usePartners() || []).filter((p: any) => !p._hidden);
+
   // Videos switcher
-  const videosList = hero.videos || [
+  const videosList = (hero.videos && hero.videos.length ? hero.videos : [
     { id: 'default', titleAr: 'الفيديو التعريفي', titleEn: 'Introductory Video', titleMs: 'Video Pengenalan', url: hero.videoUrl || 'https://youtu.be/Eff2YQijMhA' }
-  ];
+  ]).filter((v: any) => !v._hidden);
   const [activeVideoIdx, setActiveVideoIdx] = useState(0);
   const activeVideo = videosList[activeVideoIdx] || videosList[0];
   const videoId = extractYoutubeId(activeVideo.url);
@@ -169,7 +169,7 @@ export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }:
     return sub;
   };
 
-  const stats = (hero.stats || []).map((s: any, idx: number) => ({
+  const stats = (hero.stats || []).filter((s: any) => !s._hidden).map((s: any, idx: number) => ({
     id: `stat-${idx + 1}`,
     iconName: s.icon,
     number: s.number,
@@ -328,7 +328,7 @@ export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }:
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {(hero.pillars || []).map((p: any) => (
+            {(hero.pillars || []).filter((p: any) => !p._hidden).map((p: any) => (
               <div
                 key={p.id}
                 className="bg-white border border-brand-gold/15 rounded-3xl overflow-hidden hover:border-brand-gold hover:shadow-brand-gold/10 hover:shadow-lg transition-all duration-300 flex flex-col justify-between text-left rtl:text-right group h-full shadow-sm"
