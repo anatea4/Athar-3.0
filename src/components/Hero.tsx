@@ -416,11 +416,11 @@ export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }:
               <div className="w-12 h-0.5 bg-brand-gold mx-auto mt-2" />
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8">
+            <div className="flex flex-wrap justify-center gap-8">
               {partners.map((partner: any, i: number) => (
                 <div
                   key={i}
-                  className="bg-white border border-slate-100/80 hover:border-brand-gold/30 p-6 rounded-[2rem] shadow-sm hover:shadow-brand-gold/10 hover:shadow-xl transition-all duration-500 flex flex-col items-center justify-center text-center group hover:-translate-y-1.5 cursor-default relative overflow-hidden"
+                  className="w-[170px] sm:w-[190px] md:w-[210px] shrink-0 bg-white border border-slate-100/80 hover:border-brand-gold/30 p-6 rounded-[2rem] shadow-sm hover:shadow-brand-gold/10 hover:shadow-xl transition-all duration-500 flex flex-col items-center justify-center text-center group hover:-translate-y-1.5 cursor-default relative overflow-hidden"
                 >
                   {isImageSrc(partner.logo) ? (
                     <div className="h-20 w-20 rounded-2xl bg-white overflow-hidden flex items-center justify-center border border-slate-100 shadow-sm group-hover:border-brand-gold/20 group-hover:scale-105 transition-all duration-500 mb-4 bg-gradient-to-br from-white to-slate-50">
