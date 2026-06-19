@@ -46,6 +46,7 @@ export interface Program {
   teacherEn: string;
   teacherAr: string;
   teacherMs?: string;
+  images?: string[];
 }
 
 export interface StudentProfile {

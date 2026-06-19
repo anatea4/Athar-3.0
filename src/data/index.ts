@@ -532,8 +532,9 @@ export const DETAILED_PROGRAMS = {
       titleMs: 'Halaqah Al-Quran Harian',
       descAr: 'حلقات حفظ ومراجعة مستمرة للبنين والبنات من سن 6 سنوات فما فوق مع فحص التجويد والمتابعة التربوية.',
       descEn: 'Continuous Quran memorization and review classes for boys & girls aged 6+ with Tajweed assessment and character mentorship.',
-      descMs: 'Kelas hafazan dan ulangkaji Al-Quran berterusan untuk pelajar lelaki & perempuan berumur 6+ dengan penilaian Tajwid dan bimbingan sahsiah.',
-      stats: '26 حلقة — 260 طالباً وطالبة'
+      descMs: 'Kelas hafazan dan ulangkaji Al-Quran berterusan untuk pelajar lelaki & perempuan berumur 6+ dengan penilaian Tajwid و bimbingan sahsiah.',
+      stats: '26 حلقة — 260 طالباً وطالبة',
+      gallery: []
     },
     {
       id: 'alsafarah',
@@ -543,7 +544,12 @@ export const DETAILED_PROGRAMS = {
       descAr: 'برنامج ريادي مخصص لسرد المحفوظ كاملاً غيباً في جلسة واحدة أو بضع جلسات متتالية لنيل مرتبة المتقن.',
       descEn: 'A pioneering program dedicated to reciting the entire memorized Quran in a single sitting or consecutive sessions to gain absolute mastery.',
       descMs: 'Program perintis yang didedikasikan untuk membaca keseluruhan Al-Quran yang dihafal dalam satu sesi atau sesi berturut-turut untuk mendapatkan penguasaan mutlak.',
-      stats: '500 مستفيد للعامين الماضيين'
+      stats: '500 مستفيد للعامين الماضيين',
+      gallery: [
+        { img: '/safara-1.png', titleAr: 'حلقات الإسناد وتلقي القراءات', titleEn: 'Connected Recitation Circles', descAr: 'تلقي القراءات والإجازات القرآنية بالسند المتصل على شيوخ الأكاديمية.', descEn: 'Receiving Quranic chains of narration from the academy scholars.' },
+        { img: '/safara-2.png', titleAr: 'مدارسة المتون وضبط التجويد', titleEn: 'Text Study & Articulation', descAr: 'حلقات نقاشية ومدارسة المتون العلمية التخصصية كالجزرية وتحفة الأطفال.', descEn: 'Discussion and study of specialized Sharia and Tajweed texts.' },
+        { img: '/safara-3.png', titleAr: 'تكريم الحفاظ والمتميزين', titleEn: 'Honoring Distinguished Students', descAr: 'احتفاء مبارك بالطلاب والطالبات الذين أتموا سرد القرآن غيباً في مجلس واحد.', descEn: 'Celebrating students who completed reciting the entire Quran in one sitting.' }
+      ]
     },
     {
       id: 'ijazah',
@@ -553,7 +559,8 @@ export const DETAILED_PROGRAMS = {
       descAr: 'مخصصة للحفاظ المتقنين لعرض الختمة ونيل الإسناد المتصل إلى رسول الله ﷺ بروايات حفص وشعبة ونافع وغيرهم.',
       descEn: 'For advanced memorizers to recite the full Quran and earn an authentic chain of narration (Sanad) connected to the Prophet ﷺ.',
       descMs: 'Untuk penghafaz peringkat tinggi membaca keseluruhan Al-Quran dan memperoleh rantaian periwayatan (Sanad) sahih yang bersambung dengan Rasulullah ﷺ.',
-      stats: 'عرض فردي مباشر مع الشيخ'
+      stats: 'عرض فردي مباشر مع الشيخ',
+      gallery: []
     },
     {
       id: 'mutoon',
@@ -562,7 +569,8 @@ export const DETAILED_PROGRAMS = {
       titleMs: 'Hafazan Teks Matan Hadis & Tajwid',
       descAr: 'برنامج لدراسة وحفظ المنظومات الأساسية مثل الجزرية، تحفة الأطفال، والكتب الحديثية المسندة.',
       descEn: 'A specialized course for studying and memorizing core texts like Al-Jazariyyah, Tuhfat Al-Atfal, and Hadith collections.',
-      descMs: 'Kursus khusus untuk mempelajari dan menghafal teks teras seperti Al-Jazariyyah, Tuhfat Al-Atfal, dan koleksi Hadis.'
+      descMs: 'Kursus khusus untuk mempelajari dan menghafal teks teras seperti Al-Jazariyyah, Tuhfat Al-Atfal, dan koleksi Hadis.',
+      gallery: []
     },
     {
       id: 'qari',
@@ -571,7 +579,12 @@ export const DETAILED_PROGRAMS = {
       titleMs: 'Program Qari Athar',
       descAr: 'يركز على جمال الصوت والمقامات التعبيرية لتمثيل الأكاديمية في المحافل الدولية وتدريب الأئمة.',
       descEn: 'Focuses on vocal beauty, articulation, and expressive recitation to train future Imams and represent the academy globally.',
-      descMs: 'Memfokuskan kepada keindahan vokal, artikulasi, dan bacaan ekspresif untuk melatih bakal Imam dan mewakili akademi di peringkat global.'
+      descMs: 'Memfokuskan kepada keindahan vokal, artikulasi, dan bacaan ekspresif untuk melatih bakal Imam dan mewakili akademi di peringkat global.',
+      gallery: [
+        { img: '/safara-1.png', titleAr: 'فحص التجويد وضبط مخارج الحروف', titleEn: 'Tajweed Evaluation & Articulation', descAr: 'تعليم التلاوة الصحيحة وأحكام التجويد عملياً ونظرياً.', descEn: 'Teaching correct pronunciation and rules practically and theoretically.' },
+        { img: '/quran-boys-3.png', titleAr: 'التسجيلات الصوتية والمحافل', titleEn: 'Audio Recordings & Assemblies', descAr: 'تسجيل التلاوات المتميزة للطلاب وتشجيعهم بظهور مبارك.', descEn: 'Recording top student recitations to encourage and reward them.' },
+        { img: '/quran-girls-3.png', titleAr: 'التتويج بجوائز قارئ أثر المتميز', titleEn: 'Athar Reciter Award Coronation', descAr: 'تكريم المتسابقين الحاصلين على أعلى درجات الضبط والجمال الصوتي.', descEn: 'Honoring contestants with the highest articulation and vocal beauty.' }
+      ]
     }
   ],
   accompanying: [
@@ -583,7 +596,12 @@ export const DETAILED_PROGRAMS = {
       descAr: 'مخيم تربوي مهاري ترفيهي مكثف للبنين يستمر لمدة 30 يوماً يبني المهارات، القيم، والأنشطة القيادية والمغامرة.',
       descEn: 'An intensive 30-day educational, skill-building, and recreational camp for boys, focusing on leadership, values, and team building.',
       descMs: 'Kem pendidikan, pembinaan kemahiran, dan rekreasi intensif selama 30 hari untuk lelaki, memfokuskan kepada kepimpinan, nilai murni, dan pembinaan pasukan.',
-      stats: '60 مستفيداً كل عام'
+      stats: '60 مستفيداً كل عام',
+      gallery: [
+        { img: '/creators-1.png', titleAr: 'الأنشطة الرياضية واللياقة البدنية', titleEn: 'Sports & Physical Activities', descAr: 'تعزيز القوة البدنية والنشاط اليومي من خلال رياضات مختلفة.', descEn: 'Enhancing physical fitness and daily active sports.' },
+        { img: '/creators-2.png', titleAr: 'ورش العمل وبناء القيادة', titleEn: 'Leadership & Workshops', descAr: 'تدريبات مهارية في الإلقاء، وحل المشكلات، والاعتماد على النفس.', descEn: 'Skill building in public speaking, problem-solving, and independence.' },
+        { img: '/creators-3.png', titleAr: 'اللقاءات التربوية وحلقات القرآن', titleEn: 'Educational Meetings & Quran Hifz', descAr: 'مراجعة وتسميع أوراد القرآن الكريم بالإضافة إلى اللقاءات القيمية اليومية.', descEn: 'Reviewing Quranic memorization alongside daily values sittings.' }
+      ]
     },
     {
       id: 'camps-sfeerat',
@@ -593,7 +611,12 @@ export const DETAILED_PROGRAMS = {
       descAr: 'مخيم مهاراتي ترفيهي قيمي للفتيات يهدف لبناء الشخصية المسلمة الرائدة القادرة على إحداث الأثر الطيب.',
       descEn: 'A value-driven, skill-oriented camp for girls aimed at building a strong Muslim character capable of leaving a positive impact.',
       descMs: 'Kem berasaskan nilai dan kemahiran untuk perempuan bertujuan membina peribadi Muslimah kukuh yang mampu meninggalkan impak positif.',
-      stats: '45 مستفيدة سنوياً'
+      stats: '45 مستفيدة سنوياً',
+      gallery: [
+        { img: '/sfeerat-1.png', titleAr: 'الحلقات الحوارية والقيمية للفتيات', titleEn: 'Girls Value & Dialogue Circles', descAr: 'لقاءات تربوية تعزز الهوية الإسلامية والقيم والأخلاق النبيلة.', descEn: 'Educational sessions reinforcing Islamic identity and values.' },
+        { img: '/sfeerat-2.png', titleAr: 'الورش الحرفية والإبداعية', titleEn: 'Craft & Creative Workshops', descAr: 'تعليم مهارات اليد والأعمال الفنية لتمكين الفتيات إبداعياً.', descEn: 'Teaching arts, crafts, and handiworks for creative empowerment.' },
+        { img: '/sfeerat-2.png', titleAr: 'أنشطة الخدمة المجتمعية والترفيه', titleEn: 'Community Service & Recreation', descAr: 'أعمال تطوعية وزيارات ترفيهية تنمي الأثر السليم في الفؤاد.', descEn: 'Volunteering and fun field trips that foster healthy social impact.' }
+      ]
     },
     {
       id: 'takween',
@@ -602,7 +625,12 @@ export const DETAILED_PROGRAMS = {
       titleMs: 'Program Pembangunan Takween',
       descAr: 'برنامج سنوي متكامل لبناء الفكر الإسلامي الصحيح، وترسيخ العقيدة وحب الأوطان ومواجهة الفتن الفكرية.',
       descEn: 'An annual program designed to build sound Islamic thought, strengthen faith, civic duty, and resist contemporary intellectual challenges.',
-      descMs: 'Program tahunan yang dirancang untuk membina pemikiran Islam yang sihat, mengukuhkan keimanan, tanggungjawab sivik, dan menentang cabaran intelektual kontemporari.'
+      descMs: 'Program tahunan yang dirancang untuk membina pemikiran Islam yang sihat, mengukuhkan keimanan, tanggungjawab sivik, dan menentang cabaran intelektual kontemporari.',
+      gallery: [
+        { img: '/takween-1.png', titleAr: 'محاضرات العلوم الشرعية', titleEn: 'Sharia Science Lectures', descAr: 'تأصيل شرعي في العقيدة والفقه والحديث واللغة العربية.', descEn: 'Foundational sharia studies in creed, jurisprudence, and language.' },
+        { img: '/takween-2.png', titleAr: 'حلقات النقاش والمذاكرة', titleEn: 'Discussion & Study Groups', descAr: 'تفعيل التعلم النشط وتوطين المعرفة بين الطلاب.', descEn: 'Promoting active learning and knowledge peer discussions.' },
+        { img: '/takween-3.png', titleAr: 'تكريم المتفوقين في الاختبارات', titleEn: 'Honoring Top Achievers', descAr: 'جوائز تشجيعية وشهادات تفوق للطلبة المتميزين في الفحص الدوري.', descEn: 'Awards and certificates for top performing students in assessments.' }
+      ]
     },
     {
       id: 'ramadan-retreat',
@@ -611,7 +639,12 @@ export const DETAILED_PROGRAMS = {
       titleMs: 'Iktikaf Rohani Ramadan',
       descAr: 'خلوة علمية تربوية في العشر الأواخر من رمضان، تركز على مراجعة القرآن وتلاوة الأثر وقيام الليل والاعتكاف.',
       descEn: 'A structured spiritual retreat during the last ten days of Ramadan, focusing on Quranic revision, night prayers, and devotion.',
-      descMs: 'Iktikaf rohani berstruktur dalam sepuluh hari terakhir Ramadan, memfokuskan kepada ulangkaji Al-Quran, solat malam, dan ibadah.'
+      descMs: 'Iktikaf rohani berstruktur dalam sepuluh hari terakhir Ramadan, memfokuskan kepada ulangkaji Al-Quran, solat malam, dan ibadah.',
+      gallery: [
+        { img: '/quran-boys.png', titleAr: 'التهجد وصلاة القيام', titleEn: 'Night Prayers (Tahajjud)', descAr: 'إحياء العشر الأواخر بالقيام والدعاء والتضرع في جو إيماني.', descEn: 'Spiritual night prayers and supplication during the last ten nights.' },
+        { img: '/safara-1.png', titleAr: 'المراجعة القرآنية المكثفة', titleEn: 'Intensive Quranic Review', descAr: 'خطط يومية مكثفة لتثبيت الحفظ والمراجعة الجماعية والفردية.', descEn: 'Focused daily structures for solidifying memorization and reviews.' },
+        { img: '/quran-girls-2.png', titleAr: 'الإفطار الجماعي واللقاءات الإيمانية', titleEn: 'Community Iftar & Lessons', descAr: 'جلسات إيمانية وثقافية مباركة تجمع طلبة الأكاديمية.', descEn: 'Blessed spiritual and cultural sittings with academy students.' }
+      ]
     },
     {
       id: 'journey-athar',
@@ -620,7 +653,12 @@ export const DETAILED_PROGRAMS = {
       titleMs: 'Perjalanan Impak (Athar)',
       descAr: 'رحلات تربوية وثقافية دورية لزيارة البقاع الطاهرة والعلماء، وربط الطلاب ببيئات العلم والصلاح.',
       descEn: 'Regular educational and cultural journeys to holy places and scholars, linking students with environments of knowledge and righteousness.',
-      descMs: 'Perjalanan pendidikan dan kebudayaan berkala ke tempat suci dan ulama, menghubungkan pelajar dengan persekitaran ilmu dan kesolehan.'
+      descMs: 'Perjalanan pendidikan dan kebudayaan berkala ke tempat suci dan ulama, menghubungkan pelajar dengan persekitaran ilmu dan kesolehan.',
+      gallery: [
+        { img: '/creators-1.png', titleAr: 'الرحلات الاستكشافية والخارجية', titleEn: 'Outdoor Expeditions & Field Trips', descAr: 'زيارة المعالم والتعلم من خلال الاستكشاف والتجربة العملية.', descEn: 'Visiting historic landmarks and learning through direct experience.' },
+        { img: '/creators-2.png', titleAr: 'الأنشطة الجماعية وتحديات الفريق', titleEn: 'Group Activities & Team Challenges', descAr: 'ألعاب حركية ومسابقات تعزز روح الأخوة والعمل الجماعي.', descEn: 'Action sports and puzzles reinforcing team spirit and brotherhood.' },
+        { img: '/quran-boys-2.png', titleAr: 'المحاضرات وجلسات التفكر والتدبر', titleEn: 'Lectures & Reflection Circles', descAr: 'جلسات تفكر في الطبيعة ودروس تدبر في معاني الآيات العظيمة.', descEn: 'Sittings in nature reflecting on Quranic verses and meanings.' }
+      ]
     }
   ]
 };

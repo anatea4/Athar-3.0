@@ -68,13 +68,24 @@ const ContentContext = createContext<Content>(DEFAULTS);
 
 function mergeData<T>(defaults: T, override: any): T {
   if (override === null || override === undefined) return defaults;
+  if (typeof defaults !== 'object' || defaults === null) return override as T;
   if (typeof override !== 'object') return override as T;
-  if (Array.isArray(override)) {
-    return (override.length > 0 ? override : defaults) as T;
+
+  if (Array.isArray(defaults)) {
+    const overrideArr = Array.isArray(override) ? override : [];
+    if (overrideArr.length === 0) return defaults;
+    
+    return overrideArr.map((item: any, idx: number) => {
+      const defaultItem = defaults.find((x: any) => x && x.id && x.id === item.id) || defaults[idx];
+      return mergeData(defaultItem, item);
+    }) as any;
   }
-  if (Object.keys(override).length === 0) return defaults;
-  // Object — shallow merge: any provided keys override
-  return { ...(defaults as any), ...override } as T;
+
+  const res: any = { ...defaults };
+  for (const key of Object.keys(override)) {
+    res[key] = mergeData(defaults[key as keyof typeof defaults], override[key]);
+  }
+  return res as T;
 }
 
 export function ContentProvider({ children }: { children: ReactNode }) {

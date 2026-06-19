@@ -236,16 +236,31 @@ export default function AdminPage() {
   const startEdit = useCallback((section: string) => {
     const current = content[section];
     const fallback = defaults[section];
-    let value: any;
-    if (Array.isArray(fallback)) {
-      // Arrays: use saved content if non-empty, else defaults
-      value = Array.isArray(current) && current.length > 0 ? current : fallback || [];
-    } else if (fallback && typeof fallback === 'object') {
-      // Objects: merge defaults under saved content so newly-added default fields always appear
-      value = { ...(fallback as any), ...(current && typeof current === 'object' ? current : {}) };
-    } else {
-      value = current ?? fallback ?? {};
-    }
+    
+    const deepMerge = (def: any, cur: any): any => {
+      if (cur === undefined || cur === null) return def;
+      if (typeof def !== 'object' || def === null) return cur;
+      if (typeof cur !== 'object') return cur;
+
+      if (Array.isArray(def)) {
+        const curArr = Array.isArray(cur) ? cur : [];
+        if (curArr.length === 0) return def;
+        
+        return curArr.map((item: any, idx: number) => {
+          const defItem = def.find((x: any) => x && x.id && x.id === item.id) || def[idx];
+          return deepMerge(defItem, item);
+        });
+      }
+
+      const res: any = { ...def };
+      for (const key of Object.keys(cur)) {
+        res[key] = deepMerge(def[key], cur[key]);
+      }
+      return res;
+    };
+
+    const value = deepMerge(fallback, current);
+    
     // Deep clone so editing doesn't mutate the loaded state
     const cloned = JSON.parse(JSON.stringify(value));
     setEditorData(cloned);

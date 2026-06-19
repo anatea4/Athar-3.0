@@ -85,6 +85,8 @@ const LABEL_MAP: Record<string, string> = {
   logo: 'الشعار',
   avatar: 'الصورة الشخصية',
   url: 'الصورة / الرابط',
+  images: 'معرض الصور / الصور المتعددة',
+  gallery: 'معرض الصور',
   phone: 'رقم الهاتف',
   email: 'البريد الإلكتروني',
   website: 'الموقع الإلكتروني',
@@ -219,6 +221,17 @@ function ObjectFields({
 
         // Array of strings (e.g. syllabus, objectives)
         if (Array.isArray(val) && val.every((x) => typeof x === 'string')) {
+          if (['images', 'gallery', 'photos'].some((k) => key.toLowerCase().includes(k))) {
+            return (
+              <ImageArrayEditor
+                key={key}
+                label={friendlyLabel(key)}
+                items={val}
+                onChange={(items) => updateField(key, items)}
+                onToast={onToast}
+              />
+            );
+          }
           return (
             <StringArrayEditor
               key={key}
@@ -363,6 +376,59 @@ function ArrayEditor({
         </ArrayItemCard>
       ))}
       <AddItemButton onClick={makeNew} label="إضافة عنصر جديد" />
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Image array editor (list of images with uploaders)
+// ---------------------------------------------------------------------------
+function ImageArrayEditor({
+  label,
+  items,
+  onChange,
+  onToast,
+}: {
+  label: string;
+  items: string[];
+  onChange: (items: string[]) => void;
+  onToast: Toast;
+}) {
+  return (
+    <div className="border border-slate-200 rounded-lg p-4 bg-slate-50/50 space-y-4">
+      <div className="text-xs font-bold text-slate-600">{label}</div>
+      {items.map((item, i) => (
+        <div key={i} className="relative border border-slate-200 rounded-xl p-3 bg-white space-y-2">
+          <div className="flex justify-between items-center pb-2 border-b border-slate-100">
+            <span className="text-[11px] font-bold text-slate-500">الصورة #{i + 1}</span>
+            <button
+              type="button"
+              onClick={() => onChange(items.filter((_, idx) => idx !== i))}
+              className="p-1 hover:bg-red-50 text-red-600 rounded cursor-pointer"
+              title="حذف الصورة"
+            >
+              ✕
+            </button>
+          </div>
+          <ImageField
+            label=""
+            value={item}
+            onChange={(url) => {
+              const next = [...items];
+              next[i] = url;
+              onChange(next);
+            }}
+            onToast={onToast}
+          />
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={() => onChange([...items, ''])}
+        className="w-full flex items-center justify-center gap-1.5 border border-dashed border-brand-gold/40 text-brand-gold-dark hover:bg-brand-gold-light hover:border-brand-gold font-bold py-2 rounded-xl text-xs transition cursor-pointer"
+      >
+        + إضافة صورة جديدة
+      </button>
     </div>
   );
 }
