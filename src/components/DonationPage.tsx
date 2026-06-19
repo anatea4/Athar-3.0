@@ -255,6 +255,8 @@ export default function DonationPage({ currentLang, form }: DonationPageProps) {
   React.useEffect(() => {
     if (campaigns.length > 0) {
       setDonationTierSelected((prev) => campaigns.some(c => c.id === prev) ? prev : campaigns[0].id);
+      // Reflect the first path's amount on load (e.g. student → 100).
+      if (campaigns[0]?.amount) setSelectedAmount(Number(campaigns[0].amount));
     }
   }, [campaigns]);
   
@@ -555,7 +557,12 @@ export default function DonationPage({ currentLang, form }: DonationPageProps) {
                         <button
                           key={c.id}
                           type="button"
-                          onClick={() => setDonationTierSelected(c.id)}
+                          onClick={() => {
+                            setDonationTierSelected(c.id);
+                            // Selecting a path auto-fills its amount (e.g. student → 100, circle → 1000).
+                            // The donor can still pick a different/lower amount below.
+                            if (c.amount) { setSelectedAmount(Number(c.amount)); setCustomAmountText(''); }
+                          }}
                           className={`p-3.5 rounded-2xl border text-xs font-bold font-sans text-left rtl:text-right transition-all flex flex-col justify-between cursor-pointer ${
                             selected
                               ? 'bg-brand-blue text-brand-gold border-transparent shadow'
