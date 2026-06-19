@@ -193,11 +193,20 @@ export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }:
         
         {/* YouTube Background Video Player */}
         <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
+          {/* Poster (video thumbnail) — shows on mobile where autoplay is blocked, so the
+              hero never looks blank. The video fades in above it when it actually plays. */}
+          {videoId && (
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url(https://img.youtube.com/vi/${videoId}/maxresdefault.jpg)` }}
+            />
+          )}
           <iframe
             id={`hero-youtube-bg-${videoId}`}
             src={iframeSrc}
             className={`absolute top-1/2 left-1/2 w-[300%] h-[300%] sm:w-[160%] sm:h-[160%] lg:w-[115%] lg:h-[115%] aspect-video -translate-x-1/2 -translate-y-1/2 object-cover transition-opacity duration-[1200ms] ${isVideoLoaded ? 'opacity-85' : 'opacity-0'}`}
-            allow="autoplay; encrypted-media"
+            allow="autoplay; encrypted-media; picture-in-picture; gyroscope"
+            allowFullScreen
             frameBorder="0"
             style={{ minWidth: '100%', minHeight: '100%' }}
           />
