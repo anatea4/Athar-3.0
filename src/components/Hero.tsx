@@ -399,7 +399,7 @@ export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }:
 
       {/* Success Partners Section */}
       {partners && partners.length > 0 && (
-        <div id="partners" className="py-20 bg-white relative">
+        <div id="partners" className="py-24 bg-gradient-to-b from-white via-brand-sand/20 to-brand-sand/50 relative border-t border-brand-gold/10">
           <div className="absolute inset-0 islamic-pattern opacity-10 pointer-events-none" />
           <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             
@@ -416,31 +416,34 @@ export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }:
               <div className="w-12 h-0.5 bg-brand-gold mx-auto mt-2" />
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8">
               {partners.map((partner: any, i: number) => (
                 <div
                   key={i}
-                  className="bg-brand-gold-light/20 border border-brand-gold/10 hover:border-brand-gold/45 hover:bg-white p-5 rounded-2xl shadow-sm transition-all duration-300 flex flex-col items-center justify-center text-center group hover:scale-[1.03] hover:shadow-lg"
+                  className="bg-white/70 backdrop-blur-sm border border-brand-gold/15 hover:border-brand-gold/50 p-6 rounded-3xl shadow-sm hover:shadow-brand-gold/10 hover:shadow-xl transition-all duration-500 flex flex-col items-center justify-center text-center group hover:-translate-y-1.5 cursor-default relative overflow-hidden"
                 >
+                  {/* Subtle gold shining line on top on hover */}
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-brand-gold/40 to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+
                   {isImageSrc(partner.logo) ? (
-                    <div className="h-16 w-16 rounded-xl bg-white overflow-hidden flex items-center justify-center border border-brand-gold/10 shadow-sm group-hover:border-brand-gold/30 transition-colors mb-3">
+                    <div className="h-16 w-16 rounded-2xl bg-white overflow-hidden flex items-center justify-center border border-brand-gold/10 shadow-sm group-hover:border-brand-gold/30 transition-all duration-500 mb-3 bg-gradient-to-br from-white to-slate-50">
                       <SmartImg
                         src={partner.logo}
                         alt={pickLang(partner, 'name', currentLang)}
-                        className="h-full w-full object-contain p-1"
+                        className="h-full w-full object-contain p-1.5 filter grayscale group-hover:grayscale-0 opacity-70 group-hover:opacity-100 transition-all duration-500"
                         referrerPolicy="no-referrer"
                       />
                     </div>
                   ) : (
-                    <div className="h-16 w-16 rounded-xl bg-brand-gold/10 text-brand-gold-dark font-bold text-2xl flex items-center justify-center mb-3">
+                    <div className="h-16 w-16 rounded-2xl bg-brand-gold/10 text-brand-gold-dark font-bold text-2xl flex items-center justify-center mb-3 border border-brand-gold/20 shadow-inner group-hover:bg-brand-gold/20 transition-all duration-500">
                       {partner.logo}
                     </div>
                   )}
-                  <span className="text-xs font-bold text-brand-blue-dark group-hover:text-brand-gold transition-colors line-clamp-1">
+                  <span className="text-xs font-bold text-brand-blue-dark group-hover:text-brand-gold-dark transition-colors line-clamp-1 font-sans">
                     {pickLang(partner, 'name', currentLang)}
                   </span>
                   {partner.descAr && (
-                    <p className="text-[10px] text-slate-500 font-sans mt-1 line-clamp-2 max-w-[150px] leading-relaxed">
+                    <p className="text-[10px] text-slate-500 font-sans mt-1.5 line-clamp-2 max-w-[150px] leading-relaxed opacity-85 group-hover:opacity-100 transition-opacity">
                       {pickLang(partner, 'desc', currentLang)}
                     </p>
                   )}
