@@ -399,7 +399,27 @@ export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }:
 
       {/* Success Partners Section */}
       {partners && partners.length > 0 && (
-        <div id="partners" className="py-24 bg-gradient-to-b from-white via-brand-sand/20 to-brand-sand/50 relative border-t border-brand-gold/10">
+        <div id="partners" className="py-24 bg-gradient-to-b from-white via-brand-sand/20 to-brand-sand/50 relative border-t border-brand-gold/10 overflow-hidden">
+          <style>{`
+            @keyframes marqueeLtr {
+              0% { transform: translateX(0); }
+              100% { transform: translateX(-33.3333%); }
+            }
+            @keyframes marqueeRtl {
+              0% { transform: translateX(0); }
+              100% { transform: translateX(33.3333%); }
+            }
+            .animate-marquee-ltr {
+              animation: marqueeLtr 35s linear infinite;
+            }
+            .animate-marquee-rtl {
+              animation: marqueeRtl 35s linear infinite;
+            }
+            .marquee-track:hover {
+              animation-play-state: paused;
+            }
+          `}</style>
+          
           <div className="absolute inset-0 islamic-pattern opacity-10 pointer-events-none" />
           <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             
@@ -416,41 +436,46 @@ export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }:
               <div className="w-12 h-0.5 bg-brand-gold mx-auto mt-2" />
             </div>
 
-            <div className="flex flex-wrap justify-center gap-8 md:gap-10">
-              {partners.map((partner: any, i: number) => (
-                <div
-                  key={i}
-                  className="w-44 h-44 rounded-full bg-gradient-to-b from-white to-brand-sand/20 border-2 border-brand-gold/20 hover:border-brand-gold/50 shadow-md hover:shadow-brand-gold/20 hover:shadow-xl transition-all duration-700 hover:-translate-y-1.5 hover:rotate-3 flex flex-col items-center justify-center p-4 text-center group cursor-default relative overflow-hidden bg-white"
-                >
-                  {/* Dashed inner circle representing traditional stamp/seal */}
-                  <div className="absolute inset-1.5 rounded-full border border-dashed border-brand-gold/20 group-hover:border-brand-gold/50 transition-colors duration-700 pointer-events-none" />
-                  
-                  {/* Metallic Sheen diagonal shine sweep on hover */}
-                  <div className="absolute top-0 -left-[150%] w-[100%] h-full bg-gradient-to-r from-transparent via-white/40 to-transparent transform -skew-x-12 group-hover:left-[150%] transition-all duration-1000 ease-in-out pointer-events-none" />
-                  
-                  {/* Golden Glowing inner aura */}
-                  <div className="absolute inset-0 bg-brand-gold/0 group-hover:bg-brand-gold/[0.03] transition-colors duration-700 pointer-events-none" />
-
-                  {isImageSrc(partner.logo) ? (
-                    <div className="h-16 w-16 rounded-full bg-white overflow-hidden flex items-center justify-center border border-brand-gold/10 shadow-sm group-hover:border-brand-gold/20 group-hover:scale-105 transition-all duration-500 relative z-10 bg-gradient-to-br from-white to-slate-50 p-1">
-                      <SmartImg
-                        src={partner.logo}
-                        alt={pickLang(partner, 'name', currentLang)}
-                        className="h-full w-full object-contain p-1 opacity-90 group-hover:opacity-100 transition-all duration-500"
-                        referrerPolicy="no-referrer"
-                      />
+            {/* Scrolling Marquee Container with edge gradients */}
+            <div className="relative w-full overflow-hidden py-4 [mask-image:linear-gradient(to_right,transparent,white_15%,white_85%,transparent)] [-webkit-mask-image:linear-gradient(to_right,transparent,white_15%,white_85%,transparent)]">
+              <div 
+                className={`flex gap-6 w-max marquee-track ${
+                  currentLang === 'ar' ? 'animate-marquee-rtl' : 'animate-marquee-ltr'
+                }`}
+              >
+                {/* Triplicating the array to guarantee infinite loop without white gaps */}
+                {[...partners, ...partners, ...partners].map((partner: any, i: number) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-4 bg-white/95 backdrop-blur-sm border border-slate-100 hover:border-brand-gold/45 p-4 px-6 rounded-3xl shadow-sm hover:shadow-brand-gold/10 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 shrink-0 min-w-[220px] h-20"
+                  >
+                    {isImageSrc(partner.logo) ? (
+                      <div className="h-12 w-12 rounded-xl bg-white overflow-hidden flex items-center justify-center border border-slate-100 p-0.5 shrink-0 shadow-inner">
+                        <SmartImg
+                          src={partner.logo}
+                          alt={pickLang(partner, 'name', currentLang)}
+                          className="h-full w-full object-contain"
+                          referrerPolicy="no-referrer"
+                        />
+                      </div>
+                    ) : (
+                      <div className="h-12 w-12 rounded-xl bg-brand-gold/5 text-brand-gold-dark font-bold text-lg flex items-center justify-center shrink-0 border border-brand-gold/10">
+                        {partner.logo}
+                      </div>
+                    )}
+                    <div className="text-right rtl:text-right ltr:text-left min-w-0">
+                      <span className="text-xs font-bold text-brand-blue-dark block truncate font-sans">
+                        {pickLang(partner, 'name', currentLang)}
+                      </span>
+                      {partner.descAr && (
+                        <span className="text-[9px] text-slate-400 block truncate font-sans mt-0.5">
+                          {pickLang(partner, 'desc', currentLang)}
+                        </span>
+                      )}
                     </div>
-                  ) : (
-                    <div className="h-16 w-16 rounded-full bg-brand-gold/5 text-brand-gold-dark font-bold text-xl flex items-center justify-center border border-brand-gold/15 group-hover:bg-brand-gold/15 group-hover:scale-105 transition-all duration-500 relative z-10">
-                      {partner.logo}
-                    </div>
-                  )}
-                  
-                  <span className="text-[11px] font-extrabold text-brand-blue-dark group-hover:text-brand-gold-dark transition-colors line-clamp-2 font-sans mt-2 max-w-[130px] relative z-10 leading-tight">
-                    {pickLang(partner, 'name', currentLang)}
-                  </span>
-                </div>
-              ))}
+                  </div>
+                ))}
+              </div>
             </div>
 
           </div>
