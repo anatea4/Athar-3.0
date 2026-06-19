@@ -45,3 +45,4 @@ athar-academy/
 
 # claude code tooling
 .claude/
+.devserver.log
