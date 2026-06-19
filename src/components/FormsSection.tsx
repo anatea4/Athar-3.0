@@ -1,5 +1,6 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Language } from '@/types';
 import { useForms } from '@/lib/content-provider';
 import DynamicForm, { FormDef } from '@/components/DynamicForm';
@@ -42,6 +43,21 @@ export default function FormsSection({
   if (includeCalculator) tabs.push({ id: 'calculator', label: t(currentLang, 'حاسبة الرسوم', 'Fee Calculator', 'Kalkulator Yuran') });
 
   const [activeTab, setActiveTab] = useState(activeSub || tabs[0]?.id || '');
+  const prevTabRef = useRef<string>(activeTab);
+  const [direction, setDirection] = useState<1 | -1>(1);
+
+  const handleTabChange = (newTab: string) => {
+    const oldIdx = tabs.findIndex((t) => t.id === activeTab);
+    const newIdx = tabs.findIndex((t) => t.id === newTab);
+    setDirection(newIdx >= oldIdx ? 1 : -1);
+    prevTabRef.current = activeTab;
+    if (onNavigate) {
+      onNavigate(sectionKey, newTab);
+    } else {
+      setActiveTab(newTab);
+    }
+  };
+
   useEffect(() => {
     if (activeSub) setActiveTab(activeSub);
   }, [activeSub]);
@@ -79,7 +95,7 @@ export default function FormsSection({
               return (
                 <button
                   key={tab.id}
-                  onClick={() => (onNavigate ? onNavigate(sectionKey, tab.id) : setActiveTab(tab.id))}
+                  onClick={() => handleTabChange(tab.id)}
                   className={`flex items-center gap-2 px-5 py-3 text-xs font-bold rounded-full border transition-all duration-300 w-max shrink-0 cursor-pointer ${
                     selected
                       ? 'bg-brand-blue-dark border-brand-gold text-brand-gold shadow-md'
@@ -95,27 +111,32 @@ export default function FormsSection({
         )}
 
         {/* Content card */}
+        <AnimatePresence mode="wait" custom={direction}>
+          <motion.div
+            key={activeTab}
+            custom={direction}
+            initial={{ opacity: 0, x: direction * 48 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: direction * -48 }}
+            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+          >
         {activeTab === 'calculator' ? (
-          <div className="-mx-4 sm:-mx-6 lg:-mx-8 animate-in fade-in duration-300">
+          <div className="-mx-4 sm:-mx-6 lg:-mx-8">
             <FeeCalculator currentLang={currentLang} />
           </div>
         ) : activeTab === 'donate' ? (
-          <div className="animate-in fade-in duration-300">
-            <DonationPage currentLang={currentLang} form={activeForm} />
-          </div>
+          <DonationPage currentLang={currentLang} form={activeForm} />
         ) : activeTab === 'volunteer' ? (
-          <div className="animate-in fade-in duration-300">
-            <VolunteerPage currentLang={currentLang} form={activeForm} />
-          </div>
+          <VolunteerPage currentLang={currentLang} form={activeForm} />
         ) : activeForm ? (
-          <div className="animate-in fade-in duration-300">
-            <DynamicForm form={activeForm} lang={currentLang} />
-          </div>
+          <DynamicForm form={activeForm} lang={currentLang} />
         ) : (
           <div className="bg-white border border-brand-gold/15 rounded-3xl p-10 text-center text-slate-400">
             {t(currentLang, 'لا توجد نماذج في هذا القسم بعد.', 'No forms in this section yet.')}
           </div>
         )}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </section>
   );

@@ -1,8 +1,8 @@
 'use client';
 import React, { useEffect } from 'react';
-import { Sparkles, Calendar, Gift, Heart, ArrowRight } from 'lucide-react';
+import { Sparkles, Calendar, ArrowRight } from 'lucide-react';
 import { Language, getLangField } from '@/types';
-import { useInitiatives, useEvents, useCalendar } from '@/lib/content-provider';
+import { useEvents, useCalendar } from '@/lib/content-provider';
 import SmartImg from '@/components/SmartImg';
 
 interface InitiativesSectionProps {
@@ -12,24 +12,21 @@ interface InitiativesSectionProps {
 }
 
 export default function InitiativesSection({ currentLang, activeSub, onNavigate }: InitiativesSectionProps) {
-  const INITIATIVES_LIST = useInitiatives();
   const EVENTS_LIST = useEvents() as any[];
   const CALENDAR = useCalendar() as any;
   const [activeTab, setActiveTab] = React.useState(activeSub || 'annual-calendar');
 
   useEffect(() => {
     if (activeSub) {
-      if (activeSub === 'initiatives-list') setActiveTab('initiatives-list');
-      else if (activeSub === 'events-list') setActiveTab('events-list');
-      else if (activeSub === 'annual-calendar') setActiveTab('annual-calendar');
+      if (activeSub === 'events-list') setActiveTab('events-list');
+      else setActiveTab('annual-calendar'); // initiatives-list and anything else → calendar
     }
   }, [activeSub]);
 
-  // Order: Annual Calendar → Active Events → Initiatives & Grants
+  // Order: Annual Calendar → Active Events
   const tabs = [
     { id: 'annual-calendar', labelAr: 'التقويم السنوي', labelEn: 'Annual Calendar', labelMs: 'Kalendar Tahunan' },
     { id: 'events-list', labelAr: 'الفعاليات الحالية', labelEn: 'Active Events', labelMs: 'Acara Aktif' },
-    { id: 'initiatives-list', labelAr: 'المبادرات والمساعدات', labelEn: 'Initiatives & Grants', labelMs: 'Inisiatif & Bantuan' },
   ];
 
   const calendarEvents = (CALENDAR?.events || []) as any[];
@@ -44,10 +41,10 @@ export default function InitiativesSection({ currentLang, activeSub, onNavigate 
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-12">
           <span className="text-xs uppercase tracking-widest font-bold text-brand-gold">
-            {currentLang === 'ms' ? 'Kesan Sosial & Aktivisme' : currentLang === 'en' ? 'Social Impact & Activism' : 'المبادرات والفعاليات والأثر'}
+            {currentLang === 'ms' ? 'Kalendar & Acara' : currentLang === 'en' ? 'Calendar & Events' : 'التقويم والفعاليات'}
           </span>
           <h2 className="text-3xl sm:text-4xl font-bold text-brand-blue-dark mt-2">
-            {currentLang === 'ms' ? 'Inisiatif Komuniti Kami' : currentLang === 'en' ? 'Our Community Initiatives' : 'مبادراتنا وفعالياتنا المجتمعية'}
+            {currentLang === 'ms' ? 'Kalendar & Acara Akademi' : currentLang === 'en' ? 'Academy Calendar & Events' : 'التقويم السنوي والفعاليات'}
           </h2>
         </div>
 
@@ -74,40 +71,12 @@ export default function InitiativesSection({ currentLang, activeSub, onNavigate 
         {/* View Box */}
         <div className="bg-white border border-brand-gold/15 rounded-3xl p-6 sm:p-10 shadow-sm min-h-[400px]">
 
-          {/* INITIATIVES */}
-          {activeTab === 'initiatives-list' && (
-            <div className="space-y-6 animate-in fade-in duration-500 text-right rtl:text-right ltr:text-left">
-              <h3 className="text-xl sm:text-2xl font-bold text-brand-blue-dark flex items-center gap-2 border-b border-brand-gold/15 pb-4">
-                <Gift className="h-6 w-6 text-brand-gold" />
-                <span>{currentLang === 'ms' ? 'Geran & Bantuan Komuniti' : currentLang === 'en' ? 'Community Grants & Aids' : 'مبادرات الدعم والمنح التعليمية'}</span>
-              </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                {INITIATIVES_LIST.filter((x: any) => !x._hidden).map((init) => (
-                  <div key={init.id} className="p-6 bg-gradient-to-tr from-brand-sand via-white to-white border-2 border-brand-gold/15 hover:border-brand-gold/45 rounded-2xl shadow-sm transition-all duration-300 flex items-start gap-4">
-                    <div className="p-3 bg-brand-gold/10 text-brand-gold-dark rounded-xl shrink-0">
-                      <Heart className="h-6 w-6" />
-                    </div>
-                    <div className="space-y-2 text-right rtl:text-right ltr:text-left">
-                      <h4 className="text-base font-bold text-brand-blue-dark">
-                        {getLangField(init, 'title', currentLang)}
-                      </h4>
-                      <p className="text-xs sm:text-sm text-slate-500 font-sans leading-relaxed">
-                        {getLangField(init, 'desc', currentLang)}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
           {/* ACTIVE EVENTS */}
           {activeTab === 'events-list' && (
             <div className="space-y-6 animate-in fade-in duration-500 text-right rtl:text-right ltr:text-left">
               <h3 className="text-xl sm:text-2xl font-bold text-brand-blue-dark flex items-center gap-2 border-b border-brand-gold/15 pb-4">
                 <Sparkles className="h-6 w-6 text-brand-gold" />
-                <span>{currentLang === 'ms' ? 'Acara Semasa & Akan Datang' : currentLang === 'en' ? 'Current & Upcoming Events' : 'الفعاليات والملتقيات الحالية'}</span>
+                <span>{currentLang === 'ms' ? 'Acara & Kem' : currentLang === 'en' ? 'Events' : 'الفعاليات'}</span>
               </h3>
 
               {EVENTS_LIST.length === 0 ? (

@@ -237,6 +237,7 @@ export default function DonationPage({ currentLang, form }: DonationPageProps) {
   const [customAmountText, setCustomAmountText] = useState('');
   const [donorName, setDonorName] = useState('');
   const [donationSuccess, setDonationSuccess] = useState(false);
+  const [isQrSuccess, setIsQrSuccess] = useState(false);
   const [donationTierSelected, setDonationTierSelected] = useState<string>('');
   const [donorEmail, setDonorEmail] = useState('');
   const [processing, setProcessing] = useState(false);
@@ -319,6 +320,7 @@ export default function DonationPage({ currentLang, form }: DonationPageProps) {
 
   const handleReset = () => {
     setDonationSuccess(false);
+    setIsQrSuccess(false);
     setDonorName('');
     setCustomAmountText('');
     setCustomQrText('');
@@ -346,10 +348,10 @@ export default function DonationPage({ currentLang, form }: DonationPageProps) {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className={`grid grid-cols-1 gap-8 items-start ${form?.hideSidebar ? '' : 'lg:grid-cols-12'}`}>
           
           {/* Sponsoring Options Info Column */}
-          <div className="lg:col-span-5 space-y-6">
+          {!form?.hideSidebar && <div className="lg:col-span-5 space-y-6">
             
             <div className="bg-brand-gold-light border-2 border-brand-gold/20 rounded-3xl p-6 sm:p-8 space-y-6">
               <span className="text-[10px] uppercase font-mono font-bold tracking-widest text-brand-gold block">
@@ -433,10 +435,10 @@ export default function DonationPage({ currentLang, form }: DonationPageProps) {
               </div>
             </div>
 
-          </div>
+          </div>}
 
           {/* Donation Form Column */}
-          <div className="lg:col-span-7 bg-white border border-brand-gold/15 rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+          <div className={`${form?.hideSidebar ? 'w-full max-w-3xl mx-auto' : 'lg:col-span-7'} bg-white border border-brand-gold/15 rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden`}>
             <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-brand-gold-dark via-brand-gold to-brand-gold-light" />
             
             <h3 className="text-lg font-bold font-serif text-brand-blue-dark font-classical mb-4">
@@ -478,6 +480,26 @@ export default function DonationPage({ currentLang, form }: DonationPageProps) {
             )}
 
             {donationSuccess ? (
+              isQrSuccess ? (
+                /* Simple QR thank-you */
+                <div className="py-12 text-center space-y-5 animate-in fade-in duration-300">
+                  <div className="mx-auto w-20 h-20 bg-brand-gold/15 text-brand-gold rounded-full flex items-center justify-center border-2 border-brand-gold shadow-lg">
+                    <CheckCircle2 className="h-10 w-10" />
+                  </div>
+                  <h4 className="text-2xl font-bold font-serif text-brand-blue-dark font-classical">
+                    {currentLang === 'ms' ? 'Terima kasih atas derma anda!' : currentLang === 'en' ? 'Thank you for your donation!' : 'شكراً لتبرعك!'}
+                  </h4>
+                  <p className="text-sm text-slate-500 max-w-xs mx-auto leading-relaxed font-sans">
+                    {currentLang === 'ms' ? 'Semoga Allah merahmati anda dan memberi ganjaran yang berlipat ganda.' : currentLang === 'en' ? 'May Allah reward you abundantly for your generosity.' : 'جزاكم الله خيراً، وبارك في مالكم وذريتكم.'}
+                  </p>
+                  <button
+                    onClick={handleReset}
+                    className="inline-flex items-center text-xs text-brand-gold-dark hover:text-brand-blue font-bold font-sans hover:underline cursor-pointer"
+                  >
+                    {t.donateAgain}
+                  </button>
+                </div>
+              ) : (
               <div className="py-8 text-center space-y-6 animate-in fade-in duration-300">
                 <div className="mx-auto w-16 h-16 bg-brand-gold/15 text-brand-gold rounded-full flex items-center justify-center border-2 border-brand-gold shadow-lg animate-bounce">
                   <CheckCircle2 className="h-8 w-8" />
@@ -517,6 +539,7 @@ export default function DonationPage({ currentLang, form }: DonationPageProps) {
                   {t.donateAgain}
                 </button>
               </div>
+              )
             ) : paymentMethod === 'traditional' ? (
               <form onSubmit={handleDonationSubmit} className="space-y-6">
                 
@@ -828,6 +851,7 @@ export default function DonationPage({ currentLang, form }: DonationPageProps) {
                     type="button"
                     onClick={() => {
                       if (qrAmount <= 0) return;
+                      setIsQrSuccess(true);
                       setDonationSuccess(true);
                       scrollToTop();
                     }}

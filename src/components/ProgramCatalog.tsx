@@ -8,6 +8,7 @@ import {
 import { Language, getLangField } from '@/types';
 import { useDetailedPrograms, useStats, usePrograms, useContact } from '@/lib/content-provider';
 import SmartImg from '@/components/SmartImg';
+import { useRouter } from 'next/navigation';
 
 interface ProgramCatalogProps {
   currentLang: Language;
@@ -21,6 +22,7 @@ export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram
   const ACADEMY_STATS = useStats();
   const PROGRAMS = usePrograms();
   const CONTACT_DETAILS = useContact();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState(activeSub || 'quran-circles');
 
   // Image slider states for Quran circles
@@ -350,11 +352,11 @@ export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram
                     </div>
 
                     <button
-                      onClick={() => onSelectProgram && onSelectProgram(PROGRAMS[0].id)}
+                      onClick={() => onNavigate ? onNavigate('admission', 'register-circles') : undefined}
                       className="w-full sm:w-max flex items-center justify-center gap-2 bg-gradient-to-r from-brand-blue-dark to-brand-blue hover:from-brand-blue hover:to-brand-blue-dark text-white font-bold px-8 py-3.5 rounded-full shadow-md transition-all duration-300 hover:shadow-brand-blue-dark/25 cursor-pointer text-xs"
                     >
                       <Ticket className="h-4 w-4" />
-                      <span>{currentLang === 'ms' ? 'Daftar Sekarang' : currentLang === 'en' ? 'Register Now' : 'سجّل في هذه الحلقة الآن'}</span>
+                      <span>{currentLang === 'ms' ? 'Daftar Sekarang' : currentLang === 'en' ? 'Register Now' : 'سجّل الآن'}</span>
                     </button>
                   </div>
                 </div>
@@ -468,11 +470,11 @@ export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram
                     </div>
 
                     <button
-                      onClick={() => onSelectProgram && onSelectProgram(PROGRAMS[1].id)}
+                      onClick={() => onNavigate ? onNavigate('admission', 'register-circles') : undefined}
                       className="w-full sm:w-max flex items-center justify-center gap-2 bg-gradient-to-r from-brand-gold to-brand-gold-dark hover:from-brand-gold-dark hover:to-brand-gold text-brand-blue-dark font-bold px-8 py-3.5 rounded-full shadow-md transition-all duration-300 hover:shadow-brand-gold/25 cursor-pointer text-xs"
                     >
                       <Ticket className="h-4 w-4" />
-                      <span>{currentLang === 'ms' ? 'Daftar Sekarang' : currentLang === 'en' ? 'Register Now' : 'سجّل في هذه الحلقة الآن'}</span>
+                      <span>{currentLang === 'ms' ? 'Daftar Sekarang' : currentLang === 'en' ? 'Register Now' : 'سجّل الآن'}</span>
                     </button>
                   </div>
                 </div>
@@ -523,7 +525,7 @@ export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram
                 </div>
 
                 {/* Awesome Photo Gallery Showcase for Program */}
-                {programImages[activeTab] && programImages[activeTab].length > 0 && (
+                {programImages[activeTab] && programImages[activeTab].length > 0 && !['ramadan-retreat', 'qari'].includes(activeTab) && (
                   <div className="space-y-6 pt-6 animate-in fade-in duration-500">
                     <div className="flex items-center gap-2 border-b border-brand-gold/15 pb-3">
                       <Sparkles className="h-5 w-5 text-brand-gold" />

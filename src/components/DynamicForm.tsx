@@ -71,6 +71,9 @@ export interface FormDef {
   qrImage?: string;
   qrRef?: string;
   campaigns?: any[];
+
+  // Layout
+  hideSidebar?: boolean;
 }
 
 const pick = (obj: any, base: string, lang: Language): string => {
@@ -170,7 +173,7 @@ const getFormMeta = (form: FormDef, lang: Language) => {
         statsTitle: t('البرامج والمخيمات', 'Annual Programs', 'Program Tahunan'),
         statsDesc: t('تقام على مدار العام الدراسي', 'Hosted throughout the academic year', 'Dianjurkan sepanjang tahun akademik'),
         statsVal: '15+',
-        icon: 'GraduationCap'
+        icon: 'BookOpen'
       };
 
     case 'careers':

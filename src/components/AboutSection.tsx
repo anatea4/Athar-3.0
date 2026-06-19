@@ -46,10 +46,10 @@ export default function AboutSection({ currentLang, activeSub, onNavigate }: Abo
     { id: 'who-we-are', labelAr: 'نبذة عن الأكاديمية', labelEn: 'About the Academy', labelMs: 'Tentang Akademi', icon: <Compass className="h-4.5 w-4.5" /> },
     { id: 'vision-mission', labelAr: 'الرؤية والرسالة', labelEn: 'Vision & Mission', labelMs: 'Visi & Misi', icon: <Target className="h-4.5 w-4.5" /> },
     { id: 'objectives', labelAr: 'أهداف الأكاديمية', labelEn: 'Our Goals', labelMs: 'Matlamat Kami', icon: <Award className="h-4.5 w-4.5" /> },
-    ...(showTeamTab ? [{ id: 'team', labelAr: 'فريق العمل', labelEn: 'Our Team', labelMs: 'Barisan Guru/Staf', icon: <Users className="h-4.5 w-4.5" /> }] : []),
-    { id: 'director-message', labelAr: 'كلمة مدير الأكاديمية', labelEn: "Director's Message", labelMs: 'Pesanan Pengarah', icon: <Quote className="h-4.5 w-4.5" /> },
-    { id: 'chairman-message', labelAr: 'كلمة رئيس مجلس الإدارة', labelEn: "Chairman's Message", labelMs: 'Pesanan Pengerusi', icon: <Quote className="h-4.5 w-4.5" /> },
     { id: 'secretary-message', labelAr: 'كلمة الأمين العام', labelEn: "Secretary-General's Message", labelMs: 'Pesanan Setiausaha', icon: <Quote className="h-4.5 w-4.5" /> },
+    { id: 'chairman-message', labelAr: 'كلمة رئيس مجلس الإدارة', labelEn: "Chairman's Message", labelMs: 'Pesanan Pengerusi', icon: <Quote className="h-4.5 w-4.5" /> },
+    { id: 'director-message', labelAr: 'كلمة مدير الأكاديمية', labelEn: "Director's Message", labelMs: 'Pesanan Pengarah', icon: <Quote className="h-4.5 w-4.5" /> },
+    ...(showTeamTab ? [{ id: 'team', labelAr: 'فريق العمل', labelEn: 'Our Team', labelMs: 'Barisan Guru/Staf', icon: <Users className="h-4.5 w-4.5" /> }] : []),
   ];
 
   // Leadership-message tabs share one layout, driven by the field prefix in ACADEMY_PROFILE

@@ -104,6 +104,44 @@ export function ContentProvider({ children }: { children: ReactNode }) {
             const dbValue = data.content[key];
             merged[key] = mergeData(DEFAULTS[key], dbValue) as any;
           }
+          // Migration: ensure "support" nav item is a direct section button, not a group dropdown
+          // Migration: hide fee calculator from nav
+          // Migration: convert m-calendar group → direct section link (removes old مبادرات/مساعدات children)
+          if (merged.navigation?.items) {
+            const HIDDEN_NAV_IDS = new Set(['f-calc', 'sol-calc', 'calculator', 'm-articles']);
+            merged.navigation = {
+              ...merged.navigation,
+              items: (merged.navigation.items as any[]).map((item: any) => {
+                // Convert support group → direct button
+                if (item.id === 'support' && item.kind === 'group') {
+                  return { id: 'support', labelAr: 'انضم كمتطوع', labelEn: 'Join as Volunteer', labelMs: 'Jadi Sukarelawan', kind: 'section', section: 'support', sub: 'volunteer' };
+                }
+                // Process children of groups
+                if (item.children) {
+                  return {
+                    ...item,
+                    children: item.children.map((c: any) => {
+                      // Clean m-calendar: keep only calendar + events, drop everything else (initiatives, aids…)
+                      if (c.id === 'm-calendar') {
+                        return {
+                          id: 'm-calendar', labelAr: 'التقويم السنوي', labelEn: 'Annual Calendar', labelMs: 'Kalendar Tahunan', kind: 'group',
+                          section: 'media', sub: 'annual-calendar',
+                          children: [
+                            { id: 'm-cal-calendar', labelAr: 'التقويم السنوي', labelEn: 'Annual Calendar', labelMs: 'Kalendar Tahunan', kind: 'section', section: 'media', sub: 'annual-calendar' },
+                            { id: 'm-cal-events', labelAr: 'الفعاليات الحالية', labelEn: 'Active Events', labelMs: 'Acara Aktif', kind: 'section', section: 'media', sub: 'events-list' },
+                          ],
+                        };
+                      }
+                      // Hide articles and calculator
+                      if (HIDDEN_NAV_IDS.has(c.id)) return { ...c, _hidden: true };
+                      return c;
+                    }),
+                  };
+                }
+                return item;
+              }),
+            } as any;
+          }
           setContent(merged);
         }
       })

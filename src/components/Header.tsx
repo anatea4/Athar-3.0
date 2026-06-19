@@ -99,7 +99,6 @@ export const NAVIGATION_ITEMS: NavItem[] = [
     subItems: [
       { id: 'volunteer', labelAr: 'فرص التطوع', labelEn: 'Volunteering', labelMs: 'Peluang Sukarelawan' },
       { id: 'support-athar', labelAr: 'ادعم الأثر', labelEn: 'Support Athar', labelMs: 'Sokong Athar' },
-      { id: 'initiatives-list', labelAr: 'المبادرات والمساعدات', labelEn: 'Initiatives & Grants', labelMs: 'Inisiatif & Bantuan' },
     ]
   },
   { id: 'contact', labelAr: 'تواصل معنا', labelEn: 'Contact Us', labelMs: 'Hubungi' }
@@ -142,9 +141,7 @@ export default function Header({
         section: groupId,
         sub: f.id,
       }));
-    if (groupId === 'finance') {
-      items.push({ id: 'calculator', labelAr: 'حاسبة الرسوم', labelEn: 'Fee Calculator', labelMs: 'Kalkulator Yuran', kind: 'section', section: 'finance', sub: 'calculator' });
-    }
+    // fee calculator hidden from nav
     return items;
   };
 

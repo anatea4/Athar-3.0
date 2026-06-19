@@ -273,7 +273,7 @@ export default function SiteApp({ initialSection = 'home', initialSub = '' }: Si
               )}
               {activeSection === 'media' && (
                 <>
-                  {['annual-calendar', 'initiatives-list', 'events-list'].includes(activeSubSection) ? (
+                  {['annual-calendar', 'events-list'].includes(activeSubSection) ? (
                     <InitiativesSection currentLang={currentLang} activeSub={activeSubSection} onNavigate={handleSectionChange} />
                   ) : (
                     <MediaSection currentLang={currentLang} activeSub={activeSubSection || 'news'} onNavigate={handleSectionChange} />
@@ -311,7 +311,7 @@ export default function SiteApp({ initialSection = 'home', initialSub = '' }: Si
                   currentLang={currentLang}
                   sectionKey="finance"
                   activeSub={activeSubSection}
-                  includeCalculator
+                  includeCalculator={false}
                   onNavigate={handleSectionChange}
                   headingAr="التبرعات والرسوم"
                   headingEn="Donations & Fees"

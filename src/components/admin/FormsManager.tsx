@@ -183,6 +183,25 @@ export default function FormsManager({ onToast }: { onToast: Toast }) {
           <div className="flex items-center gap-2 text-brand-gold-dark font-bold">
             <ClipboardList className="h-5 w-5" /> محتوى عمود المعلومات الجانبي (يمين النموذج)
           </div>
+
+          {/* Hide sidebar toggle */}
+          <label className="flex items-center gap-3 cursor-pointer select-none">
+            <div className="relative">
+              <input
+                type="checkbox"
+                className="sr-only peer"
+                checked={!!editing.hideSidebar}
+                onChange={(e) => updateEditing({ hideSidebar: e.target.checked })}
+              />
+              <div className="w-11 h-6 bg-slate-200 peer-checked:bg-brand-gold rounded-full transition-colors" />
+              <div className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform peer-checked:translate-x-5" />
+            </div>
+            <div>
+              <span className="text-sm font-bold text-slate-800">إخفاء عمود المعلومات الجانبي</span>
+              <p className="text-xs text-slate-400 mt-0.5">عند التفعيل يختفي العمود الجانبي ويتوسع النموذج ليأخذ المساحة كاملة</p>
+            </div>
+          </label>
+
           <p className="text-xs text-slate-400">
             أدخل محتوى الشريط التعريفي الذي يظهر بجانب حقول النموذج في الموقع. اترك العنوان الجانبي فارغاً لاستخدام المحتوى الافتراضي.
           </p>

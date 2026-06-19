@@ -12,7 +12,6 @@ const PREVIEW_NAV: Record<string, [string, string]> = {
   faqs: ['about', 'faq'],
   programs: ['programs', 'quran-circles'],
   detailed_programs: ['programs', 'quran-circles'],
-  initiatives: ['support', 'initiatives-list'],
   volunteers: ['support', 'support-athar'],
   media_news: ['media', 'news'],
   media_articles: ['media', 'articles'],

@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Sparkles, ArrowRight, ArrowLeft, Award, BookOpen, Users, Clock,
   ShieldCheck, HeartHandshake, Smartphone, GraduationCap, Landmark, Heart
@@ -70,13 +70,26 @@ export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }:
   const isYoutube = !!videoId;
   const iframeSrc = isYoutube ? `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1&enablejsapi=1` : '';
 
+  const bgVideoRef = useRef<HTMLVideoElement>(null);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+
+  // Fix: React doesn't set the muted attribute correctly on <video>,
+  // so iOS Safari won't autoplay. Force muted + play via ref.
+  useEffect(() => {
+    if (!isYoutube && bgVideoRef.current) {
+      const vid = bgVideoRef.current;
+      vid.muted = true;
+      vid.play().catch(() => {});
+    }
+  }, [isYoutube, videoUrl]);
+
   useEffect(() => {
     setIsVideoLoaded(false);
 
     if (!isYoutube) {
       if (videoUrl) {
-        const timer = setTimeout(() => setIsVideoLoaded(true), 200);
+        // Fallback: show video after 1.5s even if canplay/loadeddata didn't fire (mobile browsers)
+        const timer = setTimeout(() => setIsVideoLoaded(true), 1500);
         return () => clearTimeout(timer);
       }
       return;
@@ -213,11 +226,13 @@ export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }:
             />
           ) : videoUrl ? (
             <video
+              ref={bgVideoRef}
               autoPlay
               loop
               muted
               playsInline
               onCanPlay={() => setIsVideoLoaded(true)}
+              onLoadedData={() => setIsVideoLoaded(true)}
               className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-[1200ms] ${isVideoLoaded ? 'opacity-85' : 'opacity-0'}`}
             >
               <source src={videoUrl} />

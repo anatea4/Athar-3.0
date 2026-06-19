@@ -71,7 +71,6 @@ const SECTIONS: { id: Tab; label: string; icon: React.ReactNode; group: string }
   { id: 'team', label: 'الفريق', icon: <Users className="h-4 w-4" />, group: 'content' },
   { id: 'partners', label: 'الشركاء', icon: <Heart className="h-4 w-4" />, group: 'content' },
   { id: 'faqs', label: 'الأسئلة الشائعة', icon: <HelpCircle className="h-4 w-4" />, group: 'content' },
-  { id: 'initiatives', label: 'المبادرات', icon: <Star className="h-4 w-4" />, group: 'content' },
   { id: 'events', label: 'الفعاليات الحالية', icon: <Sparkles className="h-4 w-4" />, group: 'content' },
   { id: 'volunteers', label: 'التطوع', icon: <Heart className="h-4 w-4" />, group: 'content' },
   { id: 'media_news', label: 'الأخبار', icon: <Newspaper className="h-4 w-4" />, group: 'content' },

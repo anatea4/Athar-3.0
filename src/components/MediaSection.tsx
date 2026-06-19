@@ -1,8 +1,8 @@
 'use client';
 import React, { useEffect } from 'react';
-import { Newspaper, FileText, Download, Play, Image, Calendar, User, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Newspaper, FileText, Download, Play, Image, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Language, getLangField } from '@/types';
-import { useMediaNews, useMediaArticles, useDigitalLibrary, useGallery, useCalendar } from '@/lib/content-provider';
+import { useMediaNews, useDigitalLibrary, useGallery, useCalendar } from '@/lib/content-provider';
 import SmartImg from '@/components/SmartImg';
 
 interface MediaSectionProps {
@@ -44,7 +44,6 @@ function docBadge(type: string, url: string): string {
 
 export default function MediaSection({ currentLang, activeSub, onNavigate }: MediaSectionProps) {
   const MEDIA_NEWS = useMediaNews();
-  const MEDIA_ARTICLES = useMediaArticles();
   const DIGITAL_LIBRARY = useDigitalLibrary();
   const GALLERY_ITEMS = useGallery();
   const CALENDAR = useCalendar();
@@ -57,7 +56,6 @@ export default function MediaSection({ currentLang, activeSub, onNavigate }: Med
 
   const tabs = [
     { id: 'news', labelAr: 'الأخبار والإعلانات', labelEn: 'News & Events', labelMs: 'Berita & Pengumuman', icon: <Newspaper className="h-4 w-4" /> },
-    { id: 'articles', labelAr: 'المقالات التربوية', labelEn: 'Educational Articles', labelMs: 'Artikel Pendidikan', icon: <FileText className="h-4 w-4" /> },
     { id: 'digital-library', labelAr: 'المكتبة الرقمية', labelEn: 'Digital Library', labelMs: 'Perpustakaan Digital', icon: <Download className="h-4 w-4" /> },
     { id: 'gallery', labelAr: 'الصور والفيديو', labelEn: 'Photo & Video Gallery', labelMs: 'Galeri Foto & Video', icon: <Image className="h-4 w-4" /> },
     { id: 'annual-calendar', labelAr: 'التقويم السنوي', labelEn: 'Annual Calendar', labelMs: 'Kalendar Tahunan', icon: <Calendar className="h-4 w-4" /> },
@@ -123,33 +121,6 @@ export default function MediaSection({ currentLang, activeSub, onNavigate }: Med
                     </h4>
                     <p className="text-xs sm:text-sm text-slate-500 font-sans leading-relaxed">
                       {getLangField(item, 'excerpt', currentLang)}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* ARTICLES */}
-          {activeTab === 'articles' && (
-            <div className="space-y-6 animate-in fade-in duration-500 text-right rtl:text-right ltr:text-left">
-              <h3 className="text-xl sm:text-2xl font-bold text-brand-blue-dark flex items-center gap-2 border-b border-brand-gold/15 pb-4">
-                <FileText className="h-6 w-6 text-brand-gold" />
-                <span>{currentLang === 'ms' ? 'Artikel Pendidikan' : currentLang === 'en' ? 'Educational Articles' : 'المقالات والبحوث التربوية'}</span>
-              </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                {MEDIA_ARTICLES.filter((x: any) => !x._hidden).map((art) => (
-                  <div key={art.id} className="p-6 bg-white border-2 border-brand-gold/10 hover:border-brand-gold/30 rounded-2xl shadow-sm transition-all duration-300 space-y-3">
-                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                      <User className="h-3.5 w-3.5 text-brand-gold" />
-                      {getLangField(art, 'author', currentLang)}
-                    </span>
-                    <h4 className="text-base sm:text-lg font-bold text-brand-blue-dark leading-snug">
-                      {getLangField(art, 'title', currentLang)}
-                    </h4>
-                    <p className="text-xs sm:text-sm text-slate-500 font-sans leading-relaxed">
-                      {getLangField(art, 'excerpt', currentLang)}
                     </p>
                   </div>
                 ))}

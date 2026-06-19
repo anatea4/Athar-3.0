@@ -334,6 +334,16 @@ export const FAQS: FAQItem[] = [
   {
     id: 'faq-3',
     category: 'financial',
+    questionEn: 'What are the fees for joining Athar Academy?',
+    questionAr: 'كم رسوم التسجيل والاشتراك الشهري في أكاديمية أثر؟',
+    questionMs: 'Berapakah yuran pendaftaran dan yuran bulanan Akademi Athar?',
+    answerEn: 'For students inside Malaysia: Registration fee is 100 MYR, and the monthly subscription is 70 MYR. For students outside Malaysia: Registration fee is 50 USD, and the monthly fee is 25 USD.',
+    answerAr: 'للطلاب داخل ماليزيا: رسوم التسجيل 100 رنجت، والاشتراك الشهري 70 رنجت. للطلاب خارج ماليزيا: رسوم التسجيل 50 دولار، والاشتراك الشهري 25 دولار.',
+    answerMs: 'Untuk pelajar dalam Malaysia: Yuran pendaftaran RM100, dan yuran bulanan RM70. Untuk pelajar luar Malaysia: Yuran pendaftaran 50 USD, dan yuran bulanan 25 USD.'
+  },
+  {
+    id: 'faq-4',
+    category: 'financial',
     questionEn: 'Are there subsidized slots or sponsorships for circles?',
     questionAr: 'هل توجد حلقات مكفولة بالكامل ودعم مالي للطلاب؟',
     questionMs: 'Adakah terdapat kuota bersubsidi atau penajaan untuk halaqah?',

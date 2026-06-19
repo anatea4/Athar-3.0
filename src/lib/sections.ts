@@ -23,7 +23,7 @@ export const SECTION_SUBS: Record<string, string[]> = {
     'ramadan-retreat', 'journey-athar', 'qari', 'accompanying',
   ],
   solutions: ['ai-teacher', 'ayah-reflection', 'fee-calculator'],
-  media: ['news', 'articles', 'digital-library', 'gallery', 'annual-calendar', 'initiatives-list', 'events-list'],
+  media: ['news', 'articles', 'digital-library', 'gallery', 'annual-calendar', 'events-list'],
 };
 
 // These sections have data-driven sub-pages (managed form ids) → accept any sub.
