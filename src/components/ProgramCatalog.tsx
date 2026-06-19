@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import {
   BookOpen, Users, Clock, Award, Landmark, Sparkles, CheckCircle2,
-  HelpCircle, Compass, ShieldCheck, HeartHandshake, PhoneCall, Calculator, Ticket
+  HelpCircle, Compass, ShieldCheck, HeartHandshake, PhoneCall, Calculator, Ticket,
+  ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { Language, getLangField } from '@/types';
 import { useDetailedPrograms, useStats, usePrograms, useContact } from '@/lib/content-provider';
@@ -21,6 +22,13 @@ export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram
   const PROGRAMS = usePrograms();
   const CONTACT_DETAILS = useContact();
   const [activeTab, setActiveTab] = useState(activeSub || 'quran-circles');
+
+  // Image slider states for Quran circles
+  const [boysSlide, setBoysSlide] = useState(0);
+  const [girlsSlide, setGirlsSlide] = useState(0);
+
+  const boysImages = ['/quran-boys.png', '/quran-boys-2.png', '/quran-boys-3.png'];
+  const girlsImages = ['/quran-girls.png', '/quran-girls-2.png', '/quran-girls-3.png'];
 
   useEffect(() => {
     if (activeSub) setActiveTab(activeSub);
@@ -150,18 +158,70 @@ export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram
               <div className="flex flex-col gap-10 pt-6 text-right rtl:text-right ltr:text-left">
                 {/* Boys Card */}
                 <div className="bg-white border border-brand-gold/15 hover:border-brand-gold/30 rounded-[2.5rem] overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 flex flex-col lg:flex-row group">
-                  {/* Left Side: Image */}
-                  <div className="lg:w-2/5 min-h-[260px] relative overflow-hidden shrink-0">
-                    <SmartImg
-                      src="/quran-boys.png"
-                      alt={getLangField(PROGRAMS[0], 'title', currentLang)}
-                      className="w-full h-full object-cover group-hover:scale-[1.03] transition-all duration-700 absolute inset-0"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-l from-slate-950/30 to-transparent pointer-events-none" />
+                  {/* Left Side: Image Slider */}
+                  <div className="lg:w-2/5 min-h-[280px] relative overflow-hidden shrink-0 group/slider">
+                    {/* Images Container */}
+                    <div className="w-full h-full relative">
+                      {boysImages.map((imgSrc, idx) => (
+                        <div
+                          key={imgSrc}
+                          className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                            idx === boysSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
+                          }`}
+                        >
+                          <SmartImg
+                            src={imgSrc}
+                            alt={getLangField(PROGRAMS[0], 'title', currentLang)}
+                            className="w-full h-full object-cover group-hover:scale-[1.03] transition-all duration-700 absolute inset-0"
+                          />
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-l from-slate-950/40 to-transparent pointer-events-none z-20" />
                     
                     {/* Badge */}
-                    <div className="absolute top-4 right-4 bg-brand-blue/90 backdrop-blur-sm text-brand-gold px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border border-brand-gold/30 shadow-md">
+                    <div className="absolute top-4 right-4 bg-brand-blue/90 backdrop-blur-sm text-brand-gold px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border border-brand-gold/30 shadow-md z-30">
                       {currentLang === 'ms' ? 'Kelas Lelaki' : currentLang === 'en' ? 'Boys Class' : 'حلقات البنين'}
+                    </div>
+
+                    {/* Navigation Arrows */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setBoysSlide((prev) => (prev === 0 ? boysImages.length - 1 : prev - 1));
+                      }}
+                      className="absolute top-1/2 left-3 -translate-y-1/2 bg-white/80 hover:bg-white text-slate-800 p-1.5 rounded-full shadow-md hover:scale-105 transition-all opacity-0 group-hover/slider:opacity-100 focus:opacity-100 z-30 cursor-pointer"
+                      aria-label="Previous image"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setBoysSlide((prev) => (prev === boysImages.length - 1 ? 0 : prev + 1));
+                      }}
+                      className="absolute top-1/2 right-3 -translate-y-1/2 bg-white/80 hover:bg-white text-slate-800 p-1.5 rounded-full shadow-md hover:scale-105 transition-all opacity-0 group-hover/slider:opacity-100 focus:opacity-100 z-30 cursor-pointer"
+                      aria-label="Next image"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </button>
+
+                    {/* Dots Indicators */}
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-30">
+                      {boysImages.map((_, idx) => (
+                        <button
+                          key={idx}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setBoysSlide(idx);
+                          }}
+                          className={`h-1.5 rounded-full transition-all duration-300 ${
+                            idx === boysSlide ? 'w-4 bg-brand-gold' : 'w-1.5 bg-white/60 hover:bg-white'
+                          }`}
+                          aria-label={`Go to slide ${idx + 1}`}
+                        />
+                      ))}
                     </div>
                   </div>
 
@@ -214,18 +274,70 @@ export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram
 
                 {/* Girls Card */}
                 <div className="bg-white border border-brand-gold/15 hover:border-brand-gold/30 rounded-[2.5rem] overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 flex flex-col lg:flex-row group">
-                  {/* Left Side: Image */}
-                  <div className="lg:w-2/5 min-h-[260px] relative overflow-hidden shrink-0">
-                    <SmartImg
-                      src="/quran-girls.png"
-                      alt={getLangField(PROGRAMS[1], 'title', currentLang)}
-                      className="w-full h-full object-cover group-hover:scale-[1.03] transition-all duration-700 absolute inset-0"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-l from-slate-950/30 to-transparent pointer-events-none" />
+                  {/* Left Side: Image Slider */}
+                  <div className="lg:w-2/5 min-h-[280px] relative overflow-hidden shrink-0 group/slider">
+                    {/* Images Container */}
+                    <div className="w-full h-full relative">
+                      {girlsImages.map((imgSrc, idx) => (
+                        <div
+                          key={imgSrc}
+                          className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                            idx === girlsSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
+                          }`}
+                        >
+                          <SmartImg
+                            src={imgSrc}
+                            alt={getLangField(PROGRAMS[1], 'title', currentLang)}
+                            className="w-full h-full object-cover group-hover:scale-[1.03] transition-all duration-700 absolute inset-0"
+                          />
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-l from-slate-950/40 to-transparent pointer-events-none z-20" />
                     
                     {/* Badge */}
-                    <div className="absolute top-4 right-4 bg-brand-gold/90 backdrop-blur-sm text-brand-blue-dark px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border border-brand-gold/25 shadow-md">
+                    <div className="absolute top-4 right-4 bg-brand-gold/90 backdrop-blur-sm text-brand-blue-dark px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border border-brand-gold/25 shadow-md z-30">
                       {currentLang === 'ms' ? 'Halaqah Perempuan' : currentLang === 'en' ? 'Girls Sanctuary' : 'حلقات البنات والتربية بالقرآن'}
+                    </div>
+
+                    {/* Navigation Arrows */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setGirlsSlide((prev) => (prev === 0 ? girlsImages.length - 1 : prev - 1));
+                      }}
+                      className="absolute top-1/2 left-3 -translate-y-1/2 bg-white/80 hover:bg-white text-slate-800 p-1.5 rounded-full shadow-md hover:scale-105 transition-all opacity-0 group-hover/slider:opacity-100 focus:opacity-100 z-30 cursor-pointer"
+                      aria-label="Previous image"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setGirlsSlide((prev) => (prev === girlsImages.length - 1 ? 0 : prev + 1));
+                      }}
+                      className="absolute top-1/2 right-3 -translate-y-1/2 bg-white/80 hover:bg-white text-slate-800 p-1.5 rounded-full shadow-md hover:scale-105 transition-all opacity-0 group-hover/slider:opacity-100 focus:opacity-100 z-30 cursor-pointer"
+                      aria-label="Next image"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </button>
+
+                    {/* Dots Indicators */}
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-30">
+                      {girlsImages.map((_, idx) => (
+                        <button
+                          key={idx}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setGirlsSlide(idx);
+                          }}
+                          className={`h-1.5 rounded-full transition-all duration-300 ${
+                            idx === girlsSlide ? 'w-4 bg-brand-gold' : 'w-1.5 bg-white/60 hover:bg-white'
+                          }`}
+                          aria-label={`Go to slide ${idx + 1}`}
+                        />
+                      ))}
                     </div>
                   </div>
 
