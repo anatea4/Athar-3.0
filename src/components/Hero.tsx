@@ -420,22 +420,19 @@ export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }:
               {partners.map((partner: any, i: number) => (
                 <div
                   key={i}
-                  className="bg-white/70 backdrop-blur-sm border border-brand-gold/15 hover:border-brand-gold/50 p-6 rounded-3xl shadow-sm hover:shadow-brand-gold/10 hover:shadow-xl transition-all duration-500 flex flex-col items-center justify-center text-center group hover:-translate-y-1.5 cursor-default relative overflow-hidden"
+                  className="bg-white border border-slate-100/80 hover:border-brand-gold/30 p-6 rounded-[2rem] shadow-sm hover:shadow-brand-gold/10 hover:shadow-xl transition-all duration-500 flex flex-col items-center justify-center text-center group hover:-translate-y-1.5 cursor-default relative overflow-hidden"
                 >
-                  {/* Subtle gold shining line on top on hover */}
-                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-brand-gold/40 to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-
                   {isImageSrc(partner.logo) ? (
-                    <div className="h-16 w-16 rounded-2xl bg-white overflow-hidden flex items-center justify-center border border-brand-gold/10 shadow-sm group-hover:border-brand-gold/30 transition-all duration-500 mb-3 bg-gradient-to-br from-white to-slate-50">
+                    <div className="h-20 w-20 rounded-2xl bg-white overflow-hidden flex items-center justify-center border border-slate-100 shadow-sm group-hover:border-brand-gold/20 group-hover:scale-105 transition-all duration-500 mb-4 bg-gradient-to-br from-white to-slate-50">
                       <SmartImg
                         src={partner.logo}
                         alt={pickLang(partner, 'name', currentLang)}
-                        className="h-full w-full object-contain p-1.5 filter grayscale group-hover:grayscale-0 opacity-70 group-hover:opacity-100 transition-all duration-500"
+                        className="h-full w-full object-contain p-2 opacity-90 group-hover:opacity-100 transition-all duration-500"
                         referrerPolicy="no-referrer"
                       />
                     </div>
                   ) : (
-                    <div className="h-16 w-16 rounded-2xl bg-brand-gold/10 text-brand-gold-dark font-bold text-2xl flex items-center justify-center mb-3 border border-brand-gold/20 shadow-inner group-hover:bg-brand-gold/20 transition-all duration-500">
+                    <div className="h-20 w-20 rounded-2xl bg-brand-gold/5 text-brand-gold-dark font-bold text-2xl flex items-center justify-center mb-4 border border-brand-gold/15 group-hover:bg-brand-gold/15 group-hover:scale-105 transition-all duration-500">
                       {partner.logo}
                     </div>
                   )}
@@ -443,7 +440,7 @@ export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }:
                     {pickLang(partner, 'name', currentLang)}
                   </span>
                   {partner.descAr && (
-                    <p className="text-[10px] text-slate-500 font-sans mt-1.5 line-clamp-2 max-w-[150px] leading-relaxed opacity-85 group-hover:opacity-100 transition-opacity">
+                    <p className="text-[10px] text-slate-400 font-sans mt-2 line-clamp-2 max-w-[160px] leading-relaxed group-hover:text-slate-500 transition-colors">
                       {pickLang(partner, 'desc', currentLang)}
                     </p>
                   )}
