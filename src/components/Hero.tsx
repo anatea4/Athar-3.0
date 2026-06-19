@@ -399,7 +399,7 @@ export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }:
 
       {/* Success Partners Section */}
       {partners && partners.length > 0 && (
-        <div id="partners" className="py-24 bg-gradient-to-b from-white via-brand-sand/20 to-brand-sand/50 relative border-t border-brand-gold/10 overflow-hidden">
+        <div id="partners" className="pt-12 pb-16 bg-gradient-to-b from-white via-brand-sand/20 to-brand-sand/50 relative border-t border-brand-gold/10 overflow-hidden">
           <style>{`
             @keyframes marqueeLtr {
               0% { transform: translateX(0); }
@@ -423,7 +423,7 @@ export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }:
           <div className="absolute inset-0 islamic-pattern opacity-10 pointer-events-none" />
           <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             
-            <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
+            <div className="text-center max-w-3xl mx-auto mb-8 space-y-3">
               <div className="inline-flex items-center space-x-1.5 rtl:space-x-reverse text-brand-gold-dark bg-brand-gold/10 px-3.5 py-1 rounded-full border border-brand-gold/20">
                 <Landmark className="h-3.5 w-3.5" />
                 <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider font-sans">
