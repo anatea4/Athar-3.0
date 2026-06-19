@@ -319,12 +319,6 @@ export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }:
         <div className="absolute inset-0 islamic-pattern opacity-30 pointer-events-none" />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-            <div className="inline-flex items-center space-x-1.5 rtl:space-x-reverse text-brand-gold-dark">
-              <Sparkles className="h-4.5 w-4.5 animate-pulse text-brand-gold" />
-              <span className="text-xs uppercase tracking-widest font-semibold">
-                {getPillarsTagline()}
-              </span>
-            </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-brand-blue-dark tracking-tight">
               {getPillarsHeading()}
             </h2>

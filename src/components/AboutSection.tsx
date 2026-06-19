@@ -28,19 +28,25 @@ export default function AboutSection({ currentLang, activeSub, onNavigate }: Abo
   const ACADEMY_PROFILE = useAbout();
   const TEAM_MEMBERS = useTeam();
   const PARTNERS = usePartners();
-  const [activeTab, setActiveTab] = React.useState(activeSub || 'who-we-are');
+  const visibleTeamMembers = TEAM_MEMBERS.filter((m: any) => !m._hidden);
+  const showTeamTab = visibleTeamMembers.length > 0;
+  const [activeTab, setActiveTab] = React.useState((activeSub === 'team' && !showTeamTab) ? 'who-we-are' : activeSub || 'who-we-are');
 
   useEffect(() => {
     if (activeSub) {
-      setActiveTab(activeSub);
+      if (activeSub === 'team' && !showTeamTab) {
+        setActiveTab('who-we-are');
+      } else {
+        setActiveTab(activeSub);
+      }
     }
-  }, [activeSub]);
+  }, [activeSub, showTeamTab]);
 
   const tabs = [
     { id: 'who-we-are', labelAr: 'نبذة عن الأكاديمية', labelEn: 'About the Academy', labelMs: 'Tentang Akademi', icon: <Compass className="h-4.5 w-4.5" /> },
     { id: 'vision-mission', labelAr: 'الرؤية والرسالة', labelEn: 'Vision & Mission', labelMs: 'Visi & Misi', icon: <Target className="h-4.5 w-4.5" /> },
     { id: 'objectives', labelAr: 'أهداف الأكاديمية', labelEn: 'Our Goals', labelMs: 'Matlamat Kami', icon: <Award className="h-4.5 w-4.5" /> },
-    { id: 'team', labelAr: 'فريق العمل', labelEn: 'Our Team', labelMs: 'Barisan Guru/Staf', icon: <Users className="h-4.5 w-4.5" /> },
+    ...(showTeamTab ? [{ id: 'team', labelAr: 'فريق العمل', labelEn: 'Our Team', labelMs: 'Barisan Guru/Staf', icon: <Users className="h-4.5 w-4.5" /> }] : []),
     { id: 'director-message', labelAr: 'كلمة مدير الأكاديمية', labelEn: "Director's Message", labelMs: 'Pesanan Pengarah', icon: <Quote className="h-4.5 w-4.5" /> },
     { id: 'chairman-message', labelAr: 'كلمة رئيس مجلس الإدارة', labelEn: "Chairman's Message", labelMs: 'Pesanan Pengerusi', icon: <Quote className="h-4.5 w-4.5" /> },
     { id: 'secretary-message', labelAr: 'كلمة الأمين العام', labelEn: "Secretary-General's Message", labelMs: 'Pesanan Setiausaha', icon: <Quote className="h-4.5 w-4.5" /> },
@@ -193,7 +199,7 @@ export default function AboutSection({ currentLang, activeSub, onNavigate }: Abo
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                  {TEAM_MEMBERS.map((member, i) => (
+                  {visibleTeamMembers.map((member, i) => (
                     <div key={i} className="flex gap-4 p-4 bg-brand-gold/5 border border-brand-gold/10 rounded-2xl hover:border-brand-gold/30 hover:bg-brand-gold/10 transition-all duration-300">
                       <SmartImg
                         src={member.image}
