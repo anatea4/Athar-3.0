@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { Language, getLangField } from '@/types';
 import { useDetailedPrograms, useStats, usePrograms, useContact } from '@/lib/content-provider';
+import SmartImg from '@/components/SmartImg';
 
 interface ProgramCatalogProps {
   currentLang: Language;
@@ -146,39 +147,125 @@ export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram
               </div>
 
               {/* Circles Info Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 text-right rtl:text-right ltr:text-left">
-                <div className="bg-white border-2 border-brand-gold/10 hover:border-brand-gold/30 rounded-3xl p-6 transition-all duration-300">
-                  <span className="text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 bg-brand-blue/10 text-brand-blue rounded-full">
-                    {currentLang === 'ms' ? 'Kelas Lelaki' : currentLang === 'en' ? 'Boys Class' : 'حلقات البنين'}
-                  </span>
-                  <h4 className="text-lg font-bold text-brand-blue-dark mt-3">
-                    {getLangField(PROGRAMS[0], 'title', currentLang)}
-                  </h4>
-                  <p className="text-slate-500 font-sans text-xs sm:text-sm leading-relaxed mt-2">
-                    {getLangField(PROGRAMS[0], 'description', currentLang)}
-                  </p>
-                  <ul className="mt-4 space-y-2 text-xs text-slate-600 font-sans">
-                    <li>⏱️ <strong>{currentLang === 'ms' ? 'Jadual: ' : currentLang === 'en' ? 'Schedule: ' : 'المواعيد: '}</strong> {getLangField(PROGRAMS[0], 'schedule', currentLang)}</li>
-                    <li>👥 <strong>{currentLang === 'ms' ? 'Umur: ' : currentLang === 'en' ? 'Ages: ' : 'الأعمار: '}</strong> {getLangField(PROGRAMS[0], 'ageRules', currentLang)}</li>
-                    <li>👤 <strong>{currentLang === 'ms' ? 'Guru: ' : currentLang === 'en' ? 'Teacher: ' : 'الشيخ: '}</strong> {getLangField(PROGRAMS[0], 'teacher', currentLang)}</li>
-                  </ul>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 text-right rtl:text-right ltr:text-left">
+                {/* Boys Card */}
+                <div className="bg-white border border-brand-gold/15 hover:border-brand-gold/35 rounded-[2rem] overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 flex flex-col group">
+                  <div className="relative h-60 sm:h-64 overflow-hidden">
+                    <SmartImg
+                      src="/quran-boys.png"
+                      alt={getLangField(PROGRAMS[0], 'title', currentLang)}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-all duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent pointer-events-none" />
+                    
+                    {/* Badge */}
+                    <div className="absolute top-4 right-4 bg-brand-blue/90 backdrop-blur-sm text-brand-gold px-4 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider border border-brand-gold/30 shadow-md">
+                      {currentLang === 'ms' ? 'Kelas Lelaki' : currentLang === 'en' ? 'Boys Class' : 'حلقات البنين'}
+                    </div>
+                  </div>
+
+                  <div className="p-6 sm:p-8 flex-1 flex flex-col justify-between space-y-4">
+                    <div>
+                      <h4 className="text-lg sm:text-xl font-bold text-brand-blue-dark leading-snug">
+                        {getLangField(PROGRAMS[0], 'title', currentLang)}
+                      </h4>
+                      <p className="text-slate-500 font-sans text-xs sm:text-sm leading-relaxed mt-2.5">
+                        {getLangField(PROGRAMS[0], 'description', currentLang)}
+                      </p>
+                    </div>
+
+                    <div className="bg-brand-gold/5 border border-brand-gold/10 p-4 rounded-2xl space-y-2.5 text-xs text-slate-700 font-sans">
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-brand-gold-dark shrink-0" />
+                        <div>
+                          <strong>{currentLang === 'ms' ? 'Jadual: ' : currentLang === 'en' ? 'Schedule: ' : 'المواعيد: '}</strong>
+                          <span className="text-slate-600 block sm:inline sm:ms-1">{getLangField(PROGRAMS[0], 'schedule', currentLang)}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4 text-brand-gold-dark shrink-0" />
+                        <div>
+                          <strong>{currentLang === 'ms' ? 'Umur: ' : currentLang === 'en' ? 'Ages: ' : 'الأعمار: '}</strong>
+                          <span className="text-slate-600 block sm:inline sm:ms-1">{getLangField(PROGRAMS[0], 'ageRules', currentLang)}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Award className="h-4 w-4 text-brand-gold-dark shrink-0" />
+                        <div>
+                          <strong>{currentLang === 'ms' ? 'Guru: ' : currentLang === 'en' ? 'Teacher: ' : 'الشيخ: '}</strong>
+                          <span className="text-slate-600 block sm:inline sm:ms-1">{getLangField(PROGRAMS[0], 'teacher', currentLang)}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => onSelectProgram && onSelectProgram(PROGRAMS[0].id)}
+                      className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-blue-dark to-brand-blue hover:from-brand-blue hover:to-brand-blue-dark text-white font-bold py-3 rounded-full shadow-md transition-all duration-300 hover:shadow-brand-blue-dark/25 cursor-pointer text-xs"
+                    >
+                      <Ticket className="h-4 w-4" />
+                      <span>{currentLang === 'ms' ? 'Daftar Sekarang' : currentLang === 'en' ? 'Register Now' : 'سجّل في هذه الحلقة الآن'}</span>
+                    </button>
+                  </div>
                 </div>
 
-                <div className="bg-white border-2 border-brand-gold/10 hover:border-brand-gold/30 rounded-3xl p-6 transition-all duration-300">
-                  <span className="text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 bg-brand-gold/15 text-brand-gold-dark rounded-full">
-                    {currentLang === 'ms' ? 'Halaqah Perempuan' : currentLang === 'en' ? 'Girls Sanctuary' : 'حلقات البنات والتربية بالقرآن'}
-                  </span>
-                  <h4 className="text-lg font-bold text-brand-blue-dark mt-3">
-                    {getLangField(PROGRAMS[1], 'title', currentLang)}
-                  </h4>
-                  <p className="text-slate-500 font-sans text-xs sm:text-sm leading-relaxed mt-2">
-                    {getLangField(PROGRAMS[1], 'description', currentLang)}
-                  </p>
-                  <ul className="mt-4 space-y-2 text-xs text-slate-600 font-sans">
-                    <li>⏱️ <strong>{currentLang === 'ms' ? 'Jadual: ' : currentLang === 'en' ? 'Schedule: ' : 'المواعيد: '}</strong> {getLangField(PROGRAMS[1], 'schedule', currentLang)}</li>
-                    <li>👥 <strong>{currentLang === 'ms' ? 'Umur: ' : currentLang === 'en' ? 'Ages: ' : 'الأعمار: '}</strong> {getLangField(PROGRAMS[1], 'ageRules', currentLang)}</li>
-                    <li>👤 <strong>{currentLang === 'ms' ? 'Guru: ' : currentLang === 'en' ? 'Teacher: ' : 'المعلمة: '}</strong> {getLangField(PROGRAMS[1], 'teacher', currentLang)}</li>
-                  </ul>
+                {/* Girls Card */}
+                <div className="bg-white border border-brand-gold/15 hover:border-brand-gold/35 rounded-[2rem] overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 flex flex-col group">
+                  <div className="relative h-60 sm:h-64 overflow-hidden">
+                    <SmartImg
+                      src="/quran-girls.png"
+                      alt={getLangField(PROGRAMS[1], 'title', currentLang)}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-all duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent pointer-events-none" />
+                    
+                    {/* Badge */}
+                    <div className="absolute top-4 right-4 bg-brand-gold/90 backdrop-blur-sm text-brand-blue-dark px-4 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider border border-brand-gold/25 shadow-md">
+                      {currentLang === 'ms' ? 'Halaqah Perempuan' : currentLang === 'en' ? 'Girls Sanctuary' : 'حلقات البنات والتربية بالقرآن'}
+                    </div>
+                  </div>
+
+                  <div className="p-6 sm:p-8 flex-1 flex flex-col justify-between space-y-4">
+                    <div>
+                      <h4 className="text-lg sm:text-xl font-bold text-brand-blue-dark leading-snug">
+                        {getLangField(PROGRAMS[1], 'title', currentLang)}
+                      </h4>
+                      <p className="text-slate-500 font-sans text-xs sm:text-sm leading-relaxed mt-2.5">
+                        {getLangField(PROGRAMS[1], 'description', currentLang)}
+                      </p>
+                    </div>
+
+                    <div className="bg-brand-gold/5 border border-brand-gold/10 p-4 rounded-2xl space-y-2.5 text-xs text-slate-700 font-sans">
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-brand-gold-dark shrink-0" />
+                        <div>
+                          <strong>{currentLang === 'ms' ? 'Jadual: ' : currentLang === 'en' ? 'Schedule: ' : 'المواعيد: '}</strong>
+                          <span className="text-slate-600 block sm:inline sm:ms-1">{getLangField(PROGRAMS[1], 'schedule', currentLang)}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4 text-brand-gold-dark shrink-0" />
+                        <div>
+                          <strong>{currentLang === 'ms' ? 'Umur: ' : currentLang === 'en' ? 'Ages: ' : 'الأعمار: '}</strong>
+                          <span className="text-slate-600 block sm:inline sm:ms-1">{getLangField(PROGRAMS[1], 'ageRules', currentLang)}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Award className="h-4 w-4 text-brand-gold-dark shrink-0" />
+                        <div>
+                          <strong>{currentLang === 'ms' ? 'Guru: ' : currentLang === 'en' ? 'Teacher: ' : 'المعلمة: '}</strong>
+                          <span className="text-slate-600 block sm:inline sm:ms-1">{getLangField(PROGRAMS[1], 'teacher', currentLang)}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => onSelectProgram && onSelectProgram(PROGRAMS[1].id)}
+                      className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-gold to-brand-gold-dark hover:from-brand-gold-dark hover:to-brand-gold text-brand-blue-dark font-bold py-3 rounded-full shadow-md transition-all duration-300 hover:shadow-brand-gold/25 cursor-pointer text-xs"
+                    >
+                      <Ticket className="h-4 w-4" />
+                      <span>{currentLang === 'ms' ? 'Daftar Sekarang' : currentLang === 'en' ? 'Register Now' : 'سجّل في هذه الحلقة الآن'}</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
