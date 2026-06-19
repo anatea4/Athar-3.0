@@ -27,11 +27,14 @@ export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram
   const [boysSlide, setBoysSlide] = useState(0);
   const [girlsSlide, setGirlsSlide] = useState(0);
 
-  const boysImages = PROGRAMS[0]?.images && PROGRAMS[0].images.length > 0
+  // Use the dashboard images as the source of truth. The hardcoded list is only a
+  // seed for when the field was NEVER set (undefined) — once the admin edits the
+  // images (including deleting them), an empty array is respected so deletions stick.
+  const boysImages = Array.isArray(PROGRAMS[0]?.images)
     ? PROGRAMS[0].images
     : ['/quran-boys.png', '/quran-boys-2.png', '/quran-boys-3.png'];
 
-  const girlsImages = PROGRAMS[1]?.images && PROGRAMS[1].images.length > 0
+  const girlsImages = Array.isArray(PROGRAMS[1]?.images)
     ? PROGRAMS[1].images
     : ['/quran-girls.png', '/quran-girls-2.png', '/quran-girls-3.png'];
 
@@ -125,7 +128,9 @@ export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram
     
     if (progId) {
       const prog = findProg(progId);
-      if (prog && prog.gallery && Array.isArray(prog.gallery) && prog.gallery.length > 0) {
+      // If the admin has set a gallery (even an empty one after deleting), use it —
+      // so deletions stick instead of falling back to the built-in default images.
+      if (prog && Array.isArray(prog.gallery)) {
         programImages[tabId] = prog.gallery.filter((item: any) => !item._hidden).map((item: any) => ({
           src: item.img || item.image || item.src || '',
           titleAr: item.titleAr || '',
