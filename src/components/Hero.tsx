@@ -401,29 +401,59 @@ export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }:
       {partners && partners.length > 0 && (
         <div id="partners" className="py-24 bg-gradient-to-b from-white via-brand-sand/20 to-brand-sand/50 relative border-t border-brand-gold/10 overflow-hidden">
           <style>{`
-            @keyframes marqueeLtr {
-              0% { transform: translateX(0); }
-              100% { transform: translateX(-33.3333%); }
+            @keyframes floatSlow {
+              0%, 100% { transform: translateY(0px) rotate(0deg); }
+              50% { transform: translateY(-10px) rotate(0.5deg); }
             }
-            @keyframes marqueeRtl {
-              0% { transform: translateX(0); }
-              100% { transform: translateX(33.3333%); }
+            @keyframes floatMedium {
+              0%, 100% { transform: translateY(0px) rotate(0deg); }
+              50% { transform: translateY(-15px) rotate(-1deg); }
             }
-            .animate-marquee-ltr {
-              animation: marqueeLtr 35s linear infinite;
+            @keyframes floatFast {
+              0%, 100% { transform: translateY(0px) rotate(0deg); }
+              50% { transform: translateY(-6px) rotate(0.3deg); }
             }
-            .animate-marquee-rtl {
-              animation: marqueeRtl 35s linear infinite;
+            .animate-float-slow {
+              animation: floatSlow 8s infinite ease-in-out;
             }
-            .marquee-track:hover {
-              animation-play-state: paused;
+            .animate-float-medium {
+              animation: floatMedium 6s infinite ease-in-out;
+            }
+            .animate-float-fast {
+              animation: floatFast 5s infinite ease-in-out;
             }
           `}</style>
           
           <div className="absolute inset-0 islamic-pattern opacity-10 pointer-events-none" />
+          
+          {/* Blurred Glowing Background Orbs */}
+          <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-64 h-64 bg-brand-gold/5 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-1/3 right-1/4 -translate-y-1/2 w-64 h-64 bg-brand-gold/10 rounded-full blur-3xl pointer-events-none" />
+
+          {/* SVG Constellation lines connecting the staggered layout points */}
+          <svg className="absolute inset-0 w-full h-full opacity-[0.18] pointer-events-none hidden md:block" viewBox="0 0 1200 400" preserveAspectRatio="none">
+            <path d="M 220,180 L 480,240 L 720,160 L 980,220" fill="none" stroke="url(#goldGrad)" strokeWidth="1.5" strokeDasharray="6,6" />
+            <path d="M 220,180 L 720,160" fill="none" stroke="url(#goldGrad)" strokeWidth="1" strokeDasharray="3,3" />
+            <path d="M 480,240 L 980,220" fill="none" stroke="url(#goldGrad)" strokeWidth="1" strokeDasharray="3,3" />
+            
+            {/* Tiny stars/particles on junctions */}
+            <circle cx="220" cy="180" r="3" fill="#D4AF37" className="animate-pulse" />
+            <circle cx="480" cy="240" r="4" fill="#D4AF37" className="animate-pulse" style={{ animationDelay: '1s' }} />
+            <circle cx="720" cy="160" r="3" fill="#D4AF37" className="animate-pulse" style={{ animationDelay: '0.5s' }} />
+            <circle cx="980" cy="220" r="4" fill="#D4AF37" className="animate-pulse" style={{ animationDelay: '1.5s' }} />
+            
+            <defs>
+              <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#D4AF37" />
+                <stop offset="50%" stopColor="#AA7C11" />
+                <stop offset="100%" stopColor="#D4AF37" />
+              </linearGradient>
+            </defs>
+          </svg>
+
           <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             
-            <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
+            <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
               <div className="inline-flex items-center space-x-1.5 rtl:space-x-reverse text-brand-gold-dark bg-brand-gold/10 px-3.5 py-1 rounded-full border border-brand-gold/20">
                 <Landmark className="h-3.5 w-3.5" />
                 <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider font-sans">
@@ -436,46 +466,54 @@ export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }:
               <div className="w-12 h-0.5 bg-brand-gold mx-auto mt-2" />
             </div>
 
-            {/* Scrolling Marquee Container with edge gradients */}
-            <div className="relative w-full overflow-hidden py-4 [mask-image:linear-gradient(to_right,transparent,white_15%,white_85%,transparent)] [-webkit-mask-image:linear-gradient(to_right,transparent,white_15%,white_85%,transparent)]">
-              <div 
-                className={`flex gap-6 w-max marquee-track ${
-                  currentLang === 'ar' ? 'animate-marquee-rtl' : 'animate-marquee-ltr'
-                }`}
-              >
-                {/* Triplicating the array to guarantee infinite loop without white gaps */}
-                {[...partners, ...partners, ...partners].map((partner: any, i: number) => (
+            {/* Constellation Container */}
+            <div className="flex flex-wrap justify-center items-center gap-8 md:gap-14 py-8 relative max-w-5xl mx-auto">
+              {partners.map((partner: any, i: number) => {
+                // Determine layout float and offset style based on index to create constellation look
+                const floatClass = ['animate-float-slow', 'animate-float-medium', 'animate-float-fast', 'animate-float-slow'][i % 4];
+                const staggerClass = ['md:-translate-y-6', 'md:translate-y-8', 'md:-translate-y-10', 'md:translate-y-4'][i % 4];
+                const delayStr = `${(i * 0.5).toFixed(1)}s`;
+
+                return (
                   <div
                     key={i}
-                    className="flex items-center gap-4 bg-white/95 backdrop-blur-sm border border-slate-100 hover:border-brand-gold/45 p-4 px-6 rounded-3xl shadow-sm hover:shadow-brand-gold/10 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 shrink-0 min-w-[220px] h-20"
+                    style={{ animationDelay: delayStr }}
+                    className={`w-44 h-44 sm:w-48 sm:h-48 md:w-52 md:h-52 rounded-full bg-white/70 backdrop-blur-md border border-brand-gold/25 hover:border-brand-gold/60 shadow-lg hover:shadow-brand-gold/15 hover:shadow-2xl transition-all duration-700 hover:scale-[1.03] hover:rotate-2 flex flex-col items-center justify-center p-5 text-center group cursor-default relative overflow-hidden ${floatClass} ${staggerClass}`}
                   >
+                    {/* Inner dashed ring reflecting premium certificates/diplomas */}
+                    <div className="absolute inset-2.5 rounded-full border border-dashed border-brand-gold/15 group-hover:border-brand-gold/40 transition-colors duration-700 pointer-events-none" />
+                    
+                    {/* Glowing golden background gradient on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-brand-gold/[0.01] to-brand-gold/[0.04] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+                    
+                    {/* Metallic Sheen diagonal shine sweep on hover */}
+                    <div className="absolute top-0 -left-[150%] w-[100%] h-full bg-gradient-to-r from-transparent via-white/40 to-transparent transform -skew-x-12 group-hover:left-[150%] transition-all duration-1000 ease-in-out pointer-events-none" />
+
                     {isImageSrc(partner.logo) ? (
-                      <div className="h-12 w-12 rounded-xl bg-white overflow-hidden flex items-center justify-center border border-slate-100 p-0.5 shrink-0 shadow-inner">
+                      <div className="h-16 w-16 md:h-18 md:w-18 rounded-full bg-white overflow-hidden flex items-center justify-center border border-brand-gold/15 p-1.5 shadow-sm group-hover:border-brand-gold/30 group-hover:scale-105 transition-all duration-500 relative z-10 bg-gradient-to-br from-white to-slate-50">
                         <SmartImg
                           src={partner.logo}
                           alt={pickLang(partner, 'name', currentLang)}
-                          className="h-full w-full object-contain"
+                          className="h-full w-full object-contain p-0.5 opacity-90 group-hover:opacity-100 transition-all duration-500"
                           referrerPolicy="no-referrer"
                         />
                       </div>
                     ) : (
-                      <div className="h-12 w-12 rounded-xl bg-brand-gold/5 text-brand-gold-dark font-bold text-lg flex items-center justify-center shrink-0 border border-brand-gold/10">
+                      <div className="h-16 w-16 md:h-18 md:w-18 rounded-full bg-brand-gold/5 text-brand-gold-dark font-bold text-2xl flex items-center justify-center shrink-0 border border-brand-gold/15 group-hover:bg-brand-gold/15 group-hover:scale-105 transition-all duration-500 relative z-10">
                         {partner.logo}
                       </div>
                     )}
-                    <div className="text-right rtl:text-right ltr:text-left min-w-0">
-                      <span className="text-xs font-bold text-brand-blue-dark block truncate font-sans">
-                        {pickLang(partner, 'name', currentLang)}
-                      </span>
-                      {partner.descAr && (
-                        <span className="text-[9px] text-slate-400 block truncate font-sans mt-0.5">
-                          {pickLang(partner, 'desc', currentLang)}
-                        </span>
-                      )}
-                    </div>
+                    
+                    <span className="text-xs sm:text-sm font-bold text-brand-blue-dark group-hover:text-brand-gold-dark transition-colors line-clamp-2 mt-3 font-sans relative z-10 max-w-[140px] leading-tight">
+                      {pickLang(partner, 'name', currentLang)}
+                    </span>
+                    
+                    <p className="text-[9px] sm:text-[10px] text-slate-500 font-sans leading-normal mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500 max-w-[140px] line-clamp-2 relative z-10">
+                      {pickLang(partner, 'desc', currentLang)}
+                    </p>
                   </div>
-                ))}
-              </div>
+                );
+              })}
             </div>
 
           </div>
