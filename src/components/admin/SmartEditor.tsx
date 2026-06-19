@@ -11,6 +11,21 @@ const isImageKey = (k: string) => {
   return IMAGE_KEYS.some((ik) => lk.includes(ik));
 };
 
+const HIDDEN_IMAGE_PROGRAMS = [
+  'برنامج رحلة الأثر', 'رحلة الأثر',
+  'برنامج قارئ أثر', 'قارئ أثر',
+  'المعتكف الرمضاني العلمي', 'المعتكف الرمضاني',
+  'مخيم سفيرات الأثر (السنوي)', 'مخيم سفيرات الأثر'
+];
+const shouldHideImage = (obj: any): boolean => {
+  if (!obj) return false;
+  const tAr = obj.titleAr?.trim() || '';
+  const id = String(obj.id || '').trim();
+  if (HIDDEN_IMAGE_PROGRAMS.some(p => tAr.includes(p))) return true;
+  if (['p-sfeerat', 'p-motakaf', 'p-rihla', 'p-qari', 'sfeerat', 'journey-athar', 'qari', 'ramadan-retreat'].includes(id)) return true;
+  return false;
+};
+
 // File/document fields (PDF, attachments, downloads) and generic media urls
 const FILE_KEYS = ['url', 'file', 'document', 'attachment', 'download', 'pdf'];
 const isFileKey = (k: string) => {
@@ -182,6 +197,7 @@ function ObjectFields({
 
         // Image fields
         if (typeof val === 'string' && isImageKey(key)) {
+          if (shouldHideImage(obj)) return null;
           return (
             <ImageField
               key={key}

@@ -97,7 +97,7 @@ export const FORMS_DEFAULTS = [
   },
   {
     id: 'donate', section: 'finance', order: 1,
-    titleAr: 'تبرّع الآن', titleEn: 'Donate Now', titleMs: 'Derma Sekarang',
+    titleAr: 'تبرّع الآن', titleEn: 'Donate', titleMs: 'Derma',
     descAr: 'ساهم في كفالة حلقة قرآنية أو طالب، ودعم مسيرة أكاديمية أثر. كل تبرع له أثر باقٍ.',
     descEn: 'Support a Quran circle or a student.',
     headerImage: '',
@@ -198,8 +198,8 @@ export const HERO_DEFAULTS = {
   ctaPrimaryEn: 'Browse Enrollment Programs',
   ctaPrimaryMs: 'Lihat Program Pendaftaran',
   ctaSecondaryAr: 'تبرّع الآن',
-  ctaSecondaryEn: 'Donate Now',
-  ctaSecondaryMs: 'Derma Sekarang',
+  ctaSecondaryEn: 'Donate',
+  ctaSecondaryMs: 'Derma',
   // Stats
   statsLabelAr: 'إحصائيات الأثر',
   statsLabelEn: 'Athar Stats',
@@ -417,7 +417,7 @@ export const NAV_DEFAULTS = {
     {
       id: 'finance', labelAr: 'التبرعات والرسوم', labelEn: 'Donations & Fees', labelMs: 'Derma & Yuran', kind: 'group',
       children: [
-        { id: 'f-donate', labelAr: 'تبرّع الآن', labelEn: 'Donate Now', labelMs: 'Derma Sekarang', kind: 'section', section: 'finance', sub: 'donate' },
+        { id: 'f-donate', labelAr: 'تبرّع الآن', labelEn: 'Donate', labelMs: 'Derma', kind: 'section', section: 'finance', sub: 'donate' },
         { id: 'f-pay', labelAr: 'دفع الرسوم', labelEn: 'Pay Fees', labelMs: 'Bayar Yuran', kind: 'section', section: 'finance', sub: 'pay-fees' },
         { id: 'f-calc', labelAr: 'حاسبة الرسوم', labelEn: 'Fee Calculator', labelMs: 'Kalkulator Yuran', kind: 'section', section: 'finance', sub: 'calculator' },
       ],

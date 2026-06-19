@@ -429,7 +429,7 @@ export function FileField({
               <span className="truncate" dir="ltr">{fileName}</span>
             </a>
           )}
-          <p className="text-[11px] text-slate-400">PDF / Word / Excel / صورة — حتى 25MB</p>
+          <p className="text-[11px] text-slate-400">PDF / Word / Excel / صورة / فيديو — حتى 100MB</p>
           <input
             type="text"
             value={value || ''}

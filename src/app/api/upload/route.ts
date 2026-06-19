@@ -33,8 +33,10 @@ const ALLOWED = [
   'application/zip', 'application/x-zip-compressed',
   // audio
   'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg',
+  // video
+  'video/mp4', 'video/webm', 'video/ogg', 'video/quicktime',
 ];
-const MAX_SIZE = 25 * 1024 * 1024; // 25 MB (documents can be larger than images)
+const MAX_SIZE = 100 * 1024 * 1024; // 100 MB
 
 export async function POST(req: NextRequest) {
   const session = await getSession();
@@ -47,14 +49,14 @@ export async function POST(req: NextRequest) {
   // Validate type — images + common document/audio types
   if (!ALLOWED.includes(file.type)) {
     return NextResponse.json(
-      { error: 'نوع الملف غير مدعوم (صور، PDF، Word، Excel، PowerPoint، نص، صوت)' },
+      { error: 'نوع الملف غير مدعوم (صور، فيديو، PDF، Word، Excel، PowerPoint، نص، صوت)' },
       { status: 400 }
     );
   }
 
   // Validate size
   if (file.size > MAX_SIZE) {
-    return NextResponse.json({ error: 'حجم الملف يجب أن يكون أقل من 25 ميجابايت' }, { status: 400 });
+    return NextResponse.json({ error: 'حجم الملف يجب أن يكون أقل من 100 ميجابايت' }, { status: 400 });
   }
 
   const ext = (file.name.split('.').pop() || 'png').toLowerCase().replace(/[^a-z0-9]/g, '');

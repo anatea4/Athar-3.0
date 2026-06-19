@@ -81,7 +81,7 @@ export default function Footer({ currentLang }: FooterProps) {
               const active = order.filter((s) => (contact as any)[s.key]);
               if (active.length === 0) return null;
               return (
-                <div className="flex flex-wrap items-center justify-center lg:justify-start rtl:lg:justify-end gap-2.5 pt-1">
+                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 pt-1">
                   {active.map(({ key, label }) => (
                     <a
                       key={key}

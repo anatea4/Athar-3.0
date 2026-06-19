@@ -386,7 +386,7 @@ export default function Header({
               className="flex items-center bg-gradient-to-r from-brand-gold to-brand-gold-dark hover:from-brand-gold-light hover:to-brand-gold text-brand-blue-dark font-bold text-[11px] px-9 py-3 rounded-full transition-all duration-300 uppercase tracking-wider shadow-md hover:scale-105 font-sans cursor-pointer"
             >
               <span>
-                {currentLang === 'ms' ? 'Derma Sekarang' : currentLang === 'en' ? 'Donate Now' : 'تبرع الآن'}
+                {currentLang === 'ms' ? 'Derma' : currentLang === 'en' ? 'Donate' : 'تبرع الآن'}
               </span>
             </button>
           </div>
@@ -526,7 +526,7 @@ export default function Header({
               className="flex items-center justify-center bg-gradient-to-r from-brand-gold to-brand-gold-dark text-brand-blue-dark hover:bg-brand-gold-light w-full py-3.5 rounded-full font-bold text-sm shadow-md transition-all duration-300 font-sans cursor-pointer"
             >
               <span>
-                {currentLang === 'ms' ? 'Derma Sekarang' : currentLang === 'en' ? 'Donate Now' : 'تبرع الآن'}
+                {currentLang === 'ms' ? 'Derma' : currentLang === 'en' ? 'Donate' : 'تبرع الآن'}
               </span>
             </button>
           </div>

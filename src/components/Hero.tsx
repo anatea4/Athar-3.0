@@ -33,15 +33,15 @@ const pickLang = (obj: any, field: string, lang: Language): string => {
   return obj[`${field}Ar`] || obj[`${field}En`] || '';
 };
 
-const extractYoutubeId = (url: string): string => {
-  if (!url) return 'Eff2YQijMhA'; // default fallback ID
+const extractYoutubeId = (url: string): string | null => {
+  if (!url) return null;
   const trimmed = url.trim();
   if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) {
     return trimmed;
   }
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
   const match = trimmed.match(regExp);
-  return (match && match[2].length === 11) ? match[2] : 'Eff2YQijMhA';
+  return (match && match[2].length === 11) ? match[2] : null;
 };
 
 function isImageSrc(v?: string): boolean {
@@ -64,13 +64,23 @@ export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }:
     { id: 'default', titleAr: 'الفيديو التعريفي', titleEn: 'Introductory Video', titleMs: 'Video Pengenalan', url: hero.videoUrl || 'https://youtu.be/Eff2YQijMhA' }
   ]).filter((v: any) => !v._hidden);
   const [activeVideoIdx, setActiveVideoIdx] = useState(0);
-  const activeVideo = videosList[activeVideoIdx] || videosList[0];
-  const videoId = extractYoutubeId(activeVideo.url);
-  const iframeSrc = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1&enablejsapi=1`;
+  const activeVideo = videosList[activeVideoIdx] || videosList[0] || {};
+  const videoUrl = activeVideo.url || '';
+  const videoId = extractYoutubeId(videoUrl);
+  const isYoutube = !!videoId;
+  const iframeSrc = isYoutube ? `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1&enablejsapi=1` : '';
 
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   useEffect(() => {
     setIsVideoLoaded(false);
+
+    if (!isYoutube) {
+      if (videoUrl) {
+        const timer = setTimeout(() => setIsVideoLoaded(true), 200);
+        return () => clearTimeout(timer);
+      }
+      return;
+    }
 
     // Inject the YouTube Iframe API script dynamically if not present
     if (typeof window !== 'undefined' && !(window as any).YT) {
@@ -139,7 +149,7 @@ export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }:
         }
       }
     };
-  }, [videoId]);
+  }, [videoId, isYoutube, videoUrl]);
 
   const getPillarsHeading = () => {
     const heading = pickLang(hero, 'pillarsHeading', currentLang);
@@ -191,25 +201,28 @@ export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }:
       {/* Immersive Video Fold */}
       <div className="relative min-h-[92vh] flex flex-col justify-between py-16 sm:py-20 lg:py-24 border-b border-brand-gold/20 overflow-hidden">
         
-        {/* YouTube Background Video Player */}
+        {/* Background Video Player */}
         <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
-          {/* Poster (video thumbnail) — shows on mobile where autoplay is blocked, so the
-              hero never looks blank. The video fades in above it when it actually plays. */}
-          {videoId && (
-            <div
-              className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url(https://img.youtube.com/vi/${videoId}/maxresdefault.jpg)` }}
+          {isYoutube ? (
+            <iframe
+              id={`hero-youtube-bg-${videoId}`}
+              src={iframeSrc}
+              className={`absolute top-1/2 left-1/2 w-[300%] h-[300%] sm:w-[160%] sm:h-[160%] lg:w-[115%] lg:h-[115%] aspect-video -translate-x-1/2 -translate-y-1/2 object-cover transition-opacity duration-[1200ms] ${isVideoLoaded ? 'opacity-85' : 'opacity-0'}`}
+              allow="autoplay; encrypted-media"
+              tabIndex={-1}
             />
-          )}
-          <iframe
-            id={`hero-youtube-bg-${videoId}`}
-            src={iframeSrc}
-            className={`absolute top-1/2 left-1/2 w-[300%] h-[300%] sm:w-[160%] sm:h-[160%] lg:w-[115%] lg:h-[115%] aspect-video -translate-x-1/2 -translate-y-1/2 object-cover transition-opacity duration-[1200ms] ${isVideoLoaded ? 'opacity-85' : 'opacity-0'}`}
-            allow="autoplay; encrypted-media; picture-in-picture; gyroscope"
-            allowFullScreen
-            frameBorder="0"
-            style={{ minWidth: '100%', minHeight: '100%' }}
-          />
+          ) : videoUrl ? (
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              onCanPlay={() => setIsVideoLoaded(true)}
+              className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-[1200ms] ${isVideoLoaded ? 'opacity-85' : 'opacity-0'}`}
+            >
+              <source src={videoUrl} />
+            </video>
+          ) : null}
           
           {/* Semi-transparent dark/gold gradients for luxury aesthetics and readability */}
           <div className="absolute inset-0 bg-brand-blue-dark/85 mix-blend-multiply" />
@@ -400,7 +413,7 @@ export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }:
               onClick={onAccessPortal}
               className="flex items-center justify-center bg-gradient-to-r from-brand-gold to-brand-gold-dark hover:from-brand-gold-dark hover:to-brand-gold text-brand-blue-dark font-bold px-10 py-4 rounded-full shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-brand-gold/25 cursor-pointer mx-auto border border-brand-gold/50"
             >
-              <span>{currentLang === 'ms' ? 'Derma Sekarang' : currentLang === 'en' ? 'Donate Now' : 'تبرّع الآن'}</span>
+              <span>{currentLang === 'ms' ? 'Derma' : currentLang === 'en' ? 'Donate' : 'تبرّع الآن'}</span>
             </button>
           </div>
         </div>

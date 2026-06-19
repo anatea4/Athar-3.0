@@ -523,7 +523,7 @@ export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram
                 </div>
 
                 {/* Awesome Photo Gallery Showcase for Program */}
-                {programImages[activeTab] && (
+                {programImages[activeTab] && programImages[activeTab].length > 0 && (
                   <div className="space-y-6 pt-6 animate-in fade-in duration-500">
                     <div className="flex items-center gap-2 border-b border-brand-gold/15 pb-3">
                       <Sparkles className="h-5 w-5 text-brand-gold" />

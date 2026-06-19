@@ -71,11 +71,12 @@ function mergeData<T>(defaults: T, override: any): T {
   if (typeof defaults !== 'object' || defaults === null) return override as T;
   if (typeof override !== 'object') return override as T;
 
-  if (Array.isArray(defaults)) {
-    const overrideArr = Array.isArray(override) ? override : [];
-    if (overrideArr.length === 0) return defaults;
-    
-    return overrideArr.map((item: any, idx: number) => {
+    if (Array.isArray(defaults)) {
+      const overrideArr = Array.isArray(override) ? override : [];
+      // Respect empty arrays explicitly saved by the user
+      // if (overrideArr.length === 0) return defaults;
+      
+      return overrideArr.map((item: any, idx: number) => {
       const defaultItem = defaults.find((x: any) => x && x.id && x.id === item.id) || defaults[idx];
       return mergeData(defaultItem, item);
     }) as any;
