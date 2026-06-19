@@ -416,34 +416,39 @@ export default function Hero({ currentLang, onExplorePrograms, onAccessPortal }:
               <div className="w-12 h-0.5 bg-brand-gold mx-auto mt-2" />
             </div>
 
-            <div className="flex flex-wrap justify-center gap-8">
+            <div className="flex flex-wrap justify-center gap-8 md:gap-10">
               {partners.map((partner: any, i: number) => (
                 <div
                   key={i}
-                  className="w-[170px] sm:w-[190px] md:w-[210px] shrink-0 bg-white border border-slate-100/80 hover:border-brand-gold/30 p-6 rounded-[2rem] shadow-sm hover:shadow-brand-gold/10 hover:shadow-xl transition-all duration-500 flex flex-col items-center justify-center text-center group hover:-translate-y-1.5 cursor-default relative overflow-hidden"
+                  className="w-44 h-44 rounded-full bg-gradient-to-b from-white to-brand-sand/20 border-2 border-brand-gold/20 hover:border-brand-gold/50 shadow-md hover:shadow-brand-gold/20 hover:shadow-xl transition-all duration-700 hover:-translate-y-1.5 hover:rotate-3 flex flex-col items-center justify-center p-4 text-center group cursor-default relative overflow-hidden bg-white"
                 >
+                  {/* Dashed inner circle representing traditional stamp/seal */}
+                  <div className="absolute inset-1.5 rounded-full border border-dashed border-brand-gold/20 group-hover:border-brand-gold/50 transition-colors duration-700 pointer-events-none" />
+                  
+                  {/* Metallic Sheen diagonal shine sweep on hover */}
+                  <div className="absolute top-0 -left-[150%] w-[100%] h-full bg-gradient-to-r from-transparent via-white/40 to-transparent transform -skew-x-12 group-hover:left-[150%] transition-all duration-1000 ease-in-out pointer-events-none" />
+                  
+                  {/* Golden Glowing inner aura */}
+                  <div className="absolute inset-0 bg-brand-gold/0 group-hover:bg-brand-gold/[0.03] transition-colors duration-700 pointer-events-none" />
+
                   {isImageSrc(partner.logo) ? (
-                    <div className="h-20 w-20 rounded-2xl bg-white overflow-hidden flex items-center justify-center border border-slate-100 shadow-sm group-hover:border-brand-gold/20 group-hover:scale-105 transition-all duration-500 mb-4 bg-gradient-to-br from-white to-slate-50">
+                    <div className="h-16 w-16 rounded-full bg-white overflow-hidden flex items-center justify-center border border-brand-gold/10 shadow-sm group-hover:border-brand-gold/20 group-hover:scale-105 transition-all duration-500 relative z-10 bg-gradient-to-br from-white to-slate-50 p-1">
                       <SmartImg
                         src={partner.logo}
                         alt={pickLang(partner, 'name', currentLang)}
-                        className="h-full w-full object-contain p-2 opacity-90 group-hover:opacity-100 transition-all duration-500"
+                        className="h-full w-full object-contain p-1 opacity-90 group-hover:opacity-100 transition-all duration-500"
                         referrerPolicy="no-referrer"
                       />
                     </div>
                   ) : (
-                    <div className="h-20 w-20 rounded-2xl bg-brand-gold/5 text-brand-gold-dark font-bold text-2xl flex items-center justify-center mb-4 border border-brand-gold/15 group-hover:bg-brand-gold/15 group-hover:scale-105 transition-all duration-500">
+                    <div className="h-16 w-16 rounded-full bg-brand-gold/5 text-brand-gold-dark font-bold text-xl flex items-center justify-center border border-brand-gold/15 group-hover:bg-brand-gold/15 group-hover:scale-105 transition-all duration-500 relative z-10">
                       {partner.logo}
                     </div>
                   )}
-                  <span className="text-xs font-bold text-brand-blue-dark group-hover:text-brand-gold-dark transition-colors line-clamp-1 font-sans">
+                  
+                  <span className="text-[11px] font-extrabold text-brand-blue-dark group-hover:text-brand-gold-dark transition-colors line-clamp-2 font-sans mt-2 max-w-[130px] relative z-10 leading-tight">
                     {pickLang(partner, 'name', currentLang)}
                   </span>
-                  {partner.descAr && (
-                    <p className="text-[10px] text-slate-400 font-sans mt-2 line-clamp-2 max-w-[160px] leading-relaxed group-hover:text-slate-500 transition-colors">
-                      {pickLang(partner, 'desc', currentLang)}
-                    </p>
-                  )}
                 </div>
               ))}
             </div>
