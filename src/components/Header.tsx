@@ -380,18 +380,15 @@ export default function Header({
               )}
             </div>
 
-            {/* External Platform Login Button */}
-            <a
-              href="https://atharacademy.info/platform/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 bg-gradient-to-r from-brand-gold to-brand-gold-dark hover:from-brand-gold-light hover:to-brand-gold text-brand-blue-dark font-bold text-[11px] px-4.5 py-2.5 rounded-full transition-all duration-300 uppercase tracking-wider shadow-md hover:scale-105 font-sans"
+            {/* External Platform Login Button replaced with Donate Now */}
+            <button
+              onClick={() => onSectionChange('finance', 'donate')}
+              className="flex items-center bg-gradient-to-r from-brand-gold to-brand-gold-dark hover:from-brand-gold-light hover:to-brand-gold text-brand-blue-dark font-bold text-[11px] px-9 py-3 rounded-full transition-all duration-300 uppercase tracking-wider shadow-md hover:scale-105 font-sans cursor-pointer"
             >
-              <LogIn className="h-4 w-4" />
               <span>
-                {currentLang === 'ms' ? 'Log Masuk' : currentLang === 'en' ? 'Login' : 'تسجيل الدخول'}
+                {currentLang === 'ms' ? 'Derma Sekarang' : currentLang === 'en' ? 'Donate Now' : 'تبرع الآن'}
               </span>
-            </a>
+            </button>
           </div>
 
           {/* Smartphone Menu toggle */}
@@ -519,20 +516,19 @@ export default function Header({
             })}
           </div>
 
-          {/* Mobile Direct External Login Redirect */}
+          {/* Mobile Direct External Login Redirect replaced with Donate Now */}
           <div className="pt-4 border-t border-brand-gold/20">
-            <a
-              href="https://atharacademy.info/platform/"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center justify-center gap-2 bg-gradient-to-r from-brand-gold to-brand-gold-dark text-brand-blue-dark hover:bg-brand-gold-light w-full py-3.5 rounded-full font-bold text-sm shadow-md transition-all duration-300 font-sans"
+            <button
+              onClick={() => {
+                onSectionChange('finance', 'donate');
+                setIsMobileMenuOpen(false);
+              }}
+              className="flex items-center justify-center bg-gradient-to-r from-brand-gold to-brand-gold-dark text-brand-blue-dark hover:bg-brand-gold-light w-full py-3.5 rounded-full font-bold text-sm shadow-md transition-all duration-300 font-sans cursor-pointer"
             >
-              <LogIn className="h-4.5 w-4.5" />
               <span>
-                {currentLang === 'ms' ? 'Log Masuk Platform' : currentLang === 'en' ? 'Login to Platform' : 'تسجيل الدخول للمنصة'}
+                {currentLang === 'ms' ? 'Derma Sekarang' : currentLang === 'en' ? 'Donate Now' : 'تبرع الآن'}
               </span>
-            </a>
+            </button>
           </div>
         </div>
       )}

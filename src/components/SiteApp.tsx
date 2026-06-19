@@ -167,19 +167,16 @@ export default function SiteApp({ initialSection = 'home', initialSub = '' }: Si
       try { window.history.pushState(null, '', path); } catch { /* ignore */ }
     }
     if (!isSameSection) {
-      setTimeout(() => scrollToSection(sectionId), 360);
+      setTimeout(() => scrollToSection(subSectionId || sectionId), 360);
+    } else if (subSectionId) {
+      scrollToSection(subSectionId);
     }
   };
 
   const handleExplorePrograms = () => handleSectionChange('programs', 'quran-circles');
 
   const handleAccessPortal = () => {
-    window.open('https://atharacademy.info/platform/', '_blank', 'noopener,noreferrer');
-    triggerBannerNotification(
-      'Opening the official Athar Academy login platform...',
-      'جاري توجيهك إلى منصة تسجيل الدخول لأكاديمية أثر...',
-      'Membuka platform log masuk rasmi Akademi Athar...'
-    );
+    handleSectionChange('finance', 'donate');
   };
 
   const handlePreloaderComplete = React.useCallback(() => setIsLoading(false), []);

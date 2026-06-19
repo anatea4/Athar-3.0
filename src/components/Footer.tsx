@@ -56,14 +56,6 @@ export default function Footer({ currentLang }: FooterProps) {
               {pick(footer, 'aboutText', currentLang)}
             </p>
 
-            <div className="flex justify-center lg:justify-start gap-4">
-              <span className="p-2 py-1 bg-brand-blue-light/50 border border-brand-gold/15 rounded text-[10px] uppercase font-bold tracking-widest text-brand-gold font-sans">
-                {currentLang === 'ms' ? '★ AKADEMI BERTAULIAH' : currentLang === 'en' ? '★ CERTIFIED ACADEMY' : '★ أكاديمية معتمدة'}
-              </span>
-              <span className="p-2 py-1 bg-brand-blue-light/50 border border-brand-gold/15 rounded text-[10px] uppercase font-bold tracking-widest text-[#cbd5e1] font-sans">
-                {currentLang === 'ms' ? '✔ LEBIH 450 SANAD DIKELUARKAN' : currentLang === 'en' ? '✔ ISSUED OVER 450 SANADS' : '✔ تم إصدار أكثر من 450 سنداً'}
-              </span>
-            </div>
           </div>
 
           {/* Quick Contact Directory info */}

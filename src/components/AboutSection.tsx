@@ -44,7 +44,6 @@ export default function AboutSection({ currentLang, activeSub, onNavigate }: Abo
     { id: 'director-message', labelAr: 'كلمة مدير الأكاديمية', labelEn: "Director's Message", labelMs: 'Pesanan Pengarah', icon: <Quote className="h-4.5 w-4.5" /> },
     { id: 'chairman-message', labelAr: 'كلمة رئيس مجلس الإدارة', labelEn: "Chairman's Message", labelMs: 'Pesanan Pengerusi', icon: <Quote className="h-4.5 w-4.5" /> },
     { id: 'secretary-message', labelAr: 'كلمة الأمين العام', labelEn: "Secretary-General's Message", labelMs: 'Pesanan Setiausaha', icon: <Quote className="h-4.5 w-4.5" /> },
-    { id: 'partners', labelAr: 'شركاؤنا', labelEn: 'Our Partners', labelMs: 'Rakan Kerjasama', icon: <Landmark className="h-4.5 w-4.5" /> },
   ];
 
   // Leadership-message tabs share one layout, driven by the field prefix in ACADEMY_PROFILE
@@ -218,45 +217,6 @@ export default function AboutSection({ currentLang, activeSub, onNavigate }: Abo
               </div>
             )}
 
-            {/* PARTNERS */}
-            {activeTab === 'partners' && (
-              <div className="space-y-6 animate-in fade-in duration-500 text-right rtl:text-right ltr:text-left">
-                <h3 className="text-xl sm:text-2xl font-bold text-brand-blue-dark flex items-center gap-2">
-                  <Landmark className="h-6 w-6 text-brand-gold" />
-                  <span>{currentLang === 'ms' ? 'Rakan Kerjasama Kejayaan Kami' : currentLang === 'en' ? 'Our Success Partners' : 'شركاء النجاح والأثر'}</span>
-                </h3>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                  {PARTNERS.map((partner, i) => (
-                    <div key={i} className="p-5 bg-white border-2 border-brand-gold/10 hover:border-brand-gold/40 rounded-2xl shadow-sm transition-all duration-300 flex items-start gap-4">
-                      {isImageSrc(partner.logo) ? (
-                        <div className="h-14 w-14 shrink-0 rounded-xl border border-brand-gold/20 bg-white overflow-hidden flex items-center justify-center shadow-sm">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <SmartImg
-                            src={partner.logo}
-                            alt={getLangField(partner, 'name', currentLang) as string}
-                            className="h-full w-full object-contain"
-                            referrerPolicy="no-referrer"
-                          />
-                        </div>
-                      ) : (
-                        <div className="p-3.5 bg-brand-gold/10 text-brand-gold-dark rounded-xl font-bold text-xl shrink-0">
-                          {partner.logo}
-                        </div>
-                      )}
-                      <div className="space-y-1 text-right rtl:text-right ltr:text-left">
-                        <h4 className="text-sm sm:text-base font-bold text-brand-blue-dark">
-                          {getLangField(partner, 'name', currentLang)}
-                        </h4>
-                        <p className="text-[11px] sm:text-xs text-slate-500 font-sans leading-relaxed mt-1">
-                          {getLangField(partner, 'desc', currentLang)}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
 
             {/* LEADERSHIP MESSAGES (Director / Chairman / Secretary-General) */}
             {messageTabs[activeTab] && (() => {

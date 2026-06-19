@@ -225,7 +225,7 @@ const getFormMeta = (form: FormDef, lang: Language) => {
           'A leading educational institution dedicated to teaching the Holy Quran and Arabic.',
           'Institusi pendidikan terkemuka khusus mengajar Al-Quran dan Bahasa Arab.'
         ),
-        perksTitle: t('ركائز التميز لدينا:', 'Athar Pillars', 'Teras Utama Athar:'),
+        perksTitle: t('أهم ما يميزنا:', 'What Distinguishes Us:', 'Keistimewaan Kami:'),
         perks: [
           t('كادر تعليمي مؤهل ومجاز بالسند المتصل', 'Qualified faculty with high connected Sanad', 'Barisan pendidik bertauliah bersambung Sanad'),
           t('مناهج دراسية متكاملة تركز على الجانب السلوكي والتربوي', 'Comprehensive curriculum focusing on manners and morals', 'Kurikulum komprehensif memupuk adab dan akhlak'),
