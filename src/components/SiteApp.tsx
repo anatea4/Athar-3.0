@@ -20,6 +20,7 @@ import FormsSection from '@/components/FormsSection';
 import Preloader from '@/components/Preloader';
 import MaintenanceScreen from '@/components/MaintenanceScreen';
 import LaunchOverlay from '@/components/LaunchOverlay';
+import DonatePopup from '@/components/DonatePopup';
 import { scrollToSection } from '@/lib/scroll';
 import { viewToPath, pathToView } from '@/lib/sections';
 import { Language } from '@/types';
@@ -193,6 +194,8 @@ export default function SiteApp({ initialSection = 'home', initialSub = '' }: Si
         onFinish={() => setLaunchDone(true)}
         onConfig={(c) => setPreloaderOn(c?.preloaderEnabled !== false)}
       />
+
+      <DonatePopup currentLang={currentLang} onDonate={() => handleSectionChange('finance', 'donate')} />
 
       <AnimatePresence>
         {isLoading && (

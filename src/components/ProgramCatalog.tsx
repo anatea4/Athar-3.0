@@ -44,40 +44,40 @@ export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram
   const [galleryActiveImg, setGalleryActiveImg] = useState(0);
   const [galleryLightboxOpen, setGalleryLightboxOpen] = useState(false);
 
-  const defaultProgramImages: Record<string, { src: string; titleAr: string; titleEn: string; descAr: string; descEn: string; }[]> = {
+  const defaultProgramImages: Record<string, { src: string; titleAr: string; titleEn: string; titleMs?: string; descAr: string; descEn: string; descMs?: string; }[]> = {
     safara: [
-      { src: '/safara-1.png', titleAr: 'حلقات الإسناد وتلقي القراءات', titleEn: 'Connected Recitation Circles', descAr: 'تلقي القراءات والإجازات القرآنية بالسند المتصل على شيوخ الأكاديمية.', descEn: 'Receiving Quranic chains of narration from the academy scholars.' },
-      { src: '/safara-2.png', titleAr: 'مدارسة المتون وضبط التجويد', titleEn: 'Text Study & Articulation', descAr: 'حلقات نقاشية ومدارسة المتون العلمية التخصصية كالجزرية وتحفة الأطفال.', descEn: 'Discussion and study of specialized Sharia and Tajweed texts.' },
-      { src: '/safara-3.png', titleAr: 'تكريم الحفاظ والمتميزين', titleEn: 'Honoring Distinguished Students', descAr: 'احتفاء مبارك بالطلاب والطالبات الذين أتموا سرد القرآن غيباً في مجلس واحد.', descEn: 'Celebrating students who completed reciting the entire Quran in one sitting.' }
+      { src: '/safara-1.png', titleAr: 'حلقات الإسناد وتلقي القراءات', titleEn: 'Connected Recitation Circles', titleMs: 'Halaqah Isnad & Penerimaan Bacaan', descAr: 'تلقي القراءات والإجازات القرآنية بالسند المتصل على شيوخ الأكاديمية.', descEn: 'Receiving Quranic chains of narration from the academy scholars.', descMs: 'Menerima rantaian periwayatan Al-Quran daripada syeikh akademi.' },
+      { src: '/safara-2.png', titleAr: 'مدارسة المتون وضبط التجويد', titleEn: 'Text Study & Articulation', titleMs: 'Kajian Teks & Penguasaan Tajwid', descAr: 'حلقات نقاشية ومدارسة المتون العلمية التخصصية كالجزرية وتحفة الأطفال.', descEn: 'Discussion and study of specialized Sharia and Tajweed texts.', descMs: 'Perbincangan dan kajian teks khusus syariah dan tajwid seperti Al-Jazariyyah.' },
+      { src: '/safara-3.png', titleAr: 'تكريم الحفاظ والمتميزين', titleEn: 'Honoring Distinguished Students', titleMs: 'Penghargaan Pelajar Cemerlang', descAr: 'احتفاء مبارك بالطلاب والطالبات الذين أتموا سرد القرآن غيباً في مجلس واحد.', descEn: 'Celebrating students who completed reciting the entire Quran in one sitting.', descMs: 'Meraikan pelajar yang berjaya membaca keseluruhan Al-Quran dalam satu majlis.' }
     ],
     takween: [
-      { src: '/takween-1.png', titleAr: 'محاضرات العلوم الشرعية', titleEn: 'Sharia Science Lectures', descAr: 'تأصيل شرعي في العقيدة والفقه والحديث واللغة العربية.', descEn: 'Foundational sharia studies in creed, jurisprudence, and language.' },
-      { src: '/takween-2.png', titleAr: 'حلقات النقاش والمذاكرة', titleEn: 'Discussion & Study Groups', descAr: 'تفعيل التعلم النشط وتوطين المعرفة بين الطلاب.', descEn: 'Promoting active learning and knowledge peer discussions.' },
-      { src: '/takween-3.png', titleAr: 'تكريم المتفوقين في الاختبارات', titleEn: 'Honoring Top Achievers', descAr: 'جوائز تشجيعية وشهادات تفوق للطلبة المتميزين في الفحص الدوري.', descEn: 'Awards and certificates for top performing students in assessments.' }
+      { src: '/takween-1.png', titleAr: 'محاضرات العلوم الشرعية', titleEn: 'Sharia Science Lectures', titleMs: 'Kuliah Ilmu Syariah', descAr: 'تأصيل شرعي في العقيدة والفقه والحديث واللغة العربية.', descEn: 'Foundational sharia studies in creed, jurisprudence, and language.', descMs: 'Pengajian syariah asas merangkumi akidah, fiqh, hadis, dan bahasa Arab.' },
+      { src: '/takween-2.png', titleAr: 'حلقات النقاش والمذاكرة', titleEn: 'Discussion & Study Groups', titleMs: 'Kumpulan Perbincangan & Pengajian', descAr: 'تفعيل التعلم النشط وتوطين المعرفة بين الطلاب.', descEn: 'Promoting active learning and knowledge peer discussions.', descMs: 'Menggalakkan pembelajaran aktif dan perbincangan ilmu sesama pelajar.' },
+      { src: '/takween-3.png', titleAr: 'تكريم المتفوقين في الاختبارات', titleEn: 'Honoring Top Achievers', titleMs: 'Penghargaan Pelajar Cemerlang', descAr: 'جوائز تشجيعية وشهادات تفوق للطلبة المتميزين في الفحص الدوري.', descEn: 'Awards and certificates for top performing students in assessments.', descMs: 'Anugerah dan sijil kecemerlangan untuk pelajar terbaik dalam penilaian berkala.' }
     ],
     'creators-of-tomorrow': [
-      { src: '/creators-1.png', titleAr: 'الأنشطة الرياضية واللياقة البدنية', titleEn: 'Sports & Physical Activities', descAr: 'تعزيز القوة البدنية والنشاط اليومي من خلال رياضات مختلفة.', descEn: 'Enhancing physical fitness and daily active sports.' },
-      { src: '/creators-2.png', titleAr: 'ورش العمل وبناء القيادة', titleEn: 'Leadership & Workshops', descAr: 'تدريبات مهارية في الإلقاء، وحل المشكلات، والاعتماد على النفس.', descEn: 'Skill building in public speaking, problem-solving, and independence.' },
-      { src: '/creators-3.png', titleAr: 'اللقاءات التربوية وحلقات القرآن', titleEn: 'Educational Meetings & Quran Hifz', descAr: 'مراجعة وتسميع أوراد القرآن الكريم بالإضافة إلى اللقاءات القيمية اليومية.', descEn: 'Reviewing Quranic memorization alongside daily values sittings.' }
+      { src: '/creators-1.png', titleAr: 'الأنشطة الرياضية واللياقة البدنية', titleEn: 'Sports & Physical Activities', titleMs: 'Aktiviti Sukan & Kecergasan Fizikal', descAr: 'تعزيز القوة البدنية والنشاط اليومي من خلال رياضات مختلفة.', descEn: 'Enhancing physical fitness and daily active sports.', descMs: 'Meningkatkan kecergasan fizikal dan aktiviti harian melalui pelbagai sukan.' },
+      { src: '/creators-2.png', titleAr: 'ورش العمل وبناء القيادة', titleEn: 'Leadership & Workshops', titleMs: 'Kepimpinan & Bengkel Kemahiran', descAr: 'تدريبات مهارية في الإلقاء، وحل المشكلات، والاعتماد على النفس.', descEn: 'Skill building in public speaking, problem-solving, and independence.', descMs: 'Pembinaan kemahiran dalam ucapan awam, penyelesaian masalah, dan berdikari.' },
+      { src: '/creators-3.png', titleAr: 'اللقاءات التربوية وحلقات القرآن', titleEn: 'Educational Meetings & Quran Hifz', titleMs: 'Pertemuan Pendidikan & Hafazan Al-Quran', descAr: 'مراجعة وتسميع أوراد القرآن الكريم بالإضافة إلى اللقاءات القيمية اليومية.', descEn: 'Reviewing Quranic memorization alongside daily values sittings.', descMs: 'Mengulangkaji hafazan Al-Quran bersama pertemuan nilai harian.' }
     ],
     sfeerat: [
-      { src: '/sfeerat-1.png', titleAr: 'الحلقات الحوارية والقيمية للفتيات', titleEn: 'Girls Value & Dialogue Circles', descAr: 'لقاءات تربوية تعزز الهوية الإسلامية والقيم والأخلاق النبيلة.', descEn: 'Educational sessions reinforcing Islamic identity and values.' },
-      { src: '/sfeerat-2.png', titleAr: 'الورش الحرفية والإبداعية', titleEn: 'Craft & Creative Workshops', descAr: 'تعليم مهارات اليد والأعمال الفنية لتمكين الفتيات إبداعياً.', descEn: 'Teaching arts, crafts, and handiworks for creative empowerment.' },
-      { src: '/sfeerat-2.png', titleAr: 'أنشطة الخدمة المجتمعية والترفيه', titleEn: 'Community Service & Recreation', descAr: 'أعمال تطوعية وزيارات ترفيهية تنمي الأثر السليم في الفؤاد.', descEn: 'Volunteering and fun field trips that foster healthy social impact.' }
+      { src: '/sfeerat-1.png', titleAr: 'الحلقات الحوارية والقيمية للفتيات', titleEn: 'Girls Value & Dialogue Circles', titleMs: 'Halaqah Nilai & Dialog untuk Perempuan', descAr: 'لقاءات تربوية تعزز الهوية الإسلامية والقيم والأخلاق النبيلة.', descEn: 'Educational sessions reinforcing Islamic identity and values.', descMs: 'Sesi pendidikan yang mengukuhkan identiti Islam, nilai murni, dan akhlak.' },
+      { src: '/sfeerat-2.png', titleAr: 'الورش الحرفية والإبداعية', titleEn: 'Craft & Creative Workshops', titleMs: 'Bengkel Kraf & Kreativiti', descAr: 'تعليم مهارات اليد والأعمال الفنية لتمكين الفتيات إبداعياً.', descEn: 'Teaching arts, crafts, and handiworks for creative empowerment.', descMs: 'Mengajar kemahiran tangan dan kerja seni untuk memperkasakan kreativiti perempuan.' },
+      { src: '/sfeerat-2.png', titleAr: 'أنشطة الخدمة المجتمعية والترفيه', titleEn: 'Community Service & Recreation', titleMs: 'Khidmat Masyarakat & Rekreasi', descAr: 'أعمال تطوعية وزيارات ترفيهية تنمي الأثر السليم في الفؤاد.', descEn: 'Volunteering and fun field trips that foster healthy social impact.', descMs: 'Kerja sukarela dan lawatan rekreasi yang memupuk impak sosial yang sihat.' }
     ],
     'ramadan-retreat': [
-      { src: '/quran-boys.png', titleAr: 'التهجد وصلاة القيام', titleEn: 'Night Prayers (Tahajjud)', descAr: 'إحياء العشر الأواخر بالقيام والدعاء والتضرع في جو إيماني.', descEn: 'Spiritual night prayers and supplication during the last ten nights.' },
-      { src: '/safara-1.png', titleAr: 'المراجعة القرآنية المكثفة', titleEn: 'Intensive Quranic Review', descAr: 'خطط يومية مكثفة لتثبيت الحفظ والمراجعة الجماعية والفردية.', descEn: 'Focused daily structures for solidifying memorization and reviews.' },
-      { src: '/quran-girls-2.png', titleAr: 'إفطار الجماعي واللقاءات الإيمانية', titleEn: 'Community Iftar & Lessons', descAr: 'جلسات إيمانية وثقافية مباركة تجمع طلبة الأكاديمية.', descEn: 'Blessed spiritual and cultural sittings with academy students.' }
+      { src: '/quran-boys.png', titleAr: 'التهجد وصلاة القيام', titleEn: 'Night Prayers (Tahajjud)', titleMs: 'Solat Malam (Tahajjud)', descAr: 'إحياء العشر الأواخر بالقيام والدعاء والتضرع في جو إيماني.', descEn: 'Spiritual night prayers and supplication during the last ten nights.', descMs: 'Menghidupkan sepuluh malam terakhir dengan solat malam, doa, dan munajat.' },
+      { src: '/safara-1.png', titleAr: 'المراجعة القرآنية المكثفة', titleEn: 'Intensive Quranic Review', titleMs: 'Ulangkaji Al-Quran Intensif', descAr: 'خطط يومية مكثفة لتثبيت الحفظ والمراجعة الجماعية والفردية.', descEn: 'Focused daily structures for solidifying memorization and reviews.', descMs: 'Jadual harian intensif untuk mengukuhkan hafazan secara berjemaah dan individu.' },
+      { src: '/quran-girls-2.png', titleAr: 'إفطار الجماعي واللقاءات الإيمانية', titleEn: 'Community Iftar & Lessons', titleMs: 'Iftar Berjemaah & Majlis Ilmu', descAr: 'جلسات إيمانية وثقافية مباركة تجمع طلبة الأكاديمية.', descEn: 'Blessed spiritual and cultural sittings with academy students.', descMs: 'Majlis rohani dan kebudayaan yang menghimpunkan para pelajar akademi.' }
     ],
     'journey-athar': [
-      { src: '/creators-1.png', titleAr: 'الرحلات الاستكشافية والخارجية', titleEn: 'Outdoor Expeditions & Field Trips', descAr: 'زيارة المعالم والتعلم من خلال الاستكشاف والتجربة العملية.', descEn: 'Visiting historic landmarks and learning through direct experience.' },
-      { src: '/creators-2.png', titleAr: 'الأنشطة الجماعية وتحديات الفريق', titleEn: 'Group Activities & Team Challenges', descAr: 'ألعاب حركية ومسابقات تعزز روح الأخوة والعمل الجماعي.', descEn: 'Action sports and puzzles reinforcing team spirit and brotherhood.' },
-      { src: '/quran-boys-2.png', titleAr: 'المحاضرات وجلسات التفكر والتدبر', titleEn: 'Lectures & Reflection Circles', descAr: 'جلسات تفكر في الطبيعة ودروس تدبر في معاني الآيات العظيمة.', descEn: 'Sittings in nature reflecting on Quranic verses and meanings.' }
+      { src: '/creators-1.png', titleAr: 'الرحلات الاستكشافية والخارجية', titleEn: 'Outdoor Expeditions & Field Trips', titleMs: 'Ekspedisi Luar & Lawatan Sambil Belajar', descAr: 'زيارة المعالم والتعلم من خلال الاستكشاف والتجربة العملية.', descEn: 'Visiting historic landmarks and learning through direct experience.', descMs: 'Melawat tempat bersejarah dan belajar melalui eksplorasi dan pengalaman langsung.' },
+      { src: '/creators-2.png', titleAr: 'الأنشطة الجماعية وتحديات الفريق', titleEn: 'Group Activities & Team Challenges', titleMs: 'Aktiviti Berkumpulan & Cabaran Pasukan', descAr: 'ألعاب حركية ومسابقات تعزز روح الأخوة والعمل الجماعي.', descEn: 'Action sports and puzzles reinforcing team spirit and brotherhood.', descMs: 'Sukan aksi dan cabaran yang mengukuhkan semangat berpasukan dan persaudaraan.' },
+      { src: '/quran-boys-2.png', titleAr: 'المحاضرات وجلسات التفكر والتدبر', titleEn: 'Lectures & Reflection Circles', titleMs: 'Kuliah & Majlis Tadabbur', descAr: 'جلسات تفكر في الطبيعة ودروس تدبر في معاني الآيات العظيمة.', descEn: 'Sittings in nature reflecting on Quranic verses and meanings.', descMs: 'Duduk di alam terbuka merenungi ayat-ayat Al-Quran dan maknanya.' }
     ],
     qari: [
-      { src: '/safara-1.png', titleAr: 'فحص التجويد وضبط مخارج الحروف', titleEn: 'Tajweed Evaluation & Articulation', descAr: 'تعليم التلاوة الصحيحة وأحكام التجويد عملياً ونظرياً.', descEn: 'Teaching correct pronunciation and rules practically and theoretically.' },
-      { src: '/quran-boys-3.png', titleAr: 'التسجيلات الصوتية والمحافل', titleEn: 'Audio Recordings & Assemblies', descAr: 'تسجيل التلاوات المتميزة للطلاب وتشجيعهم بظهور مبارك.', descEn: 'Recording top student recitations to encourage and reward them.' },
+      { src: '/safara-1.png', titleAr: 'فحص التجويد وضبط مخارج الحروف', titleEn: 'Tajweed Evaluation & Articulation', titleMs: 'Penilaian Tajwid & Makhraj Huruf', descAr: 'تعليم التلاوة الصحيحة وأحكام التجويد عملياً ونظرياً.', descEn: 'Teaching correct pronunciation and rules practically and theoretically.', descMs: 'Mengajar sebutan yang betul dan hukum tajwid secara praktikal dan teori.' },
+      { src: '/quran-boys-3.png', titleAr: 'التسجيلات الصوتية والمحافل', titleEn: 'Audio Recordings & Assemblies', titleMs: 'Rakaman Audio & Majlis Pembacaan', descAr: 'تسجيل التلاوات المتميزة للطلاب وتشجيعهم بظهور مبارك.', descEn: 'Recording top student recitations to encourage and reward them.', descMs: 'Merakam bacaan terbaik pelajar untuk menggalakkan dan memberi ganjaran.' },
       { src: '/quran-girls-3.png', titleAr: 'التتويج بجوائز قارئ أثر المتميز', titleEn: 'Athar Reciter Award Coronation', descAr: 'تكريم المتسابقين الحاصلين على أعلى درجات الضبط والجمال الصوتي.', descEn: 'Honoring contestants with the highest articulation and vocal beauty.' }
     ]
   };
@@ -118,7 +118,7 @@ export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram
     'qari': { progId: 'qari', icon: <BookOpen className="h-6 w-6 text-brand-gold" /> },
   };
 
-  const programImages: Record<string, { src: string; titleAr: string; titleEn: string; descAr: string; descEn: string; }[]> = {};
+  const programImages: Record<string, { src: string; titleAr: string; titleEn: string; titleMs?: string; descAr: string; descEn: string; descMs?: string; }[]> = {};
   const tabsWithGalleries = ['safara', 'takween', 'creators-of-tomorrow', 'sfeerat', 'ramadan-retreat', 'journey-athar', 'qari'];
   for (const tabId of tabsWithGalleries) {
     let progId = '';
@@ -137,8 +137,10 @@ export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram
           src: item.img || item.image || item.src || '',
           titleAr: item.titleAr || '',
           titleEn: item.titleEn || '',
+          titleMs: item.titleMs || '',
           descAr: item.descAr || '',
           descEn: item.descEn || '',
+          descMs: item.descMs || '',
         }));
       }
     }
@@ -507,7 +509,7 @@ export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram
                     {prog.stats && (
                       <div className="pt-4 border-t border-white/10">
                         <span className="inline-flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-sm font-bold text-brand-gold-light">
-                          <Users className="h-4 w-4" /> {prog.stats}
+                          <Users className="h-4 w-4" /> {currentLang === 'ms' ? (prog.statsMs || prog.stats) : currentLang === 'en' ? (prog.statsEn || prog.stats) : prog.stats}
                         </span>
                       </div>
                     )}
@@ -559,10 +561,10 @@ export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram
                       <div className="absolute bottom-6 right-6 left-6 z-30 text-white flex flex-col md:flex-row md:items-end justify-between gap-4 text-right">
                         <div className="space-y-1.5 max-w-xl">
                           <h5 className="text-base sm:text-lg font-extrabold text-brand-gold">
-                            {currentLang === 'en' ? programImages[activeTab][galleryActiveImg]?.titleEn : programImages[activeTab][galleryActiveImg]?.titleAr}
+                            {currentLang === 'ms' ? programImages[activeTab][galleryActiveImg]?.titleMs : currentLang === 'en' ? programImages[activeTab][galleryActiveImg]?.titleEn : programImages[activeTab][galleryActiveImg]?.titleAr}
                           </h5>
                           <p className="text-xs sm:text-sm text-slate-200 font-sans leading-relaxed">
-                            {currentLang === 'en' ? programImages[activeTab][galleryActiveImg]?.descEn : programImages[activeTab][galleryActiveImg]?.descAr}
+                            {currentLang === 'ms' ? programImages[activeTab][galleryActiveImg]?.descMs : currentLang === 'en' ? programImages[activeTab][galleryActiveImg]?.descEn : programImages[activeTab][galleryActiveImg]?.descAr}
                           </p>
                         </div>
                         
@@ -646,10 +648,10 @@ export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram
                       {/* Info overlay in lightbox */}
                       <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/85 to-transparent p-6 text-white text-right">
                         <h5 className="text-base sm:text-lg font-bold text-brand-gold">
-                          {currentLang === 'en' ? programImages[activeTab][galleryActiveImg]?.titleEn : programImages[activeTab][galleryActiveImg]?.titleAr}
+                          {currentLang === 'ms' ? programImages[activeTab][galleryActiveImg]?.titleMs : currentLang === 'en' ? programImages[activeTab][galleryActiveImg]?.titleEn : programImages[activeTab][galleryActiveImg]?.titleAr}
                         </h5>
                         <p className="text-xs sm:text-sm text-slate-300 font-sans mt-1 leading-relaxed">
-                          {currentLang === 'en' ? programImages[activeTab][galleryActiveImg]?.descEn : programImages[activeTab][galleryActiveImg]?.descAr}
+                          {currentLang === 'ms' ? programImages[activeTab][galleryActiveImg]?.descMs : currentLang === 'en' ? programImages[activeTab][galleryActiveImg]?.descEn : programImages[activeTab][galleryActiveImg]?.descAr}
                         </p>
                       </div>
                     </div>
@@ -672,7 +674,7 @@ export default function ProgramCatalog({ currentLang, activeSub, onSelectProgram
                     <h4 className="text-lg font-bold text-brand-blue-dark">{getLangField(p, 'title', currentLang)}</h4>
                     <p className="text-slate-500 font-sans text-xs sm:text-sm leading-relaxed">{getLangField(p, 'desc', currentLang)}</p>
                     {p.stats && (
-                      <div className="bg-brand-sand p-3 rounded-xl text-xs text-brand-blue font-bold font-sans">👥 {p.stats}</div>
+                      <div className="bg-brand-sand p-3 rounded-xl text-xs text-brand-blue font-bold font-sans">👥 {currentLang === 'ms' ? (p.statsMs || p.stats) : currentLang === 'en' ? (p.statsEn || p.stats) : p.stats}</div>
                     )}
                   </div>
                 ))}
